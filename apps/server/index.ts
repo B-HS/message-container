@@ -5,6 +5,7 @@ import { compose } from '@/compose'
 import { createDbClient, runMigrations } from '@/db'
 import { getEnv } from '@/lib/env'
 import { createRouter } from '@/route'
+import { createAuthRoute } from '@/route/auth'
 import { createMcpRoute } from '@/route/mcp'
 import { createPanelRoute } from '@/route/panel'
 
@@ -18,6 +19,7 @@ const app = new Hono()
 app.get('/', (c) => c.redirect('/panel'))
 app.route('/panel', createPanelRoute({ authService: composed.authService }))
 app.route('/mcp', createMcpRoute(composed))
+app.route('/api/auth', createAuthRoute({ authService: composed.authService }))
 app.route('/api', createRouter(composed))
 
 app.get(
