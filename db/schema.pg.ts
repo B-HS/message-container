@@ -1,4 +1,4 @@
-import { bigint, boolean, index, pgTable, primaryKey, text } from 'drizzle-orm/pg-core'
+import { bigint, bigserial, boolean, index, pgTable, primaryKey, text } from 'drizzle-orm/pg-core'
 
 export const chats = pgTable('chats', {
     sourceRowId: bigint('source_row_id', { mode: 'number' }).primaryKey(),
@@ -60,4 +60,19 @@ export const attachments = pgTable(
 export const syncState = pgTable('sync_state', {
     key: text('key').primaryKey(),
     value: text('value').notNull(),
+})
+
+export const authState = pgTable('auth_state', {
+    key: text('key').primaryKey(),
+    value: text('value').notNull(),
+})
+
+export const apiKeys = pgTable('api_keys', {
+    id: bigserial('id', { mode: 'number' }).primaryKey(),
+    name: text('name').notNull(),
+    start: text('start').notNull(),
+    keyHash: text('key_hash').notNull().unique(),
+    createdAtMs: bigint('created_at_ms', { mode: 'number' }).notNull(),
+    lastUsedAtMs: bigint('last_used_at_ms', { mode: 'number' }),
+    revokedAtMs: bigint('revoked_at_ms', { mode: 'number' }),
 })

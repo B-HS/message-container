@@ -1,10 +1,12 @@
 import { count, desc, eq, inArray, like, sql } from 'drizzle-orm'
 
 import { INSERT_CHUNK_SIZE, SYNC_STATE_KEY } from '@/compose/provider/constants'
-import { attachments, chatHandles, chats, handles, messages, syncState } from '@/db/schema.pg'
+import { apiKeys, attachments, authState, chatHandles, chats, handles, messages, syncState } from '@/db/schema.pg'
 import { chunk } from '@/lib/collection'
+import { createAppError } from '@/lib/error'
 
 import type { BunSQLDatabase } from 'drizzle-orm/bun-sql'
+import type { AuthServiceDb } from '@/service/domain/auth/auth-service'
 import type { AttachmentServiceDb } from '@/service/domain/message/attachment-service'
 import type { ChatServiceDb, ChatSummary } from '@/service/domain/message/chat-service'
 import type { MessageServiceDb } from '@/service/domain/message/message-service'
@@ -203,5 +205,34 @@ export const createPgServiceDb = (db: BunSQLDatabase) => {
         getAttachmentById: async (id) => (await db.select().from(attachments).where(eq(attachments.sourceRowId, id))).at(0) ?? null,
     }
 
-    return { sync, chat, message, attachment }
+    const apiKeySelection = {
+        id: apiKeys.id,
+        name: apiKeys.name,
+        start: apiKeys.start,
+        createdAtMs: apiKeys.createdAtMs,
+        lastUsedAtMs: apiKeys.lastUsedAtMs,
+        revokedAtMs: apiKeys.revokedAtMs,
+    }
+
+    const auth: AuthServiceDb = {
+        getAuthState: async (key) => (await db.select().from(authState).where(eq(authState.key, key))).at(0)?.value ?? null,
+        setAuthState: async (key, value) => {
+            await db.insert(authState).values({ key, value }).onConflictDoUpdate({ target: authState.key, set: { value } })
+        },
+        insertApiKey: async (row) => {
+            const inserted = (await db.insert(apiKeys).values(row).returning({ id: apiKeys.id })).at(0)
+            if (!inserted) throw createAppError('INTERNAL_ERROR')
+            return inserted
+        },
+        getApiKeyByHash: async (keyHash) => (await db.select(apiKeySelection).from(apiKeys).where(eq(apiKeys.keyHash, keyHash))).at(0) ?? null,
+        listApiKeys: async () => db.select(apiKeySelection).from(apiKeys).orderBy(desc(apiKeys.id)),
+        revokeApiKey: async (id, atMs) => {
+            await db.update(apiKeys).set({ revokedAtMs: atMs }).where(eq(apiKeys.id, id))
+        },
+        touchApiKey: async (id, atMs) => {
+            await db.update(apiKeys).set({ lastUsedAtMs: atMs }).where(eq(apiKeys.id, id))
+        },
+    }
+
+    return { sync, chat, message, attachment, auth }
 }

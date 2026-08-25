@@ -10,6 +10,7 @@ export type AppError = {
 }
 
 const STATUS_MAP: Record<ErrorCode, number> = {
+    UNAUTHORIZED: 401,
     VALIDATION_ERROR: 400,
     CHAT_NOT_FOUND: 404,
     ATTACHMENT_NOT_FOUND: 404,

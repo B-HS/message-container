@@ -1,6 +1,7 @@
 import { createMysqlServiceDb } from '@/compose/provider/mysql'
 import { createPgServiceDb } from '@/compose/provider/pg'
 import { createSqliteServiceDb } from '@/compose/provider/sqlite'
+import { createAuthService } from '@/service/domain/auth/auth-service'
 import { createAttachmentService } from '@/service/domain/message/attachment-service'
 import { createChatService } from '@/service/domain/message/chat-service'
 import { createMessageService } from '@/service/domain/message/message-service'
@@ -30,6 +31,7 @@ export const compose = ({ env, client }: ComposeArgs) => {
         chatService: createChatService({ db: serviceDb.chat }),
         messageService: createMessageService({ db: serviceDb.message }),
         attachmentService: createAttachmentService({ db: serviceDb.attachment, attachmentsRoot: env.ATTACHMENTS_ROOT }),
+        authService: createAuthService({ db: serviceDb.auth }),
     }
 }
 

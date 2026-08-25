@@ -1,6 +1,7 @@
 import type { ErrorCode } from '@/lib/error-code'
 
 export const ERROR_MESSAGE: Record<ErrorCode, string> = {
+    UNAUTHORIZED: '유효한 API 키가 필요합니다',
     VALIDATION_ERROR: '요청 값이 올바르지 않습니다',
     CHAT_NOT_FOUND: '대화를 찾을 수 없습니다',
     ATTACHMENT_NOT_FOUND: '첨부파일을 찾을 수 없습니다',

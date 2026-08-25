@@ -1,13 +1,20 @@
 {
-    "version": "7",
-    "dialect": "mysql",
-    "entries": [
-        {
-            "idx": 0,
-            "version": "5",
-            "when": 1787621254971,
-            "tag": "0000_unique_wildside",
-            "breakpoints": true
-        }
-    ]
+  "version": "7",
+  "dialect": "mysql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1787621254971,
+      "tag": "0000_unique_wildside",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1787624527371,
+      "tag": "0001_clear_spyke",
+      "breakpoints": true
+    }
+  ]
 }

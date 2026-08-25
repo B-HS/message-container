@@ -12,6 +12,7 @@ COPY db db
 COPY dto dto
 COPY service service
 COPY compose compose
+COPY middleware middleware
 COPY route route
 COPY drizzle drizzle
 ENV NODE_ENV=production

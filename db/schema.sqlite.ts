@@ -61,3 +61,18 @@ export const syncState = sqliteTable('sync_state', {
     key: text('key').primaryKey(),
     value: text('value').notNull(),
 })
+
+export const authState = sqliteTable('auth_state', {
+    key: text('key').primaryKey(),
+    value: text('value').notNull(),
+})
+
+export const apiKeys = sqliteTable('api_keys', {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    name: text('name').notNull(),
+    start: text('start').notNull(),
+    keyHash: text('key_hash').notNull().unique(),
+    createdAtMs: integer('created_at_ms').notNull(),
+    lastUsedAtMs: integer('last_used_at_ms'),
+    revokedAtMs: integer('revoked_at_ms'),
+})

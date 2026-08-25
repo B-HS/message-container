@@ -66,3 +66,21 @@ export const syncState = mysqlTable('sync_state', {
     key: varchar('key', { length: KEY_LENGTH }).primaryKey(),
     value: text('value').notNull(),
 })
+
+export const authState = mysqlTable('auth_state', {
+    key: varchar('key', { length: KEY_LENGTH }).primaryKey(),
+    value: text('value').notNull(),
+})
+
+const KEY_HASH_LENGTH = 64
+const KEY_START_LENGTH = 16
+
+export const apiKeys = mysqlTable('api_keys', {
+    id: bigint('id', { mode: 'number' }).autoincrement().primaryKey(),
+    name: varchar('name', { length: ADDRESS_LENGTH }).notNull(),
+    start: varchar('start', { length: KEY_START_LENGTH }).notNull(),
+    keyHash: varchar('key_hash', { length: KEY_HASH_LENGTH }).notNull().unique(),
+    createdAtMs: bigint('created_at_ms', { mode: 'number' }).notNull(),
+    lastUsedAtMs: bigint('last_used_at_ms', { mode: 'number' }),
+    revokedAtMs: bigint('revoked_at_ms', { mode: 'number' }),
+})

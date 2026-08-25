@@ -5,6 +5,8 @@ import { compose } from '@/compose'
 import { createDbClient, runMigrations } from '@/db'
 import { getEnv } from '@/lib/env'
 import { createRouter } from '@/route'
+import { createMcpRoute } from '@/route/mcp'
+import { createPanelRoute } from '@/route/panel'
 
 const env = getEnv()
 const client = createDbClient(env)
@@ -13,11 +15,27 @@ await runMigrations(client)
 const composed = compose({ env, client })
 
 const app = new Hono()
+app.get('/', (c) => c.redirect('/panel'))
+app.route('/panel', createPanelRoute({ authService: composed.authService }))
+app.route('/mcp', createMcpRoute(composed))
 app.route('/api', createRouter(composed))
 
-if (env.NODE_ENV !== 'production') {
-    app.get('/openapi.json', openAPIRouteHandler(app, { documentation: { info: { title: 'message-container API', version: '0.1.0' } } }))
-}
+app.get(
+    '/openapi.json',
+    openAPIRouteHandler(app, {
+        documentation: {
+            info: {
+                title: 'message-container API',
+                version: '0.1.0',
+                description: 'macOS Messages(chat.db) 조회 API. 모든 /api/* 경로는 Bearer API 키(msg_ prefix)가 필요하다. 키는 /panel 에서 발급한다.',
+            },
+            components: {
+                securitySchemes: { bearerAuth: { type: 'http', scheme: 'bearer', description: 'msg_ prefix API key issued from /panel' } },
+            },
+            security: [{ bearerAuth: [] }],
+        },
+    }),
+)
 
 let isSyncRunning = false
 const runSyncTick = async () => {
