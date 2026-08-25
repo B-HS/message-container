@@ -4,7 +4,7 @@ const DEFAULT_PORT = 3000
 const DEFAULT_SYNC_INTERVAL_MS = 5000
 const DEFAULT_SYNC_BATCH_SIZE = 1000
 
-const envSchema = z
+export const envSchema = z
     .object({
         DB_PROVIDER: z.enum(['mysql', 'postgres', 'sqlite']).default('mysql'),
         DATABASE_URL: z.string().min(1).optional(),

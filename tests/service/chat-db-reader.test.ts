@@ -6,6 +6,7 @@ import { join } from 'node:path'
 
 import { isAppError } from '@/lib/error'
 import { createChatDbReader } from '@/service/shared/chat-db-reader'
+import { createFakeChatDbSchema } from '@/tests/helpers/fake-chat-db'
 import { buildTypedstreamBody } from '@/tests/helpers/typedstream-fixture'
 
 const NS_PER_MS = 1_000_000
@@ -17,15 +18,7 @@ const chatDbPath = join(tempDir, 'chat.db')
 
 const setupFakeChatDb = () => {
     const db = new Database(chatDbPath, { create: true })
-    db.exec(`
-        CREATE TABLE message (ROWID INTEGER PRIMARY KEY, guid TEXT, text TEXT, attributedBody BLOB, handle_id INTEGER, is_from_me INTEGER, date INTEGER, service TEXT, cache_has_attachments INTEGER);
-        CREATE TABLE chat (ROWID INTEGER PRIMARY KEY, guid TEXT, chat_identifier TEXT, service_name TEXT, display_name TEXT, style INTEGER);
-        CREATE TABLE chat_message_join (chat_id INTEGER, message_id INTEGER);
-        CREATE TABLE chat_handle_join (chat_id INTEGER, handle_id INTEGER);
-        CREATE TABLE handle (ROWID INTEGER PRIMARY KEY, id TEXT, service TEXT);
-        CREATE TABLE attachment (ROWID INTEGER PRIMARY KEY, guid TEXT, filename TEXT, transfer_name TEXT, mime_type TEXT, total_bytes INTEGER);
-        CREATE TABLE message_attachment_join (message_id INTEGER, attachment_id INTEGER);
-    `)
+    createFakeChatDbSchema(db)
     db.exec(`
         INSERT INTO handle (ROWID, id, service) VALUES (1, '+821012345678', 'iMessage'), (2, 'friend@example.com', 'iMessage');
         INSERT INTO chat (ROWID, guid, chat_identifier, service_name, display_name, style)
