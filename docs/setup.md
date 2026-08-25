@@ -43,8 +43,8 @@ Error response from daemon: error while creating mount source path '/host_mnt/Us
 docker compose up -d --build
 ```
 
-- 웹 대시보드: `http://localhost:32000` (`WEB_PORT` 로 변경) — 초기 설정·로그인·대화/메시지 조회
-- API: `http://localhost:33000` (`API_PORT` 로 변경)
+- 웹 대시보드: `http://localhost:32000` (`WEB_PORT` 로 변경) — **유일한 노출면**. 초기 설정·로그인·조회·API(`/api/be/*`)·MCP(`/mcp`)·OpenAPI(`/openapi.json`)가 전부 이 origin 이다
+- 백엔드 API 컨테이너는 **기본 비노출**(docker 내부 네트워크 전용). 직접 노출하려면 compose 의 `api` 서비스에 `ports: ['33000:33000']` 을 추가하고, 브라우저에서 직접 호출해야 하면 `CORS_ALLOWED_ORIGINS`(콤마 구분) 를 api 환경변수로 설정한다
 - MySQL: `localhost:3306` (기본 계정 `messages` / `messages`, `MYSQL_PASSWORD` 등 환경변수로 덮어쓰기 가능) — 외부 클라이언트가 동기화 DB 에 직접 접속할 수 있다
 
 ### SQLite provider (단일 컨테이너)

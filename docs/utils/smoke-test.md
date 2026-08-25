@@ -2,7 +2,7 @@
 
 > 최종 갱신: 2026-08-25 · 기준: dev 브랜치
 
-docker 만 있으면 스택(api + web)을 기동하고 상태를 확인한다. **패스워드 입력이 없다** — 초기 설정(패스워드·API 키)은 전부 웹(`http://localhost:32000`)에서 진행되고 서버에 기록된다.
+docker 만 있으면 스택(api + web)을 기동하고 상태를 확인한다. **패스워드 입력이 없다** — 초기 설정(패스워드·API 키)은 전부 웹(`http://localhost:32000`)에서 진행되고 서버에 기록된다. 확인은 전부 **웹 origin 경유**다(백엔드는 기본 비노출 — 단일 origin 프록시 모델).
 
 ## 사용법
 
@@ -15,7 +15,7 @@ docker 만 있으면 스택(api + web)을 기동하고 상태를 확인한다. *
 ## 단계
 
 1. `docker compose up -d --build` (mysql 또는 sqlite 변형)
-2. `/api/auth/status` 응답 대기 (기본 90초, `BOOT_TIMEOUT_S`)
+2. `{WEB_URL}/api/be/auth/status` 응답 대기 (기본 90초, `BOOT_TIMEOUT_S`)
 3. 상태 확인 — 초기 설정 여부(`passwordSet`), 키 없이 API 호출 401(보호 정상), `/openapi.json` 200, MCP 키 없이 401
 4. `passwordSet` 값에 따라 웹에서 초기 설정 또는 로그인하라는 안내를 출력
 
@@ -23,8 +23,7 @@ docker 만 있으면 스택(api + web)을 기동하고 상태를 확인한다. *
 
 | 변수             | 기본값                   | 용도                                            |
 | ---------------- | ------------------------ | ----------------------------------------------- |
-| `BASE_URL`       | `http://localhost:33000` | 대상 API 서버                                   |
-| `WEB_URL`        | `http://localhost:32000` | 안내에 표시할 웹 주소                           |
+| `WEB_URL`        | `http://localhost:32000` | 대상 웹 origin (API·MCP 확인도 이 주소 경유)    |
 | `BOOT_TIMEOUT_S` | `90`                     | 서버 대기 한도                                  |
 | `SKIP_BOOT`      | `0`                      | `1` 이면 compose 기동 생략, 실행 중 서버만 확인 |
 

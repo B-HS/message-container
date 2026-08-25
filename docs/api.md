@@ -4,16 +4,17 @@
 
 macOS Messages(`chat.db`) 조회 API 의 엔드포인트·인증·응답 봉투·에러 코드 스펙. 계층 구조·설계 근거는 [docs/architecture.md](./architecture.md), 실행 절차는 [docs/setup.md](./setup.md) 참고.
 
-Base URL: `http://localhost:33000` (기본 `PORT`, `lib/env.ts`)
+Base URL (기본 노출 모델): **`http://localhost:32000/api/be`** — 웹(Next)이 유일한 노출면이고, 백엔드(33000)는 docker 내부 네트워크 전용으로 숨겨져 있다. 웹 프록시(`apps/web/app/api/be/[...path]/route.ts`)는 `Authorization: Bearer msg_...` 헤더를 그대로 패스스루하므로 스크립트·curl 은 웹 origin 으로 호출하면 된다 (합의: [docs/acknowledge/2026-08-25-single-origin-proxy.md](./acknowledge/2026-08-25-single-origin-proxy.md)).
+
+백엔드를 직접 노출하려면 compose 의 `api` 서비스에 `ports: ['33000:33000']` 을 추가한다. 이때 Base URL 은 `http://localhost:33000/api` 이며, 브라우저 기반 클라이언트가 직접 호출해야 하면 `CORS_ALLOWED_ORIGINS`(콤마 구분 origin 목록, `lib/env.ts`) 옵트인으로 CORS 를 연다 — 기본은 CORS 미허용이다(브라우저 직접 호출 경로가 없으므로).
 
 ## 1. 인증
 
 이 서버는 개인용 단일 사용자 전제로 별도 계정 시스템 없이 **앱 패스워드 + API 키** 방식을 쓴다(합의: [docs/acknowledge/2026-08-25-auth-mcp.md](./acknowledge/2026-08-25-auth-mcp.md)).
 
-1. 브라우저로 `/panel` 접속 — 패스워드가 없으면 초기 설정 폼, 있으면 로그인 폼이 뜬다.
-2. 초기 설정: 패스워드(최소 8자) + 확인 값을 제출한다(`dto/panel.ts` 의 `panelSetupSchema`, `password.min(8)` + `confirm` 일치 `refine`).
-3. 로그인 후 키 관리 화면에서 이름(1~100자, `apiKeyCreateSchema`)을 입력해 키를 생성한다. `msg_` prefix 키 **원문은 생성 응답에 한 번만** `<code data-new-key>` 로 표시되며, DB 에는 SHA-256 해시만 저장되어 재조회할 수 없다.
-4. 발급받은 키를 모든 `/api/*` 요청과 `/mcp` 요청에 아래 헤더로 전달한다.
+1. 웹(`http://localhost:32000`) 접속 — 패스워드가 없으면 초기 설정 폼, 있으면 로그인 폼이 뜬다(설정은 서버에 기록된다).
+2. 로그인하면 웹 세션용 키가 발급되어 httpOnly 쿠키로 보관되고, 설정 화면에서 추가 키를 생성·폐기할 수 있다. `msg_` prefix 키 **원문은 생성 시 한 번만** 표시되며, DB 에는 SHA-256 해시만 저장되어 재조회할 수 없다.
+3. 발급받은 키를 모든 API·MCP 요청에 아래 헤더로 전달한다(웹 프록시가 백엔드로 패스스루).
 
 ```
 Authorization: Bearer msg_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -25,8 +26,8 @@ Authorization: Bearer msg_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 { "success": false, "error": { "code": "UNAUTHORIZED", "message": "유효한 API 키가 필요합니다" } }
 ```
 
-- `/panel`(세션 쿠키로 별도 보호)과 `/openapi.json` 은 API 키 없이 접근 가능하다.
-- 키는 패널의 "폐기" 버튼으로 즉시 무효화할 수 있다. 폐기된 키로의 이후 호출은 모두 401 이다.
+- `/openapi.json` 과 `GET /api/auth/status` 는 키 없이 접근 가능하다(웹 프록시도 이 둘만 무자격 통과).
+- 키는 웹 설정 화면의 "폐기" 버튼으로 즉시 무효화할 수 있다. 폐기된 키로의 이후 호출은 모두 401 이다.
 
 ## 2. 엔드포인트 목록
 
@@ -166,28 +167,28 @@ type SyncStatus = {
 
 ## 6. curl 예시
 
+키는 웹 설정 화면에서 발급한다 (원문 1회 표시). 이후 모든 호출은 웹 origin 으로:
+
 ```bash
-# 1. 초기 패스워드 설정 (최초 1회) — 쿠키를 파일로 저장해 세션 유지
-curl -c cookies.txt -X POST http://localhost:33000/panel/setup \
-  -d "password=my-strong-password&confirm=my-strong-password"
+# 초기 설정 여부 확인 (공개)
+curl http://localhost:32000/api/be/auth/status
 
-# 2. 키 발급 (세션 쿠키 필요) — 응답 HTML의 <code data-new-key>msg_...</code> 안의 값을 복사해 둔다(재표시되지 않는다)
-curl -b cookies.txt -X POST http://localhost:33000/panel/keys -d "name=my-cli"
+# 대화 목록 조회
+curl -H "Authorization: Bearer msg_xxxxxxxxxxxxxxxx" http://localhost:32000/api/be/chats
 
-# 3. 발급받은 키로 대화 목록 조회
-curl -H "Authorization: Bearer msg_xxxxxxxxxxxxxxxx" http://localhost:33000/api/chats
-
-# 4. 메시지 검색
+# 메시지 검색
 curl -H "Authorization: Bearer msg_xxxxxxxxxxxxxxxx" \
-  "http://localhost:33000/api/messages?q=%EC%82%AC%EC%A7%84&limit=10"
+  "http://localhost:32000/api/be/messages?q=%EC%82%AC%EC%A7%84&limit=10"
 
-# 5. 첨부파일 다운로드
+# 첨부파일 다운로드
 curl -H "Authorization: Bearer msg_xxxxxxxxxxxxxxxx" \
-  http://localhost:33000/api/attachments/100/file -o photo.png
+  http://localhost:32000/api/be/attachments/100/file -o photo.png
 
-# 6. 동기화 즉시 실행
-curl -X POST -H "Authorization: Bearer msg_xxxxxxxxxxxxxxxx" http://localhost:33000/api/sync/run
+# 동기화 즉시 실행
+curl -X POST -H "Authorization: Bearer msg_xxxxxxxxxxxxxxxx" http://localhost:32000/api/be/sync/run
 ```
+
+백엔드를 직접 노출한 경우에는 `http://localhost:33000/api/...` 로 같은 요청을 보낼 수 있다.
 
 이미 패스워드가 설정되어 있다면 1번 대신 `/panel/login` 에 `password` 만 담아 POST 한다.
 
