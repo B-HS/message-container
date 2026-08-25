@@ -4,15 +4,15 @@
 
 ## 1. 실행 명령
 
-| 명령                     | 범위                                               |
-| ------------------------ | -------------------------------------------------- |
-| `bun test`               | 전체 (현재 127 pass / 0 fail, 244 expect, 23 파일) |
-| `bun test tests/lib`     | lib 단위 테스트만                                  |
-| `bun test tests/dto`     | dto 단위 테스트만                                  |
-| `bun test tests/service` | service 단위 테스트만                              |
-| `bun test tests/compose` | sqlite provider 통합 테스트만                      |
-| `bun test tests/e2e`     | e2e 전체(전체 배선 + 서버 부트)                    |
-| `bun test <파일 경로>`   | 단일 파일                                          |
+| 명령                     | 범위                                                                                |
+| ------------------------ | ----------------------------------------------------------------------------------- |
+| `bun test`               | 전체 — 루트에서는 워크스페이스별 실행(`bun run test`), 현재 server 139 · web 6 pass |
+| `bun test tests/lib`     | lib 단위 테스트만                                                                   |
+| `bun test tests/dto`     | dto 단위 테스트만                                                                   |
+| `bun test tests/service` | service 단위 테스트만                                                               |
+| `bun test tests/compose` | sqlite provider 통합 테스트만                                                       |
+| `bun test tests/e2e`     | e2e 전체(전체 배선 + 서버 부트)                                                     |
+| `bun test <파일 경로>`   | 단일 파일                                                                           |
 
 `bun run typecheck`(`tsc --noEmit`)와 `bun run format:check`(`prettier --check .`)를 테스트 전후로 함께 돌리는 것을 기본 검증 사다리로 한다.
 
