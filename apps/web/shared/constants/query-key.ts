@@ -14,4 +14,5 @@ export const QUERY_KEY = {
         BY_MESSAGES: (messageIds: number[]) => ['attachment', 'by-messages', messageIds],
     },
     SYNC: { STATUS: ['sync', 'status'] },
+    API_KEY: { LIST: ['api-key', 'list'] },
 }
