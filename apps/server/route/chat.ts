@@ -60,7 +60,7 @@ export const createChatRoute = (deps: ChatRouteDeps) => {
             const query = c.req.valid('query' as never) as PaginationQuery
             const chat = await deps.chatService.getById(id)
             if (!chat) throw createAppError('CHAT_NOT_FOUND')
-            const result = await deps.messageService.listByChat(id, query)
+            const result = await deps.messageService.listByChat(chat.chatIds, query)
             return c.json(paginatedResponse(result.data, { page: result.page, limit: result.limit, total: result.total }))
         }),
     )

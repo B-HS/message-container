@@ -53,7 +53,7 @@ const buildMcpServer = (deps: McpRouteDeps) => {
         async ({ chatId, ...pagination }) => {
             const chat = await deps.chatService.getById(chatId)
             if (!chat) return errorResult(`chat ${chatId} not found`)
-            return textResult({ chat, messages: await deps.messageService.listByChat(chatId, pagination) })
+            return textResult({ chat, messages: await deps.messageService.listByChat(chat.chatIds, pagination) })
         },
     )
 

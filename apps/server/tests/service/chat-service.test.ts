@@ -2,73 +2,97 @@ import { describe, expect, test } from 'bun:test'
 
 import { createChatService } from '@/service/domain/message/chat-service'
 
-import type { ChatListRow, ChatServiceDb } from '@/service/domain/message/chat-service'
+import type { ChatRowStats, ChatServiceDb } from '@/service/domain/message/chat-service'
 
-const LAST_MESSAGE_AT_MS = 1_700_000_000_000
-
-const buildChatRow = (sourceRowId: number): ChatListRow => ({
-    sourceRowId,
-    guid: `chat-guid-${sourceRowId}`,
-    identifier: 'chat-identifier',
+const buildRow = (overrides: Partial<ChatRowStats> & { sourceRowId: number }): ChatRowStats => ({
+    guid: `chat-guid-${overrides.sourceRowId}`,
+    identifier: '+821012345678',
     serviceName: 'iMessage',
     displayName: null,
     isGroup: false,
-    participants: [{ address: '+15551234567', service: 'iMessage' }],
-    messageCount: 3,
-    lastMessageText: '마지막 메시지',
-    lastMessageAtMs: LAST_MESSAGE_AT_MS,
+    messageCount: 1,
+    lastMessageText: 'hello',
+    lastMessageAtMs: 1_000,
+    ...overrides,
 })
 
-describe('chatService.list', () => {
-    test('page 와 limit 으로 offset 을 계산해 db 에 전달한다', async () => {
-        const capturedParams: { offset: number; limit: number }[] = []
-        const db: ChatServiceDb = {
-            getChatList: async (params) => {
-                capturedParams.push(params)
-                return { data: [], total: 0 }
-            },
-            getChatById: async () => null,
-        }
-        const service = createChatService({ db })
+const participantsFixture = [
+    { chatSourceRowId: 1, address: '+821012345678', service: 'SMS' },
+    { chatSourceRowId: 2, address: '+821012345678', service: 'iMessage' },
+    { chatSourceRowId: 3, address: 'friend@example.com', service: 'iMessage' },
+]
 
-        await service.list({ page: 3, limit: 10 })
+const createService = (rows: ChatRowStats[]) => {
+    const db: ChatServiceDb = {
+        getAllChatRows: async () => rows,
+        getParticipants: async () => participantsFixture,
+    }
+    return createChatService({ db })
+}
 
-        expect(capturedParams).toEqual([{ offset: 20, limit: 10 }])
-    })
-
-    test('lastMessageAtMs 를 ISO lastMessageAt 으로 변환해 반환한다', async () => {
-        const db: ChatServiceDb = {
-            getChatList: async () => ({ data: [buildChatRow(1)], total: 1 }),
-            getChatById: async () => null,
-        }
-        const service = createChatService({ db })
+describe('chatService.list — 대화 병합', () => {
+    test('같은 identifier 의 SMS·iMessage 행을 대표 1건으로 병합한다', async () => {
+        const service = createService([
+            buildRow({ sourceRowId: 1, serviceName: 'SMS', messageCount: 2, lastMessageText: 'sms 메시지', lastMessageAtMs: 1_000 }),
+            buildRow({ sourceRowId: 2, serviceName: 'iMessage', messageCount: 3, lastMessageText: '최신 메시지', lastMessageAtMs: 2_000 }),
+        ])
 
         const result = await service.list({ page: 1, limit: 20 })
 
-        expect(result.page).toBe(1)
         expect(result.total).toBe(1)
-        expect(result.data.at(0)?.lastMessageAt).toBe(new Date(LAST_MESSAGE_AT_MS).toISOString())
-        expect(result.data.at(0)?.lastMessageText).toBe('마지막 메시지')
-        expect(result.data.at(0)?.messageCount).toBe(3)
-        expect(result.data.at(0)).not.toHaveProperty('lastMessageAtMs')
+        const merged = result.data.at(0)
+        expect(merged?.sourceRowId).toBe(2)
+        expect(merged?.chatIds.toSorted()).toEqual([1, 2])
+        expect(merged?.messageCount).toBe(5)
+        expect(merged?.serviceNames.toSorted()).toEqual(['SMS', 'iMessage'])
+        expect(merged?.lastMessageText).toBe('최신 메시지')
+        expect(merged?.participants).toEqual([{ address: '+821012345678', service: 'SMS' }])
+    })
+
+    test('identifier 가 다르면 병합하지 않고 최근 메시지 순으로 정렬한다', async () => {
+        const service = createService([
+            buildRow({ sourceRowId: 1, identifier: '+821011111111', lastMessageAtMs: 1_000 }),
+            buildRow({ sourceRowId: 3, identifier: 'group-1', isGroup: true, lastMessageAtMs: 3_000 }),
+            buildRow({ sourceRowId: 2, identifier: '+821022222222', lastMessageAtMs: 2_000 }),
+        ])
+
+        const result = await service.list({ page: 1, limit: 20 })
+
+        expect(result.total).toBe(3)
+        expect(result.data.map((chat) => chat.sourceRowId)).toEqual([3, 2, 1])
+    })
+
+    test('페이지네이션은 병합된 그룹 기준으로 동작한다', async () => {
+        const service = createService([
+            buildRow({ sourceRowId: 1, identifier: 'a', lastMessageAtMs: 3_000 }),
+            buildRow({ sourceRowId: 2, identifier: 'b', lastMessageAtMs: 2_000 }),
+            buildRow({ sourceRowId: 3, identifier: 'c', lastMessageAtMs: 1_000 }),
+        ])
+
+        const result = await service.list({ page: 2, limit: 2 })
+
+        expect(result.total).toBe(3)
+        expect(result.data.map((chat) => chat.sourceRowId)).toEqual([3])
     })
 })
 
-describe('chatService.getById', () => {
-    test('db 조회 결과를 요약 형태로 변환해 반환한다', async () => {
-        const db: ChatServiceDb = { getChatList: async () => ({ data: [], total: 0 }), getChatById: async () => buildChatRow(5) }
-        const service = createChatService({ db })
+describe('chatService.getById — 병합 그룹 해석', () => {
+    test('대표가 아닌 멤버 id 로 조회해도 같은 병합 대화를 반환한다', async () => {
+        const service = createService([
+            buildRow({ sourceRowId: 1, serviceName: 'SMS', lastMessageAtMs: 1_000 }),
+            buildRow({ sourceRowId: 2, serviceName: 'iMessage', lastMessageAtMs: 2_000 }),
+        ])
 
-        const result = await service.getById(5)
+        const byMember = await service.getById(1)
+        const byRepresentative = await service.getById(2)
 
-        expect(result?.sourceRowId).toBe(5)
-        expect(result?.lastMessageAt).toBe(new Date(LAST_MESSAGE_AT_MS).toISOString())
+        expect(byMember?.sourceRowId).toBe(2)
+        expect(byMember?.chatIds.toSorted()).toEqual([1, 2])
+        expect(byRepresentative?.chatIds.toSorted()).toEqual([1, 2])
     })
 
-    test('없는 채팅이면 null 을 반환한다', async () => {
-        const db: ChatServiceDb = { getChatList: async () => ({ data: [], total: 0 }), getChatById: async () => null }
-        const service = createChatService({ db })
-
+    test('없는 id 는 null 을 반환한다', async () => {
+        const service = createService([buildRow({ sourceRowId: 1 })])
         expect(await service.getById(999)).toBeNull()
     })
 })

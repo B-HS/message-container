@@ -20,7 +20,7 @@ const buildRecord = (sourceRowId: number): MessageRecord => ({
 
 describe('messageService.listByChat', () => {
     test('chatSourceRowId 와 offset 을 db 에 전달한다', async () => {
-        const capturedParams: { chatSourceRowId: number; offset: number; limit: number }[] = []
+        const capturedParams: { chatSourceRowIds: number[]; offset: number; limit: number }[] = []
         const db: MessageServiceDb = {
             getMessageListByChat: async (params) => {
                 capturedParams.push(params)
@@ -30,9 +30,9 @@ describe('messageService.listByChat', () => {
         }
         const service = createMessageService({ db })
 
-        await service.listByChat(7, { page: 3, limit: 10 })
+        await service.listByChat([7], { page: 3, limit: 10 })
 
-        expect(capturedParams).toEqual([{ chatSourceRowId: 7, offset: 20, limit: 10 }])
+        expect(capturedParams).toEqual([{ chatSourceRowIds: [7], offset: 20, limit: 10 }])
     })
 
     test('sentAtMs 를 sentAt ISO 문자열로 변환하고 sentAtMs 는 응답에 없다', async () => {
@@ -43,7 +43,7 @@ describe('messageService.listByChat', () => {
         }
         const service = createMessageService({ db })
 
-        const result = await service.listByChat(7, { page: 1, limit: 20 })
+        const result = await service.listByChat([7], { page: 1, limit: 20 })
 
         expect(result.data[0]?.sentAt).toBe(new Date(SENT_AT_MS).toISOString())
         expect(result.data[0] && 'sentAtMs' in result.data[0]).toBe(false)

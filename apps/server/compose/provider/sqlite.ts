@@ -8,7 +8,7 @@ import { createAppError } from '@/lib/error'
 import type { BunSQLiteDatabase } from 'drizzle-orm/bun-sqlite'
 import type { AuthServiceDb } from '@/service/domain/auth/auth-service'
 import type { AttachmentServiceDb } from '@/service/domain/message/attachment-service'
-import type { ChatListRow, ChatServiceDb } from '@/service/domain/message/chat-service'
+import type { ChatServiceDb } from '@/service/domain/message/chat-service'
 import type { MessageServiceDb } from '@/service/domain/message/message-service'
 import type { SyncServiceDb } from '@/service/domain/message/sync-service'
 
@@ -141,36 +141,14 @@ export const createSqliteServiceDb = (db: BunSQLiteDatabase) => {
         lastMessageAtMs: sql<number | null>`(select max(m.sent_at_ms) from messages m where m.chat_source_row_id = chats.source_row_id)`,
     }
 
-    const toChatRows = (
-        chatRows: Omit<ChatListRow, 'participants'>[],
-        participantRows: Awaited<ReturnType<typeof getParticipantRows>>,
-    ): ChatListRow[] =>
-        chatRows.map((c) => ({
-            ...c,
-            messageCount: Number(c.messageCount),
-            lastMessageAtMs: c.lastMessageAtMs === null ? null : Number(c.lastMessageAtMs),
-            participants: participantRows.filter((p) => p.chatSourceRowId === c.sourceRowId).map(({ address, service }) => ({ address, service })),
-        }))
-
     const chat: ChatServiceDb = {
-        getChatList: async ({ offset, limit }) => {
-            const [totalRow, chatRows] = await Promise.all([
-                db.select({ value: count() }).from(chats),
-                db
-                    .select(chatListSelection)
-                    .from(chats)
-                    .orderBy(sql`${chatListSelection.lastMessageAtMs} desc`, desc(chats.sourceRowId))
-                    .limit(limit)
-                    .offset(offset),
-            ])
-            const participantRows = await getParticipantRows(chatRows.map((c) => c.sourceRowId))
-            return { data: toChatRows(chatRows, participantRows), total: totalRow.at(0)?.value ?? 0 }
-        },
-        getChatById: async (id) => {
-            const chatRow = (await db.select(chatListSelection).from(chats).where(eq(chats.sourceRowId, id))).at(0)
-            if (!chatRow) return null
-            return toChatRows([chatRow], await getParticipantRows([id])).at(0) ?? null
-        },
+        getAllChatRows: async () =>
+            (await db.select(chatListSelection).from(chats)).map((c) => ({
+                ...c,
+                messageCount: Number(c.messageCount),
+                lastMessageAtMs: c.lastMessageAtMs === null ? null : Number(c.lastMessageAtMs),
+            })),
+        getParticipants: async (chatIds) => getParticipantRows(chatIds),
     }
 
     const messageSelection = {
@@ -186,8 +164,8 @@ export const createSqliteServiceDb = (db: BunSQLiteDatabase) => {
     }
 
     const message: MessageServiceDb = {
-        getMessageListByChat: async ({ chatSourceRowId, offset, limit }) => {
-            const condition = eq(messages.chatSourceRowId, chatSourceRowId)
+        getMessageListByChat: async ({ chatSourceRowIds, offset, limit }) => {
+            const condition = inArray(messages.chatSourceRowId, chatSourceRowIds)
             const [totalRow, rows] = await Promise.all([
                 db.select({ value: count() }).from(messages).where(condition),
                 db

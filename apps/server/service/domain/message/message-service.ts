@@ -14,7 +14,7 @@ export type MessageRecord = {
 }
 
 export type MessageServiceDb = {
-    getMessageListByChat: (params: { chatSourceRowId: number; offset: number; limit: number }) => Promise<{ data: MessageRecord[]; total: number }>
+    getMessageListByChat: (params: { chatSourceRowIds: number[]; offset: number; limit: number }) => Promise<{ data: MessageRecord[]; total: number }>
     searchMessageList: (params: { keyword?: string; offset: number; limit: number }) => Promise<{ data: MessageRecord[]; total: number }>
 }
 
@@ -25,8 +25,8 @@ type MessageServiceDeps = {
 const toMessageSummary = ({ sentAtMs, ...record }: MessageRecord) => ({ ...record, sentAt: new Date(sentAtMs).toISOString() })
 
 export const createMessageService = (deps: MessageServiceDeps) => ({
-    listByChat: async (chatSourceRowId: number, query: PaginationQuery) => {
-        const { data, total } = await deps.db.getMessageListByChat({ chatSourceRowId, offset: (query.page - 1) * query.limit, limit: query.limit })
+    listByChat: async (chatSourceRowIds: number[], query: PaginationQuery) => {
+        const { data, total } = await deps.db.getMessageListByChat({ chatSourceRowIds, offset: (query.page - 1) * query.limit, limit: query.limit })
         return { data: data.map(toMessageSummary), page: query.page, limit: query.limit, total }
     },
     search: async (query: MessageListQuery) => {
