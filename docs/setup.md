@@ -62,6 +62,8 @@ DB_PROVIDER=postgres
 DATABASE_URL=postgres://user:pass@host:5432/messages
 ```
 
+containers 패널 호스트에서 운영하려면 `chore/containers` 브랜치의 `compose.containers.yaml` 과 `docs/containers-integration.md` 를 사용한다.
+
 ## 3. 로컬 개발 (컨테이너 밖)
 
 ```bash

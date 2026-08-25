@@ -2,6 +2,12 @@
 
 기준 문서: `~/.claude/convention/*.md` (특히 backend.md · common.md · git.md), `docs/acknowledge/2026-08-25-project-stack.md`
 
+## 작업: containers 통합 + 정합 스윕 (2026-08-25)
+
+- [x] chore/containers 브랜치 신설 — compose.containers.yaml(edge 네트워크 합류·하드닝·bun 헬스체크·message-* 서비스명) + docs/containers-integration.md
+- [x] 서버 이미지 /data 를 bun 소유로 선생성 (named volume + non-root 조합에서 sqlite 쓰기 실패 근본 수정)
+- [x] 문서 정합 스윕 — api.md ChatSummary 병합 반영, GET /api/chats/:id 절 추가, setup.md 브랜치 안내, acknowledge 기록
+
 ## 작업: README·워드마크 마감 (2026-08-25)
 
 - [x] 사이드바 워드마크 "Message Container" 로 변경, 데모 데이터 인스턴스(별도 포트)로 스크린샷 촬영(assets/screenshot-chat.png, 실데이터 미노출), README 를 사진·소개·사용법 중심으로 재작성

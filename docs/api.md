@@ -66,27 +66,35 @@ errorResponse(code, message, details) // { success: false, error: { code, messag
 
 쿼리: `page`(정수, 1 이상, 기본 1), `limit`(정수, 1~100, 기본 20) — 모두 `z.coerce.number()` 이므로 문자열로 와도 강제 변환된다(`dto/common.ts` 의 `paginationQuerySchema`).
 
-응답 `data` 의 각 항목(`ChatSummary`, `service/domain/message/chat-service.ts`):
+같은 상대의 SMS·iMessage 대화(chat 행)는 `chat_identifier` 기준으로 **대표 1건으로 병합**되어 반환되며, 목록은 병합된 대화의 최근 메시지 시각 내림차순으로 정렬된다. 응답 `data` 의 각 항목(`ChatSummary`, `service/domain/message/chat-service.ts`):
 
 ```typescript
 type ChatSummary = {
     sourceRowId: number
     guid: string
     identifier: string | null
-    serviceName: string | null
+    serviceNames: string[]
     displayName: string | null
     isGroup: boolean
+    chatIds: number[]
     participants: { address: string; service: string | null }[]
+    messageCount: number
+    lastMessageText: string | null
+    lastMessageAt: string | null
 }
 ```
 
-에러: `401 UNAUTHORIZED`, `400 VALIDATION_ERROR`(`limit`이 100 초과 등).
+`sourceRowId` 는 병합 그룹의 대표 chat 행 id, `chatIds` 는 그룹 전체 chat 행 id 목록이다. 에러: `401 UNAUTHORIZED`, `400 VALIDATION_ERROR`(`limit`이 100 초과 등).
+
+### GET /api/chats/:id
+
+경로 파라미터: `id` — 병합 그룹의 **어느 멤버 chat 행 id 로 조회해도 같은 병합 대화**(`ChatSummary`)를 반환한다. 없으면 `404 CHAT_NOT_FOUND`.
 
 ### GET /api/chats/:id/messages
 
 경로 파라미터: `id`(정수, 양수 — `dto/common.ts` 의 `idParamSchema`). 쿼리는 `/api/chats` 와 동일한 `page`/`limit`.
 
-대화가 없으면 `404 CHAT_NOT_FOUND`. 응답 `data` 의 각 항목(`MessageSummary`)은 아래 "메시지 응답 형태" 참고. 최신 메시지가 먼저 온다.
+대화가 없으면 `404 CHAT_NOT_FOUND`. **병합 그룹 전체(chatIds)의 메시지**를 하나의 타임라인으로 반환한다. 응답 `data` 의 각 항목(`MessageSummary`)은 아래 "메시지 응답 형태" 참고. 최신 메시지가 먼저 온다.
 
 ### GET /api/messages
 
