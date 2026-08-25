@@ -8,7 +8,7 @@ import { PageRoot } from '@features/page-root/page-root'
 import { PanelCard } from '@features/panel-card/panel-card'
 import { Pager } from '@features/pager/pager'
 import { StateCard } from '@features/state-card/state-card'
-import { formatCount } from '@shared/lib/format'
+import { formatCount, formatDateTime } from '@shared/lib/format'
 import { Badge } from '@shared/ui/badge'
 
 import type { ChatListParams } from '@entities/chat/chat.query'
@@ -24,16 +24,28 @@ const chatDisplayName = (chat: ChatSummary) =>
     chat.displayName ?? chat.identifier ?? chat.participants.map((participant) => participant.address).join(', ')
 
 const COLUMNS: DataTableColumn<ChatSummary>[] = [
-    { key: 'id', label: 'ID', width: 64, align: 'right', mono: true, render: (chat) => chat.sourceRowId },
-    { key: 'name', label: '대화', flexible: true, render: (chat) => chatDisplayName(chat) },
+    { key: 'name', label: '대화', width: 224, truncate: true, render: (chat) => chatDisplayName(chat) },
+    {
+        key: 'lastMessage',
+        label: '마지막 메시지',
+        flexible: true,
+        render: (chat) => (chat.lastMessageText ? chat.lastMessageText : <span className='text-muted-foreground'>(본문 없음)</span>),
+    },
+    {
+        key: 'lastMessageAt',
+        label: '시각',
+        width: 160,
+        align: 'right',
+        mono: true,
+        render: (chat) => <span suppressHydrationWarning>{formatDateTime(chat.lastMessageAt)}</span>,
+    },
     {
         key: 'type',
         label: '유형',
         width: 80,
         render: (chat) => <Badge variant={chat.isGroup ? 'secondary' : 'outline'}>{chat.isGroup ? '그룹' : '1:1'}</Badge>,
     },
-    { key: 'service', label: '서비스', width: 96, render: (chat) => chat.serviceName ?? '-' },
-    { key: 'participants', label: '참여자', width: 96, align: 'right', render: (chat) => chat.participants.length },
+    { key: 'messageCount', label: '메시지', width: 80, align: 'right', render: (chat) => formatCount(chat.messageCount) },
 ]
 
 export const ChatListWidget: FC<ChatListWidgetProps> = ({ params }) => {

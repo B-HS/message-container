@@ -10,6 +10,9 @@ export const chatSummarySchema = z.object({
     displayName: z.string().nullable(),
     isGroup: z.boolean(),
     participants: z.array(chatParticipantSchema),
+    messageCount: z.number(),
+    lastMessageText: z.string().nullable(),
+    lastMessageAt: z.string().nullable(),
 })
 
 export type ChatSummary = z.infer<typeof chatSummarySchema>

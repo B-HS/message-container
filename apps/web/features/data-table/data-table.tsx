@@ -9,6 +9,7 @@ export type DataTableColumn<T> = {
     align?: 'left' | 'right'
     mono?: boolean
     flexible?: boolean
+    truncate?: boolean
     render: (row: T) => ReactNode
 }
 
@@ -44,11 +45,13 @@ export const DataTable = <T,>({ columns, rows, rowKey, onRowClick }: DataTablePr
                         {columns.map((column) => (
                             <td
                                 key={column.key}
+                                style={column.truncate && column.width ? { maxWidth: column.width } : undefined}
                                 className={cn(
                                     'p-2 align-middle',
                                     column.align === 'right' && 'text-right tabular-nums',
                                     column.mono && 'font-mono',
                                     column.flexible && 'max-w-0 truncate',
+                                    column.truncate && 'truncate',
                                 )}>
                                 {column.render(row)}
                             </td>
