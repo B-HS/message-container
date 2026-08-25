@@ -2,6 +2,10 @@
 
 기준 문서: `~/.claude/convention/*.md` (특히 backend.md · common.md · git.md), `docs/acknowledge/2026-08-25-project-stack.md`
 
+## 작업: README·워드마크 마감 (2026-08-25)
+
+- [x] 사이드바 워드마크 "Message Container" 로 변경, 데모 데이터 인스턴스(별도 포트)로 스크린샷 촬영(assets/screenshot-chat.png, 실데이터 미노출), README 를 사진·소개·사용법 중심으로 재작성
+
 ## 작업: 대화 병합 — 대표 1행 (2026-08-25)
 
 - [x] identifier 기준 chat 행 병합(대표 선택·건수 합산·서비스 union·참여자 dedup) — chat-service 도메인 로직으로 구현

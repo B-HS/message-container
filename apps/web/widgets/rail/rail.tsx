@@ -37,7 +37,7 @@ const RailContent: FC<RailContentProps> = ({ onNavigate }) => {
     return (
         <>
             <header className='flex h-12 shrink-0 items-center px-3'>
-                <span className='truncate text-sm font-semibold tracking-tight'>message-container</span>
+                <span className='truncate text-sm font-semibold tracking-tight'>Message Container</span>
             </header>
             <nav className='flex min-h-0 flex-1 flex-col overflow-y-auto'>
                 {NAV_ITEMS.map((item) => (
@@ -103,7 +103,7 @@ export const Rail = () => {
                     className='flex size-8 items-center justify-center hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'>
                     <PanelLeft className='size-4' />
                 </button>
-                <span className='truncate text-sm font-semibold tracking-tight'>message-container</span>
+                <span className='truncate text-sm font-semibold tracking-tight'>Message Container</span>
             </div>
             {isDrawerOpen ? (
                 <div className='fixed inset-0 z-50 md:hidden'>
