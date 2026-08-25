@@ -3,7 +3,7 @@
 ## 결정
 
 - 자가호스팅 Docker 패널 레포(`containers`)의 호스트에서 message-container 를 운영하기 위한 전용 브랜치 **`chore/containers`** 를 둔다.
-- 브랜치에만 `compose.containers.yaml` 과 `docs/containers-integration.md` 가 존재하며, containers 쪽에서는 이 브랜치를 pull 해 `docker compose -f compose.containers.yaml up -d --build` 로 바로 올린다.
+- `compose.containers.yaml` 만 브랜치 전용이며(가이드 문서 `docs/containers-integration.md` 는 dev 에도 포함), containers 쪽에서는 이 브랜치를 pull 해 `docker compose -f compose.containers.yaml up -d --build` 로 바로 올린다.
 - 갱신 흐름: `dev` 에서 개발 → `chore/containers` 로 merge → push.
 
 ## 배경·제약
