@@ -53,15 +53,20 @@ app.get(
 )
 
 let isSyncRunning = false
+let isSyncFailing = false
 const runSyncTick = async () => {
     if (isSyncRunning) return
     isSyncRunning = true
     try {
         await composed.syncService.runOnce()
+        if (isSyncFailing) await composed.logService.record({ level: 'info', event: 'sync.recovered', message: '동기화가 복구되었습니다' })
+        isSyncFailing = false
     } catch (error) {
         const reason = error instanceof Error ? error.message : JSON.stringify(error)
         console.error('[sync]', reason)
         await composed.syncService.recordError(reason)
+        if (!isSyncFailing) await composed.logService.record({ level: 'error', event: 'sync.error', message: reason })
+        isSyncFailing = true
     } finally {
         isSyncRunning = false
     }

@@ -37,8 +37,6 @@ services:
             MYSQL_USER: ${MYSQL_USER:-messages}
             MYSQL_PASSWORD: ${MYSQL_PASSWORD:-messages}
             MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-messages-root}
-        ports:
-            - '${MYSQL_PORT:-3306}:3306'
         volumes:
             - mysql-data:/var/lib/mysql
         healthcheck:

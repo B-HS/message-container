@@ -10,6 +10,10 @@ export const messageSummarySchema = z.object({
     service: z.string().nullable(),
     sentAt: z.string(),
     hasAttachments: z.boolean(),
+    isRead: z.boolean(),
+    readAt: z.string().nullable(),
+    associatedMessageGuid: z.string().nullable(),
+    associatedMessageType: z.number().nullable(),
 })
 
 export type MessageSummary = z.infer<typeof messageSummarySchema>

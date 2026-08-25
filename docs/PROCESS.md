@@ -2,6 +2,23 @@
 
 기준 문서: `~/.claude/convention/*.md` (특히 backend.md · common.md · git.md), `docs/acknowledge/2026-08-25-project-stack.md`
 
+## 작업: 행 갱신 감지 + 로깅 시스템 (2026-08-25)
+
+기준: docs/acknowledge/2026-08-25-row-update-logging.md
+
+- [x] a. 스키마 확장 — messages 에 isRead·dateReadMs·associatedMessageGuid·associatedMessageType (3 dialect + 마이그레이션 0002 생성)
+- [x] b. chat-db-reader — SELECT 에 is_read·date_read(ns/s 판별, 0=미읽음→null)·associated_message_guid·associated_message_type 추가
+- [x] c. sync-service — SyncMessageRow·normalizeBatch 확장(type 0→null 정규화) + runOnce 재스캔 스텝(RESCAN_WINDOW_ROWS 500/매 틱, 커서 무전진)
+- [x] d. provider 3종 — saveBatch upsert set 확장, 메시지 조회 selection 에 새 필드 노출
+- [x] e-1. 조회 API — 메시지 응답에 isRead·readAt(ISO)·associatedMessageGuid·associatedMessageType 포함 (MCP 는 동일 Service 라 자동 반영)
+- [x] f. 재현 검증 — e2e "기존 행 text 수정·읽음 처리 재동기화"·"tapback 행 associated 정보 동기화" + 재스캔 단위 테스트 5건 (서버 152 pass)
+- [x] g. 로깅 BE — logs 테이블(3 dialect)·logService(기록·조회·보존 상한 1만건 정리)·/api/logs(level 필터)·배선(sync 에러 천이/복구/synced>0·auth 이벤트는 AuthService 내부·500 관측 미들웨어)
+- [x] e-2. FE 말풍선 tapback 배지(상쇄 집계·guid prefix 파싱) + 마지막 발신 메시지 "읽음" 마커
+- [x] h. 로깅 FE — 사이드바 "로그" 메뉴 + /logs 페이지(SSR prefetch·level 필터·DataTable·스켈레톤)
+- [x] i. compose — db(MySQL) 3306 호스트 포트 매핑 제거 + (사용자 교정) FE 쿠키명 mc_api_key → msg_api_key
+- [x] j. 검증 — typecheck·format·test(서버 152·웹 6)·web build + sqlite 로컬(34110)·mysql(34306)·postgres(34432) 실 DB 로 "기존 행 text 수정 재동기화·읽음·tapback·/api/logs" 실기동 확인
+- [x] k. README 스크린샷 재촬영(데모 34150/34151, 로그 메뉴·tapback·읽음 포함) + docs 갱신(architecture §8.1·§10, api.md, testing.md, README, QA, history) + 커밋
+
 ## 작업: 단일 origin 프록시 모델 전환 (2026-08-25)
 
 - [x] 웹(32000)을 유일한 노출면으로 — BE 포트 매핑 제거, /api/be 프록시에 Bearer 패스스루+공개 allowlist(auth/status), /mcp 스트리밍 프록시, /openapi.json 패스스루

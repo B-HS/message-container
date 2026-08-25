@@ -15,6 +15,13 @@
       "when": 1787624527815,
       "tag": "0001_blue_mikhail_rasputin",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1787641632750,
+      "tag": "0002_big_iceman",
+      "breakpoints": true
     }
   ]
 }

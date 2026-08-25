@@ -15,6 +15,13 @@
       "when": 1787624527371,
       "tag": "0001_clear_spyke",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1787641633021,
+      "tag": "0002_redundant_dark_phoenix",
+      "breakpoints": true
     }
   ]
 }

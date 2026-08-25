@@ -1,6 +1,7 @@
 import { appleEpochMsToUtcMs } from '@/lib/apple-time'
 import { extractTypedstreamText } from '@/lib/typedstream'
 
+import type { LogService } from '@/service/domain/log/log-service'
 import type { ChatDbBatch } from '@/service/shared/chat-db-reader'
 
 export type SyncChatRow = {
@@ -35,6 +36,10 @@ export type SyncMessageRow = {
     service: string | null
     sentAtMs: number
     hasAttachments: boolean
+    isRead: boolean
+    dateReadMs: number | null
+    associatedMessageGuid: string | null
+    associatedMessageType: number | null
     syncedAtMs: number
 }
 
@@ -78,6 +83,7 @@ type SyncServiceDeps = {
     db: SyncServiceDb
     source: SyncSource
     batchSize: number
+    log: Pick<LogService, 'record'>
 }
 
 const emptyToNull = (value: string | null) => (value === null || value === '' ? null : value)
@@ -104,6 +110,10 @@ const normalizeBatch = (raw: ChatDbBatch, syncedAtMs: number): SyncBatch => ({
         service: m.service,
         sentAtMs: appleEpochMsToUtcMs(m.msSinceAppleEpoch),
         hasAttachments: m.hasAttachments,
+        isRead: m.isRead,
+        dateReadMs: m.msSinceAppleEpochRead === null ? null : appleEpochMsToUtcMs(m.msSinceAppleEpochRead),
+        associatedMessageGuid: emptyToNull(m.associatedMessageGuid),
+        associatedMessageType: m.associatedMessageType === 0 ? null : m.associatedMessageType,
         syncedAtMs,
     })),
     attachments: raw.attachments.map((a) => ({
@@ -117,6 +127,8 @@ const normalizeBatch = (raw: ChatDbBatch, syncedAtMs: number): SyncBatch => ({
     })),
 })
 
+export const RESCAN_WINDOW_ROWS = 500
+
 export const createSyncService = (deps: SyncServiceDeps) => ({
     runOnce: async () => {
         let synced = 0
@@ -129,8 +141,14 @@ export const createSyncService = (deps: SyncServiceDeps) => ({
             synced += raw.messages.length
             if (raw.messages.length < deps.batchSize) break
         }
+        const cursor = await deps.db.getCursor()
+        if (cursor > 0) {
+            const rescan = deps.source.readBatch(Math.max(0, cursor - RESCAN_WINDOW_ROWS), RESCAN_WINDOW_ROWS)
+            if (rescan.messages.length > 0) await deps.db.saveBatch(normalizeBatch(rescan, Date.now()), cursor)
+        }
         await deps.db.markSynced(Date.now())
         await deps.db.setLastError(null)
+        if (synced > 0) await deps.log.record({ level: 'info', event: 'sync.batch', message: `메시지 ${synced}건 동기화`, details: { synced } })
         return { synced }
     },
     recordError: async (message: string) => deps.db.setLastError(message),

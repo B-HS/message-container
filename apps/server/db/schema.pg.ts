@@ -1,4 +1,4 @@
-import { bigint, bigserial, boolean, index, pgTable, primaryKey, text } from 'drizzle-orm/pg-core'
+import { bigint, bigserial, boolean, index, integer, pgTable, primaryKey, text } from 'drizzle-orm/pg-core'
 
 export const chats = pgTable('chats', {
     sourceRowId: bigint('source_row_id', { mode: 'number' }).primaryKey(),
@@ -38,6 +38,10 @@ export const messages = pgTable(
         service: text('service'),
         sentAtMs: bigint('sent_at_ms', { mode: 'number' }).notNull(),
         hasAttachments: boolean('has_attachments').notNull().default(false),
+        isRead: boolean('is_read').notNull().default(false),
+        dateReadMs: bigint('date_read_ms', { mode: 'number' }),
+        associatedMessageGuid: text('associated_message_guid'),
+        associatedMessageType: integer('associated_message_type'),
         syncedAtMs: bigint('synced_at_ms', { mode: 'number' }).notNull(),
     },
     (t) => [index('messages_chat_sent_idx').on(t.chatSourceRowId, t.sentAtMs), index('messages_sent_idx').on(t.sentAtMs)],
@@ -76,3 +80,16 @@ export const apiKeys = pgTable('api_keys', {
     lastUsedAtMs: bigint('last_used_at_ms', { mode: 'number' }),
     revokedAtMs: bigint('revoked_at_ms', { mode: 'number' }),
 })
+
+export const logs = pgTable(
+    'logs',
+    {
+        id: bigserial('id', { mode: 'number' }).primaryKey(),
+        level: text('level').notNull(),
+        event: text('event').notNull(),
+        message: text('message').notNull(),
+        detailsJson: text('details_json'),
+        createdAtMs: bigint('created_at_ms', { mode: 'number' }).notNull(),
+    },
+    (t) => [index('logs_created_idx').on(t.createdAtMs)],
+)

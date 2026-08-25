@@ -153,6 +153,19 @@ const messageSummarySchema = z.object({
     service: z.string().nullable(),
     sentAt: z.string(),
     hasAttachments: z.boolean(),
+    isRead: z.boolean(),
+    readAt: z.string().nullable(),
+    associatedMessageGuid: z.string().nullable(),
+    associatedMessageType: z.number().nullable(),
+})
+
+const logEntrySchema = z.object({
+    id: z.number(),
+    level: z.string(),
+    event: z.string(),
+    message: z.string(),
+    detailsJson: z.string().nullable(),
+    createdAt: z.string(),
 })
 
 describe('API e2e', () => {
@@ -243,5 +256,74 @@ describe('API e2e', () => {
         await composed.authService.revokeApiKey(revokedKey.id)
         const withRevokedKey = await app.request('/api/chats', { headers: { Authorization: `Bearer ${revokedKey.key}` } })
         expect(withRevokedKey.status).toBe(401)
+    })
+
+    test('기존 행의 text 수정·읽음 처리가 재동기화(재스캔)로 반영된다', async () => {
+        const editedText = '수정된 인사말'
+        const readAtMs = BASE_MS + MESSAGE_INTERVAL_MS * 3
+        const chatDb = new Database(chatDbPath)
+        chatDb.exec(
+            `UPDATE message SET text = '${editedText}', is_read = 1, date_read = ${toApplenanoseconds(readAtMs)} WHERE ROWID = ${MESSAGE_1_ROW_ID}`,
+        )
+        chatDb.close()
+
+        const syncRes = await authedRequest('/api/sync/run', { method: 'POST' })
+        expect((await parseJson(syncRes, successEnvelopeSchema(z.object({ synced: z.number() })))).data.synced).toBe(0)
+
+        const res = await authedRequest(`/api/chats/${INDIVIDUAL_CHAT_ROW_ID}/messages`)
+        const body = await parseJson(res, paginatedEnvelopeSchema(messageSummarySchema))
+        const editedMessage = body.data.find((m) => m.sourceRowId === MESSAGE_1_ROW_ID)
+        expect(editedMessage?.text).toBe(editedText)
+        expect(editedMessage?.isRead).toBe(true)
+        expect(editedMessage?.readAt).not.toBeNull()
+    })
+
+    test('tapback 행은 associated 정보와 함께 동기화된다', async () => {
+        const tapbackRowId = 4
+        const tapbackLikeType = 2001
+        const chatDb = new Database(chatDbPath)
+        chatDb
+            .prepare(
+                'INSERT INTO message (ROWID, guid, text, attributedBody, handle_id, is_from_me, date, service, cache_has_attachments, associated_message_guid, associated_message_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            )
+            .run(
+                tapbackRowId,
+                'msg-4',
+                null,
+                null,
+                HANDLE_1_ROW_ID,
+                0,
+                toApplenanoseconds(BASE_MS + MESSAGE_INTERVAL_MS * 4),
+                'iMessage',
+                0,
+                'p:0/msg-2',
+                tapbackLikeType,
+            )
+        chatDb.exec(`INSERT INTO chat_message_join (chat_id, message_id) VALUES (${INDIVIDUAL_CHAT_ROW_ID}, ${tapbackRowId})`)
+        chatDb.close()
+
+        const syncRes = await authedRequest('/api/sync/run', { method: 'POST' })
+        expect((await parseJson(syncRes, successEnvelopeSchema(z.object({ synced: z.number() })))).data.synced).toBe(1)
+
+        const res = await authedRequest(`/api/chats/${INDIVIDUAL_CHAT_ROW_ID}/messages`)
+        const body = await parseJson(res, paginatedEnvelopeSchema(messageSummarySchema))
+        const tapback = body.data.find((m) => m.sourceRowId === tapbackRowId)
+        expect(tapback?.associatedMessageGuid).toBe('p:0/msg-2')
+        expect(tapback?.associatedMessageType).toBe(tapbackLikeType)
+    })
+
+    test('GET /api/logs 는 인증 이벤트 로그를 최신순으로 반환하고 level 필터를 지원한다', async () => {
+        const res = await authedRequest('/api/logs')
+        expect(res.status).toBe(200)
+        const body = await parseJson(res, paginatedEnvelopeSchema(logEntrySchema))
+        expect(body.data.some((entry) => entry.event === 'auth.key.created')).toBe(true)
+        expect(body.data.some((entry) => entry.event === 'auth.key.revoked')).toBe(true)
+        const ids = body.data.map((entry) => entry.id)
+        expect(ids).toEqual(ids.toSorted((a, b) => b - a))
+
+        const filtered = await authedRequest('/api/logs?level=info')
+        const filteredBody = await parseJson(filtered, paginatedEnvelopeSchema(logEntrySchema))
+        expect(filteredBody.data.every((entry) => entry.level === 'info')).toBe(true)
+        expect(filteredBody.data.length).toBeGreaterThan(0)
     })
 })

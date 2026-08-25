@@ -45,6 +45,7 @@ Authorization: Bearer msg_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 | GET    | `/api/attachments/:id/file` | API 키    | 첨부파일 원본 바이너리                                            |
 | GET    | `/api/sync/status`          | API 키    | 동기화 상태 (커서·시각·건수·에러)                                 |
 | POST   | `/api/sync/run`             | API 키    | 동기화 즉시 실행                                                  |
+| GET    | `/api/logs`                 | API 키    | 시스템 로그 조회 (최신순, `level` 필터)                           |
 | GET    | `/openapi.json`             | 공개      | OpenAPI 3 스펙 (프로덕션 포함 항상 제공)                          |
 | GET    | `/panel`                    | 세션 쿠키 | API 키 관리 화면 (초기 설정·로그인은 웹 대시보드에서도 가능)      |
 
@@ -120,8 +121,14 @@ type MessageSummary = {
     service: string | null
     sentAt: string // ISO 8601 (UTC)
     hasAttachments: boolean
+    isRead: boolean // 수신 메시지를 내가 읽었는지 (chat.db is_read)
+    readAt: string | null // ISO 8601 — 수신은 내가 읽은 시각, 발신은 상대 읽음 확인 시각
+    associatedMessageGuid: string | null // tapback 이면 대상 메시지 guid (p:0/... 등 prefix 포함)
+    associatedMessageType: number | null // tapback 유형 (2000~2005 추가, 3000~3005 제거), 일반 메시지는 null
 }
 ```
+
+tapback(리액션)은 chat.db 에서 별도 message 행으로 저장되므로 목록에 일반 행으로 포함된다 — `associatedMessageType` 이 2000 이상이면 tapback 행이며, 웹 대시보드는 이를 말풍선 대신 대상 메시지의 배지로 표시한다.
 
 ### GET /api/attachments/:id/file
 
@@ -144,9 +151,26 @@ type SyncStatus = {
 
 ### POST /api/sync/run
 
-바디 없음. 즉시 1회 동기화를 실행하고 완료까지 응답을 블로킹한다. 응답 `data`: `{ synced: number }`(이번 실행에서 새로 적재된 메시지 수).
+바디 없음. 즉시 1회 동기화를 실행하고 완료까지 응답을 블로킹한다. 응답 `data`: `{ synced: number }`(이번 실행에서 새로 적재된 메시지 수 — 최근 윈도 재스캔으로 갱신된 기존 행은 세지 않는다).
 
 에러: `503 SYNC_SOURCE_UNAVAILABLE`(live `chat.db` 를 읽을 수 없을 때 — VirtioFS 로 WAL 을 읽지 못하는 경우 등, [docs/architecture.md §8](./architecture.md) 참고).
+
+### GET /api/logs
+
+쿼리: `page`·`limit`(공통 페이지네이션) + `level`(`info` | `warn` | `error`, 선택 — `dto/log.ts` 의 `logListQuerySchema`). 최신순(id 내림차순)으로 반환한다.
+
+```typescript
+type LogEntry = {
+    id: number
+    level: string // info | warn | error
+    event: string // sync.batch | sync.error | sync.recovered | auth.setup | auth.login.success | auth.login.failure | auth.login.locked | auth.key.created | auth.key.revoked | api.unhandled
+    message: string
+    detailsJson: string | null // JSON 문자열 (예: {"synced":3})
+    createdAt: string // ISO 8601
+}
+```
+
+로그는 최근 1만 건까지 보존되며 초과분은 기록 시점에 자동 삭제된다. 웹 대시보드의 "로그" 메뉴가 이 API 를 사용한다.
 
 ## 5. 에러 코드
 
