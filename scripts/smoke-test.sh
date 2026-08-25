@@ -2,7 +2,6 @@
 set -euo pipefail
 
 MODE="${1:-mysql}"
-BASE_URL="${BASE_URL:-http://localhost:33000}"
 WEB_URL="${WEB_URL:-http://localhost:32000}"
 BOOT_TIMEOUT_S="${BOOT_TIMEOUT_S:-90}"
 
@@ -19,7 +18,7 @@ fi
 
 if [ "$MODE" != "mysql" ] && [ "$MODE" != "sqlite" ]; then
     echo "사용법: scripts/smoke-test.sh [mysql|sqlite|down]"
-    echo "  환경변수: BASE_URL(기본 http://localhost:33000), WEB_URL(기본 http://localhost:32000), SKIP_BOOT=1(compose 생략)"
+    echo "  환경변수: WEB_URL(기본 http://localhost:32000), SKIP_BOOT=1(compose 생략)"
     exit 1
 fi
 
@@ -27,27 +26,27 @@ if [ "${SKIP_BOOT:-0}" != "1" ]; then
     echo "[1/3] 컨테이너 기동: $(compose_file)"
     docker compose -f "$(compose_file)" up -d --build
 else
-    echo "[1/3] SKIP_BOOT=1 — 기동 생략, $BASE_URL 의 실행 중 서버를 사용"
+    echo "[1/3] SKIP_BOOT=1 — 기동 생략, $WEB_URL 의 실행 중 서버를 사용"
 fi
 
-echo "[2/3] 서버 대기: $BASE_URL"
+echo "[2/3] 웹 대기: $WEB_URL (백엔드는 비노출 — 웹이 유일한 진입점)"
 for _ in $(seq 1 "$BOOT_TIMEOUT_S"); do
-    if curl -sf "$BASE_URL/api/auth/status" >/dev/null 2>&1; then break; fi
+    if curl -sf "$WEB_URL/api/be/auth/status" >/dev/null 2>&1; then break; fi
     sleep 1
 done
-curl -sf "$BASE_URL/api/auth/status" >/dev/null 2>&1 || {
-    echo "서버가 응답하지 않습니다. docker compose logs api 를 확인하세요"
+curl -sf "$WEB_URL/api/be/auth/status" >/dev/null 2>&1 || {
+    echo "웹이 응답하지 않습니다. docker compose logs web api 를 확인하세요"
     exit 1
 }
 
 echo "[3/3] 상태 확인"
-AUTH_STATUS="$(curl -s "$BASE_URL/api/auth/status")"
+AUTH_STATUS="$(curl -s "$WEB_URL/api/be/auth/status")"
 echo "  - 초기 설정 상태: $AUTH_STATUS"
-UNAUTH_STATUS="$(curl -s -o /dev/null -w '%{http_code}' "$BASE_URL/api/sync/status")"
-echo "  - 키 없이 API 호출: HTTP $UNAUTH_STATUS (기대 401 — 보호 정상)"
-OPENAPI_STATUS="$(curl -s -o /dev/null -w '%{http_code}' "$BASE_URL/openapi.json")"
+UNAUTH_STATUS="$(curl -s -o /dev/null -w '%{http_code}' "$WEB_URL/api/be/sync/status")"
+echo "  - 키·세션 없이 API 호출: HTTP $UNAUTH_STATUS (기대 401 — 보호 정상)"
+OPENAPI_STATUS="$(curl -s -o /dev/null -w '%{http_code}' "$WEB_URL/openapi.json")"
 echo "  - OpenAPI 스펙: HTTP $OPENAPI_STATUS (기대 200)"
-MCP_STATUS="$(curl -s -o /dev/null -w '%{http_code}' -X POST "$BASE_URL/mcp" -H 'Content-Type: application/json' -d '{}')"
+MCP_STATUS="$(curl -s -o /dev/null -w '%{http_code}' -X POST "$WEB_URL/mcp" -H 'Content-Type: application/json' -d '{}')"
 echo "  - MCP (키 없이): HTTP $MCP_STATUS (기대 401 — 보호 정상)"
 
 echo
@@ -56,4 +55,4 @@ if printf '%s' "$AUTH_STATUS" | grep -q '"passwordSet":false'; then
 else
     echo "기동 완료. 웹에서 로그인하세요: $WEB_URL"
 fi
-echo "API 키 관리(폐기 등)는 $BASE_URL/panel 에서도 가능합니다."
+echo "API·MCP 는 같은 origin 을 사용합니다: $WEB_URL/api/be/...  ·  $WEB_URL/mcp"

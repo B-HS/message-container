@@ -4,8 +4,6 @@ services:
         build:
             context: .
             dockerfile: apps/server/Dockerfile
-        ports:
-            - '${API_PORT:-33000}:33000'
         environment:
             DB_PROVIDER: sqlite
             SQLITE_PATH: /data/messages.db
@@ -26,7 +24,6 @@ services:
             - '${WEB_PORT:-32000}:32000'
         environment:
             MESSAGE_API_URL: http://api:33000
-            MESSAGE_API_PUBLIC_PORT: '${API_PORT:-33000}'
         depends_on:
             - api
         restart: unless-stopped

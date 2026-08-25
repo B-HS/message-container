@@ -11,6 +11,15 @@ export const envSchema = z
         SQLITE_PATH: z.string().min(1).default('/data/messages.db'),
         CHAT_DB_PATH: z.string().min(1).default('/host/messages/chat.db'),
         ATTACHMENTS_ROOT: z.string().min(1).default('/host/messages/Attachments'),
+        CORS_ALLOWED_ORIGINS: z
+            .string()
+            .transform((value) =>
+                value
+                    .split(',')
+                    .map((origin) => origin.trim())
+                    .filter((origin) => origin.length > 0),
+            )
+            .optional(),
         SYNC_INTERVAL_MS: z.coerce.number().int().positive().default(DEFAULT_SYNC_INTERVAL_MS),
         SYNC_BATCH_SIZE: z.coerce.number().int().positive().default(DEFAULT_SYNC_BATCH_SIZE),
         PORT: z.coerce.number().int().positive().default(DEFAULT_PORT),
