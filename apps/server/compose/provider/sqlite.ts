@@ -1,12 +1,13 @@
-import { count, desc, eq, inArray, like, sql } from 'drizzle-orm'
+import { count, desc, eq, inArray, like, lte, sql } from 'drizzle-orm'
 
 import { INSERT_CHUNK_SIZE, SYNC_STATE_KEY } from '@/compose/provider/constants'
-import { apiKeys, attachments, authState, chatHandles, chats, handles, messages, syncState } from '@/db/schema.sqlite'
+import { apiKeys, attachments, authState, chatHandles, chats, handles, logs, messages, syncState } from '@/db/schema.sqlite'
 import { chunk } from '@/lib/collection'
 import { createAppError } from '@/lib/error'
 
 import type { BunSQLiteDatabase } from 'drizzle-orm/bun-sqlite'
 import type { AuthServiceDb } from '@/service/domain/auth/auth-service'
+import type { LogServiceDb } from '@/service/domain/log/log-service'
 import type { AttachmentServiceDb } from '@/service/domain/message/attachment-service'
 import type { ChatServiceDb } from '@/service/domain/message/chat-service'
 import type { MessageServiceDb } from '@/service/domain/message/message-service'
@@ -63,6 +64,10 @@ export const createSqliteServiceDb = (db: BunSQLiteDatabase) => {
                                 service: sql`excluded.service`,
                                 sentAtMs: sql`excluded.sent_at_ms`,
                                 hasAttachments: sql`excluded.has_attachments`,
+                                isRead: sql`excluded.is_read`,
+                                dateReadMs: sql`excluded.date_read_ms`,
+                                associatedMessageGuid: sql`excluded.associated_message_guid`,
+                                associatedMessageType: sql`excluded.associated_message_type`,
                                 syncedAtMs: sql`excluded.synced_at_ms`,
                             },
                         })
@@ -161,6 +166,10 @@ export const createSqliteServiceDb = (db: BunSQLiteDatabase) => {
         service: messages.service,
         sentAtMs: messages.sentAtMs,
         hasAttachments: messages.hasAttachments,
+        isRead: messages.isRead,
+        dateReadMs: messages.dateReadMs,
+        associatedMessageGuid: messages.associatedMessageGuid,
+        associatedMessageType: messages.associatedMessageType,
     }
 
     const message: MessageServiceDb = {
@@ -231,5 +240,23 @@ export const createSqliteServiceDb = (db: BunSQLiteDatabase) => {
         },
     }
 
-    return { sync, chat, message, attachment, auth }
+    const log: LogServiceDb = {
+        insertLog: async (row) => {
+            await db.insert(logs).values(row)
+        },
+        listLogs: async ({ offset, limit, level }) => {
+            const condition = level === undefined ? undefined : eq(logs.level, level)
+            const [totalRow, rows] = await Promise.all([
+                db.select({ value: count() }).from(logs).where(condition),
+                db.select().from(logs).where(condition).orderBy(desc(logs.id)).limit(limit).offset(offset),
+            ])
+            return { data: rows, total: totalRow.at(0)?.value ?? 0 }
+        },
+        pruneLogs: async (keep) => {
+            const threshold = (await db.select({ id: logs.id }).from(logs).orderBy(desc(logs.id)).limit(1).offset(keep)).at(0)
+            if (threshold) await db.delete(logs).where(lte(logs.id, threshold.id))
+        },
+    }
+
+    return { sync, chat, message, attachment, auth, log }
 }

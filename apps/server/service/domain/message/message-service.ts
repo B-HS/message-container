@@ -11,6 +11,10 @@ export type MessageRecord = {
     service: string | null
     sentAtMs: number
     hasAttachments: boolean
+    isRead: boolean
+    dateReadMs: number | null
+    associatedMessageGuid: string | null
+    associatedMessageType: number | null
 }
 
 export type MessageServiceDb = {
@@ -22,7 +26,11 @@ type MessageServiceDeps = {
     db: MessageServiceDb
 }
 
-const toMessageSummary = ({ sentAtMs, ...record }: MessageRecord) => ({ ...record, sentAt: new Date(sentAtMs).toISOString() })
+const toMessageSummary = ({ sentAtMs, dateReadMs, ...record }: MessageRecord) => ({
+    ...record,
+    sentAt: new Date(sentAtMs).toISOString(),
+    readAt: dateReadMs === null ? null : new Date(dateReadMs).toISOString(),
+})
 
 export const createMessageService = (deps: MessageServiceDeps) => ({
     listByChat: async (chatSourceRowIds: number[], query: PaginationQuery) => {

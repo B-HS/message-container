@@ -1,4 +1,4 @@
-import { bigint, boolean, index, mysqlTable, primaryKey, text, varchar } from 'drizzle-orm/mysql-core'
+import { bigint, boolean, index, int, mysqlTable, primaryKey, text, varchar } from 'drizzle-orm/mysql-core'
 
 const GUID_LENGTH = 191
 const ADDRESS_LENGTH = 255
@@ -43,6 +43,10 @@ export const messages = mysqlTable(
         service: varchar('service', { length: SERVICE_LENGTH }),
         sentAtMs: bigint('sent_at_ms', { mode: 'number' }).notNull(),
         hasAttachments: boolean('has_attachments').notNull().default(false),
+        isRead: boolean('is_read').notNull().default(false),
+        dateReadMs: bigint('date_read_ms', { mode: 'number' }),
+        associatedMessageGuid: varchar('associated_message_guid', { length: GUID_LENGTH }),
+        associatedMessageType: int('associated_message_type'),
         syncedAtMs: bigint('synced_at_ms', { mode: 'number' }).notNull(),
     },
     (t) => [index('messages_chat_sent_idx').on(t.chatSourceRowId, t.sentAtMs), index('messages_sent_idx').on(t.sentAtMs)],
@@ -84,3 +88,18 @@ export const apiKeys = mysqlTable('api_keys', {
     lastUsedAtMs: bigint('last_used_at_ms', { mode: 'number' }),
     revokedAtMs: bigint('revoked_at_ms', { mode: 'number' }),
 })
+
+const LOG_LEVEL_LENGTH = 16
+
+export const logs = mysqlTable(
+    'logs',
+    {
+        id: bigint('id', { mode: 'number' }).autoincrement().primaryKey(),
+        level: varchar('level', { length: LOG_LEVEL_LENGTH }).notNull(),
+        event: varchar('event', { length: KEY_LENGTH }).notNull(),
+        message: text('message').notNull(),
+        detailsJson: text('details_json'),
+        createdAtMs: bigint('created_at_ms', { mode: 'number' }).notNull(),
+    },
+    (t) => [index('logs_created_idx').on(t.createdAtMs)],
+)

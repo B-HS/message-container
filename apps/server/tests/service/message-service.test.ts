@@ -6,6 +6,8 @@ import type { MessageRecord, MessageServiceDb } from '@/service/domain/message/m
 
 const SENT_AT_MS = 1700000000000
 
+const READ_AT_MS = 1700000001000
+
 const buildRecord = (sourceRowId: number): MessageRecord => ({
     sourceRowId,
     guid: `msg-guid-${sourceRowId}`,
@@ -16,6 +18,10 @@ const buildRecord = (sourceRowId: number): MessageRecord => ({
     service: 'iMessage',
     sentAtMs: SENT_AT_MS,
     hasAttachments: false,
+    isRead: true,
+    dateReadMs: READ_AT_MS,
+    associatedMessageGuid: null,
+    associatedMessageType: null,
 })
 
 describe('messageService.listByChat', () => {
@@ -47,6 +53,20 @@ describe('messageService.listByChat', () => {
 
         expect(result.data[0]?.sentAt).toBe(new Date(SENT_AT_MS).toISOString())
         expect(result.data[0] && 'sentAtMs' in result.data[0]).toBe(false)
+    })
+
+    test('dateReadMs 를 readAt ISO 문자열로 변환하고 isRead 를 그대로 노출한다', async () => {
+        const db: MessageServiceDb = {
+            getMessageListByChat: async () => ({ data: [buildRecord(1)], total: 1 }),
+            searchMessageList: async () => ({ data: [], total: 0 }),
+        }
+        const service = createMessageService({ db })
+
+        const result = await service.listByChat([7], { page: 1, limit: 20 })
+
+        expect(result.data[0]?.readAt).toBe(new Date(READ_AT_MS).toISOString())
+        expect(result.data[0]?.isRead).toBe(true)
+        expect(result.data[0] && 'dateReadMs' in result.data[0]).toBe(false)
     })
 })
 

@@ -1,3 +1,5 @@
+import type { LogService } from '@/service/domain/log/log-service'
+
 export type ApiKeyRecord = {
     id: number
     name: string
@@ -19,6 +21,7 @@ export type AuthServiceDb = {
 
 type AuthServiceDeps = {
     db: AuthServiceDb
+    log: Pick<LogService, 'record'>
 }
 
 export const API_KEY_PREFIX = 'msg_'
@@ -45,10 +48,14 @@ export const createAuthService = (deps: AuthServiceDeps) => {
         setupPassword: async (password: string) => {
             if (await deps.db.getAuthState(PASSWORD_HASH_STATE_KEY)) return false
             await deps.db.setAuthState(PASSWORD_HASH_STATE_KEY, await Bun.password.hash(password))
+            await deps.log.record({ level: 'info', event: 'auth.setup', message: '초기 패스워드가 설정되었습니다' })
             return true
         },
         verifyPassword: async (password: string) => {
-            if (Date.now() < loginLockedUntilMs) return 'locked' as const
+            if (Date.now() < loginLockedUntilMs) {
+                await deps.log.record({ level: 'warn', event: 'auth.login.locked', message: '잠금 상태에서 로그인이 시도되었습니다' })
+                return 'locked' as const
+            }
             const passwordHash = await deps.db.getAuthState(PASSWORD_HASH_STATE_KEY)
             if (!passwordHash || !(await Bun.password.verify(password, passwordHash))) {
                 failedLoginAttempts += 1
@@ -56,9 +63,11 @@ export const createAuthService = (deps: AuthServiceDeps) => {
                     loginLockedUntilMs = Date.now() + LOGIN_LOCKOUT_MS
                     failedLoginAttempts = 0
                 }
+                await deps.log.record({ level: 'warn', event: 'auth.login.failure', message: '패스워드 검증에 실패했습니다' })
                 return 'invalid' as const
             }
             failedLoginAttempts = 0
+            await deps.log.record({ level: 'info', event: 'auth.login.success', message: '패스워드 검증에 성공했습니다' })
             return 'ok' as const
         },
         createSession: () => {
@@ -83,10 +92,14 @@ export const createAuthService = (deps: AuthServiceDeps) => {
             const key = `${API_KEY_PREFIX}${randomToken(API_KEY_RANDOM_BYTES)}`
             const start = key.slice(0, API_KEY_START_VISIBLE_LENGTH)
             const { id } = await deps.db.insertApiKey({ name, start, keyHash: sha256Hex(key), createdAtMs: Date.now() })
+            await deps.log.record({ level: 'info', event: 'auth.key.created', message: `API 키가 생성되었습니다: ${name}`, details: { id, name } })
             return { id, name, start, key }
         },
         listApiKeys: async () => deps.db.listApiKeys(),
-        revokeApiKey: async (id: number) => deps.db.revokeApiKey(id, Date.now()),
+        revokeApiKey: async (id: number) => {
+            await deps.db.revokeApiKey(id, Date.now())
+            await deps.log.record({ level: 'info', event: 'auth.key.revoked', message: `API 키가 폐기되었습니다: ${id}`, details: { id } })
+        },
         verifyApiKey: async (key: string) => {
             if (!key.startsWith(API_KEY_PREFIX)) return null
             const record = await deps.db.getApiKeyByHash(sha256Hex(key))

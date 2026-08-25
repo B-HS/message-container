@@ -8,6 +8,8 @@ const FAILED_LOGIN_ATTEMPTS_TO_LOCK = 5
 const API_KEY_START_VISIBLE_LENGTH = 8
 const SHA256_HEX_LENGTH = 64
 
+const logStub = { record: async () => {} }
+
 const createStubDb = () => {
     const authState = new Map<string, string>()
     const apiKeys: (ApiKeyRecord & { keyHash: string })[] = []
@@ -44,14 +46,14 @@ const createStubDb = () => {
 describe('authService.setupPassword', () => {
     test('최초 설정은 true 를 반환한다', async () => {
         const { db } = createStubDb()
-        const service = createAuthService({ db })
+        const service = createAuthService({ db, log: logStub })
 
         expect(await service.setupPassword('correct-horse')).toBe(true)
     })
 
     test('이미 설정돼 있으면 false 를 반환하고 해시가 바뀌지 않는다', async () => {
         const { db, authState } = createStubDb()
-        const service = createAuthService({ db })
+        const service = createAuthService({ db, log: logStub })
 
         await service.setupPassword('correct-horse')
         const originalHash = authState.get('password_hash')
@@ -64,7 +66,7 @@ describe('authService.setupPassword', () => {
 describe('authService.verifyPassword', () => {
     test('올바른 패스워드는 ok 를 반환한다', async () => {
         const { db } = createStubDb()
-        const service = createAuthService({ db })
+        const service = createAuthService({ db, log: logStub })
         await service.setupPassword('correct-horse')
 
         expect(await service.verifyPassword('correct-horse')).toBe('ok')
@@ -72,7 +74,7 @@ describe('authService.verifyPassword', () => {
 
     test('틀린 패스워드는 invalid 를 반환한다', async () => {
         const { db } = createStubDb()
-        const service = createAuthService({ db })
+        const service = createAuthService({ db, log: logStub })
         await service.setupPassword('correct-horse')
 
         expect(await service.verifyPassword('wrong-password')).toBe('invalid')
@@ -80,7 +82,7 @@ describe('authService.verifyPassword', () => {
 
     test('5회 연속 실패하면 locked 를 반환한다', async () => {
         const { db } = createStubDb()
-        const service = createAuthService({ db })
+        const service = createAuthService({ db, log: logStub })
         await service.setupPassword('correct-horse')
 
         for (let attempt = 0; attempt < FAILED_LOGIN_ATTEMPTS_TO_LOCK; attempt += 1) {
@@ -94,7 +96,7 @@ describe('authService.verifyPassword', () => {
 describe('authService 세션', () => {
     test('createSession 토큰으로 validateSession 은 true 를 반환한다', async () => {
         const { db } = createStubDb()
-        const service = createAuthService({ db })
+        const service = createAuthService({ db, log: logStub })
 
         const token = service.createSession()
 
@@ -103,14 +105,14 @@ describe('authService 세션', () => {
 
     test('모르는 토큰은 false 를 반환한다', async () => {
         const { db } = createStubDb()
-        const service = createAuthService({ db })
+        const service = createAuthService({ db, log: logStub })
 
         expect(service.validateSession('unknown-token')).toBe(false)
     })
 
     test('revokeSession 이후에는 false 를 반환한다', async () => {
         const { db } = createStubDb()
-        const service = createAuthService({ db })
+        const service = createAuthService({ db, log: logStub })
 
         const token = service.createSession()
         service.revokeSession(token)
@@ -122,7 +124,7 @@ describe('authService 세션', () => {
 describe('authService.createApiKey', () => {
     test('msg_ 로 시작하는 키를 반환하고 start/keyHash 를 db 에 저장한다', async () => {
         const { db, apiKeys } = createStubDb()
-        const service = createAuthService({ db })
+        const service = createAuthService({ db, log: logStub })
 
         const result = await service.createApiKey('내 키')
 
@@ -137,7 +139,7 @@ describe('authService.createApiKey', () => {
 describe('authService.verifyApiKey', () => {
     test('발급한 원문 키로 id/name 을 반환하고 touchApiKey 를 호출한다', async () => {
         const { db, touchedApiKeyIds } = createStubDb()
-        const service = createAuthService({ db })
+        const service = createAuthService({ db, log: logStub })
         const { id, name, key } = await service.createApiKey('내 키')
 
         const result = await service.verifyApiKey(key)
@@ -148,7 +150,7 @@ describe('authService.verifyApiKey', () => {
 
     test('폐기된 키는 null 을 반환한다', async () => {
         const { db } = createStubDb()
-        const service = createAuthService({ db })
+        const service = createAuthService({ db, log: logStub })
         const { id, key } = await service.createApiKey('내 키')
         await service.revokeApiKey(id)
 
@@ -157,14 +159,14 @@ describe('authService.verifyApiKey', () => {
 
     test('msg_ prefix 가 아니면 null 을 반환한다', async () => {
         const { db } = createStubDb()
-        const service = createAuthService({ db })
+        const service = createAuthService({ db, log: logStub })
 
         expect(await service.verifyApiKey('other_abcdef')).toBeNull()
     })
 
     test('존재하지 않는 키는 null 을 반환한다', async () => {
         const { db } = createStubDb()
-        const service = createAuthService({ db })
+        const service = createAuthService({ db, log: logStub })
 
         expect(await service.verifyApiKey(`${API_KEY_PREFIX}does-not-exist`)).toBeNull()
     })

@@ -38,6 +38,10 @@ export const messages = sqliteTable(
         service: text('service'),
         sentAtMs: integer('sent_at_ms').notNull(),
         hasAttachments: integer('has_attachments', { mode: 'boolean' }).notNull().default(false),
+        isRead: integer('is_read', { mode: 'boolean' }).notNull().default(false),
+        dateReadMs: integer('date_read_ms'),
+        associatedMessageGuid: text('associated_message_guid'),
+        associatedMessageType: integer('associated_message_type'),
         syncedAtMs: integer('synced_at_ms').notNull(),
     },
     (t) => [index('messages_chat_sent_idx').on(t.chatSourceRowId, t.sentAtMs), index('messages_sent_idx').on(t.sentAtMs)],
@@ -76,3 +80,16 @@ export const apiKeys = sqliteTable('api_keys', {
     lastUsedAtMs: integer('last_used_at_ms'),
     revokedAtMs: integer('revoked_at_ms'),
 })
+
+export const logs = sqliteTable(
+    'logs',
+    {
+        id: integer('id').primaryKey({ autoIncrement: true }),
+        level: text('level').notNull(),
+        event: text('event').notNull(),
+        message: text('message').notNull(),
+        detailsJson: text('details_json'),
+        createdAtMs: integer('created_at_ms').notNull(),
+    },
+    (t) => [index('logs_created_idx').on(t.createdAtMs)],
+)

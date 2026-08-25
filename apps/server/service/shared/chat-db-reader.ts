@@ -17,6 +17,10 @@ const rawMessageSchema = z.object({
     service: z.string().nullable(),
     has_attachments: z.number().nullable(),
     chat_row_id: z.number().int().nullable(),
+    is_read: z.number().nullable(),
+    ms_since_apple_epoch_read: z.number().nullable(),
+    associated_message_guid: z.string().nullable(),
+    associated_message_type: z.number().int().nullable(),
 })
 
 const rawChatSchema = z.object({
@@ -59,7 +63,12 @@ const buildBatch = (db: Database, afterRowId: number, limit: number) => {
                     NULLIF(m.handle_id, 0) AS handle_row_id, m.is_from_me AS is_from_me,
                     CAST(CASE WHEN m.date > ${NANOSECOND_DETECTION_THRESHOLD} THEN m.date / 1000000 ELSE m.date * 1000 END AS INTEGER) AS ms_since_apple_epoch,
                     m.service AS service, m.cache_has_attachments AS has_attachments,
-                    (SELECT cmj.chat_id FROM chat_message_join cmj WHERE cmj.message_id = m.ROWID ORDER BY cmj.chat_id LIMIT 1) AS chat_row_id
+                    (SELECT cmj.chat_id FROM chat_message_join cmj WHERE cmj.message_id = m.ROWID ORDER BY cmj.chat_id LIMIT 1) AS chat_row_id,
+                    m.is_read AS is_read,
+                    CAST(CASE WHEN NULLIF(m.date_read, 0) IS NULL THEN NULL
+                        WHEN m.date_read > ${NANOSECOND_DETECTION_THRESHOLD} THEN m.date_read / 1000000
+                        ELSE m.date_read * 1000 END AS INTEGER) AS ms_since_apple_epoch_read,
+                    m.associated_message_guid AS associated_message_guid, m.associated_message_type AS associated_message_type
                 FROM message m
                 WHERE m.ROWID > ?
                 ORDER BY m.ROWID ASC
@@ -143,6 +152,10 @@ const buildBatch = (db: Database, afterRowId: number, limit: number) => {
             service: m.service,
             hasAttachments: m.has_attachments === 1,
             chatRowId: m.chat_row_id,
+            isRead: m.is_read === 1,
+            msSinceAppleEpochRead: m.ms_since_apple_epoch_read,
+            associatedMessageGuid: m.associated_message_guid,
+            associatedMessageType: m.associated_message_type,
         })),
         chats: rawChats.map((c) => ({
             rowId: c.row_id,
