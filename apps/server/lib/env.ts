@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-const DEFAULT_PORT = 3000
+const DEFAULT_PORT = 33000
 const DEFAULT_SYNC_INTERVAL_MS = 5000
 const DEFAULT_SYNC_BATCH_SIZE = 1000
 

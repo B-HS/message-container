@@ -7,7 +7,7 @@
 3. **웹 대시보드(`apps/web`)** — Next.js(App Router, React Compiler, standalone) + shadcn(new-york) + Tailwind v4 + TanStack Query v5. DESIGN.md(flunti-otel Surface A) 토큰 전면 적용(radius 0·무보더·1px 심·3계층). 화면: setup(초기설정/로그인) · 대화 목록 · 대화 상세(메시지+첨부 이미지) · 메시지 검색 · 동기화 · 설정. 전 페이지 서버 `prefetchQuery` + `HydrationBoundary` + `useSuspenseQuery`, 로딩은 스켈레톤만
 4. **FE 인증** — 발급 키를 httpOnly 쿠키에 저장, `/api/be/[...path]` 프록시가 서버측에서 Authorization 주입 (클라이언트 JS 에 키 비노출). 쿠키 없으면 `/setup` 리다이렉트
 5. **BE 보강** — `GET /api/chats/:id`(상세 헤더용), `GET /api/attachments?messageIds=`(첨부 메타 일괄) 추가
-6. **compose** — `web` 서비스 추가 (기본 `:3001`, `MESSAGE_API_URL=http://api:3000`)
+6. **compose** — `web` 서비스 추가 (기본 `:32000`, `MESSAGE_API_URL=http://api:33000`)
 
 ## 검증
 

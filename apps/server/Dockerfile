@@ -7,5 +7,5 @@ COPY apps/server apps/server
 WORKDIR /app/apps/server
 ENV NODE_ENV=production
 USER bun
-EXPOSE 3000
+EXPOSE 33000
 CMD ["bun", "index.ts"]

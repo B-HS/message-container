@@ -3,7 +3,7 @@ set -euo pipefail
 
 MODE="${1:-mysql}"
 BASE_URL="${BASE_URL:-http://localhost:33000}"
-WEB_URL="${WEB_URL:-http://localhost:3001}"
+WEB_URL="${WEB_URL:-http://localhost:32000}"
 BOOT_TIMEOUT_S="${BOOT_TIMEOUT_S:-90}"
 
 compose_file() {
@@ -19,7 +19,7 @@ fi
 
 if [ "$MODE" != "mysql" ] && [ "$MODE" != "sqlite" ]; then
     echo "사용법: scripts/smoke-test.sh [mysql|sqlite|down]"
-    echo "  환경변수: BASE_URL(기본 http://localhost:33000), WEB_URL(기본 http://localhost:3001), SKIP_BOOT=1(compose 생략)"
+    echo "  환경변수: BASE_URL(기본 http://localhost:33000), WEB_URL(기본 http://localhost:32000), SKIP_BOOT=1(compose 생략)"
     exit 1
 fi
 

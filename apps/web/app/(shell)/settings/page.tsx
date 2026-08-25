@@ -8,7 +8,7 @@ import { API_KEY_COOKIE_NAME } from '@shared/constants/auth'
 const statusEnvelopeSchema = z.object({ success: z.literal(true), data: z.object({ passwordSet: z.boolean() }) })
 
 const SettingsPage = async () => {
-    const baseUrl = process.env.MESSAGE_API_URL ?? 'http://localhost:3000'
+    const baseUrl = process.env.MESSAGE_API_URL ?? 'http://localhost:33000'
     const cookieStore = await cookies()
     const hasSession = Boolean(cookieStore.get(API_KEY_COOKIE_NAME))
 

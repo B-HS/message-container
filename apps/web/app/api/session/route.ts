@@ -5,7 +5,7 @@ import { API_KEY_COOKIE_MAX_AGE_S, API_KEY_COOKIE_NAME } from '@shared/constants
 import { isTrustedOrigin } from '@shared/lib/origin'
 
 const PASSWORD_MIN_LENGTH = 8
-const BASE_URL = process.env.MESSAGE_API_URL ?? 'http://localhost:3000'
+const BASE_URL = process.env.MESSAGE_API_URL ?? 'http://localhost:33000'
 const WEB_KEY_NAME = 'web'
 
 const sessionCreateSchema = z.object({ password: z.string().min(PASSWORD_MIN_LENGTH) })

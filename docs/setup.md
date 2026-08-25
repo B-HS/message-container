@@ -33,7 +33,7 @@ Error response from daemon: error while creating mount source path '/host_mnt/Us
 ./scripts/smoke-test.sh down     # 정리
 ```
 
-의존성은 docker 뿐이다. 스크립트는 api + web 컨테이너를 띄우고 초기 설정 여부·API 보호(401)·OpenAPI·MCP 보호를 확인한 뒤, 웹 주소를 안내한다. **초기 설정(패스워드)·로그인·키 발급은 전부 웹(`http://localhost:3001`)에서 진행된다** — 패스워드를 설정하면 서버에 기록되고 웹 세션용 API 키가 자동 발급된다. 상세는 [docs/utils/smoke-test.md](./utils/smoke-test.md).
+의존성은 docker 뿐이다. 스크립트는 api + web 컨테이너를 띄우고 초기 설정 여부·API 보호(401)·OpenAPI·MCP 보호를 확인한 뒤, 웹 주소를 안내한다. **초기 설정(패스워드)·로그인·키 발급은 전부 웹(`http://localhost:32000`)에서 진행된다** — 패스워드를 설정하면 서버에 기록되고 웹 세션용 API 키가 자동 발급된다. 상세는 [docs/utils/smoke-test.md](./utils/smoke-test.md).
 
 ### 기본 (MySQL provider)
 
@@ -41,8 +41,8 @@ Error response from daemon: error while creating mount source path '/host_mnt/Us
 docker compose up -d --build
 ```
 
-- 웹 대시보드: `http://localhost:3001` (`WEB_PORT` 로 변경) — 초기 설정·로그인·대화/메시지 조회
-- API: `http://localhost:3000` (`API_PORT` 로 변경)
+- 웹 대시보드: `http://localhost:32000` (`WEB_PORT` 로 변경) — 초기 설정·로그인·대화/메시지 조회
+- API: `http://localhost:33000` (`API_PORT` 로 변경)
 - MySQL: `localhost:3306` (기본 계정 `messages` / `messages`, `MYSQL_PASSWORD` 등 환경변수로 덮어쓰기 가능) — 외부 클라이언트가 동기화 DB 에 직접 접속할 수 있다
 
 ### SQLite provider (단일 컨테이너)
@@ -76,7 +76,7 @@ bun run dev
 
 서버가 처음 뜨면 발급된 API 키가 없어 `/api/*` 호출이 모두 401 이다. 브라우저(또는 curl)로 웹 패널에서 패스워드를 설정하고 키를 발급한다. 상세 curl 예시는 [docs/api.md §6](./api.md) 참고.
 
-1. `http://localhost:3000/panel` 접속 — 패스워드가 설정되어 있지 않으면 "초기 패스워드 설정" 폼이 뜬다. 최소 8자 패스워드를 입력하고 확인란과 일치시켜 제출한다.
+1. `http://localhost:33000/panel` 접속 — 패스워드가 설정되어 있지 않으면 "초기 패스워드 설정" 폼이 뜬다. 최소 8자 패스워드를 입력하고 확인란과 일치시켜 제출한다.
 2. 이후 접속부터는 로그인 폼이 뜬다. 같은 패스워드로 로그인한다 — 세션은 인메모리라 **서버 재시작 시 다시 로그인**해야 하고, 5회 연속 로그인 실패 시 30초 잠긴다.
 3. 로그인하면 API 키 관리 화면이 뜬다. 이름을 입력하고 "키 생성" 을 누르면 `msg_` 로 시작하는 키가 **한 번만** 화면(`<code data-new-key>`)에 표시된다 — 지금 복사해 둔다. DB 에는 SHA-256 해시만 저장되어 다시 조회할 수 없다.
 4. 발급받은 키를 모든 `/api/*` 요청과 `/mcp` 요청에 `Authorization: Bearer msg_...` 헤더로 전달한다.

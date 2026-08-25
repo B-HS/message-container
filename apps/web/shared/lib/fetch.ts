@@ -12,7 +12,7 @@ const resolveRequest = async (bePath: string, init?: RequestInit) => {
     if (typeof window !== 'undefined') return fetch(`/api/be${bePath}`, init)
     const { cookies } = await import('next/headers')
     const apiKey = (await cookies()).get(API_KEY_COOKIE_NAME)?.value
-    const baseUrl = process.env.MESSAGE_API_URL ?? 'http://localhost:3000'
+    const baseUrl = process.env.MESSAGE_API_URL ?? 'http://localhost:33000'
     return fetch(`${baseUrl}/api${bePath}`, {
         ...init,
         cache: 'no-store',

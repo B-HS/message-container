@@ -5,7 +5,7 @@ import { isTrustedOrigin } from '@shared/lib/origin'
 
 import type { NextRequest } from 'next/server'
 
-const BASE_URL = process.env.MESSAGE_API_URL ?? 'http://localhost:3000'
+const BASE_URL = process.env.MESSAGE_API_URL ?? 'http://localhost:33000'
 const FORWARDED_RESPONSE_HEADERS = ['content-type', 'content-disposition', 'content-length'] as const
 
 const forward = async (request: NextRequest, method: 'GET' | 'POST') => {

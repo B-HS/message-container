@@ -14,7 +14,7 @@ AI 클라이언트(Claude Code 등)가 `/mcp` 로 접속해 macOS Messages 데�
 ### Claude Code CLI
 
 ```bash
-claude mcp add --transport http message-container http://localhost:3000/mcp \
+claude mcp add --transport http message-container http://localhost:33000/mcp \
   --header "Authorization: Bearer msg_xxxxxxxxxxxxxxxx"
 ```
 
@@ -25,7 +25,7 @@ claude mcp add --transport http message-container http://localhost:3000/mcp \
     "mcpServers": {
         "message-container": {
             "type": "http",
-            "url": "http://localhost:3000/mcp",
+            "url": "http://localhost:33000/mcp",
             "headers": {
                 "Authorization": "Bearer msg_xxxxxxxxxxxxxxxx"
             }
@@ -40,7 +40,7 @@ claude mcp add --transport http message-container http://localhost:3000/mcp \
 
 ```json
 {
-    "url": "http://localhost:3000/mcp",
+    "url": "http://localhost:33000/mcp",
     "transport": "http",
     "headers": {
         "Authorization": "Bearer msg_xxxxxxxxxxxxxxxx"

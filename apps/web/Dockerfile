@@ -10,10 +10,10 @@ RUN cd apps/web && bun run build
 FROM oven/bun:1
 WORKDIR /app
 ENV NODE_ENV=production
-ENV PORT=3001
+ENV PORT=32000
 ENV HOSTNAME=0.0.0.0
 COPY --from=builder /app/apps/web/.next/standalone ./
 COPY --from=builder /app/apps/web/.next/static ./apps/web/.next/static
 USER bun
-EXPOSE 3001
+EXPOSE 32000
 CMD ["bun", "apps/web/server.js"]

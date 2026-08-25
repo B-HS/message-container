@@ -11,7 +11,7 @@ const SetupPage = async () => {
     const cookieStore = await cookies()
     if (cookieStore.get(API_KEY_COOKIE_NAME)) redirect('/chats')
 
-    const baseUrl = process.env.MESSAGE_API_URL ?? 'http://localhost:3000'
+    const baseUrl = process.env.MESSAGE_API_URL ?? 'http://localhost:33000'
     let passwordSet: boolean | null = null
     try {
         const res = await fetch(`${baseUrl}/api/auth/status`, { cache: 'no-store' })

@@ -2,7 +2,7 @@
 
 macOS Messages(`chat.db`) 조회 API 의 엔드포인트·인증·응답 봉투·에러 코드 스펙. 계층 구조·설계 근거는 [docs/architecture.md](./architecture.md), 실행 절차는 [docs/setup.md](./setup.md) 참고.
 
-Base URL: `http://localhost:3000` (기본 `PORT`, `lib/env.ts`)
+Base URL: `http://localhost:33000` (기본 `PORT`, `lib/env.ts`)
 
 ## 1. 인증
 
@@ -158,25 +158,25 @@ type SyncStatus = {
 
 ```bash
 # 1. 초기 패스워드 설정 (최초 1회) — 쿠키를 파일로 저장해 세션 유지
-curl -c cookies.txt -X POST http://localhost:3000/panel/setup \
+curl -c cookies.txt -X POST http://localhost:33000/panel/setup \
   -d "password=my-strong-password&confirm=my-strong-password"
 
 # 2. 키 발급 (세션 쿠키 필요) — 응답 HTML의 <code data-new-key>msg_...</code> 안의 값을 복사해 둔다(재표시되지 않는다)
-curl -b cookies.txt -X POST http://localhost:3000/panel/keys -d "name=my-cli"
+curl -b cookies.txt -X POST http://localhost:33000/panel/keys -d "name=my-cli"
 
 # 3. 발급받은 키로 대화 목록 조회
-curl -H "Authorization: Bearer msg_xxxxxxxxxxxxxxxx" http://localhost:3000/api/chats
+curl -H "Authorization: Bearer msg_xxxxxxxxxxxxxxxx" http://localhost:33000/api/chats
 
 # 4. 메시지 검색
 curl -H "Authorization: Bearer msg_xxxxxxxxxxxxxxxx" \
-  "http://localhost:3000/api/messages?q=%EC%82%AC%EC%A7%84&limit=10"
+  "http://localhost:33000/api/messages?q=%EC%82%AC%EC%A7%84&limit=10"
 
 # 5. 첨부파일 다운로드
 curl -H "Authorization: Bearer msg_xxxxxxxxxxxxxxxx" \
-  http://localhost:3000/api/attachments/100/file -o photo.png
+  http://localhost:33000/api/attachments/100/file -o photo.png
 
 # 6. 동기화 즉시 실행
-curl -X POST -H "Authorization: Bearer msg_xxxxxxxxxxxxxxxx" http://localhost:3000/api/sync/run
+curl -X POST -H "Authorization: Bearer msg_xxxxxxxxxxxxxxxx" http://localhost:33000/api/sync/run
 ```
 
 이미 패스워드가 설정되어 있다면 1번 대신 `/panel/login` 에 `password` 만 담아 POST 한다.

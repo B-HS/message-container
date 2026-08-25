@@ -11,7 +11,7 @@ macOS Messages(chat.db)를 읽어 조회 API·웹 대시보드·MCP 를 제공�
 
 ```bash
 ./scripts/smoke-test.sh          # docker compose 기동 + 상태 확인 (docker 만 있으면 됨)
-open http://localhost:3001       # 웹에서 초기 패스워드 설정 → 대시보드
+open http://localhost:32000       # 웹에서 초기 패스워드 설정 → 대시보드
 ```
 
 먼저 Docker Desktop/OrbStack 에 Full Disk Access 를 부여해야 실제 chat.db 를 읽을 수 있다. 상세 절차는 [docs/setup.md](./docs/setup.md), API 스펙 [docs/api.md](./docs/api.md), MCP 가이드 [docs/mcp.md](./docs/mcp.md), 구조 [docs/architecture.md](./docs/architecture.md) 참고.
@@ -22,6 +22,6 @@ open http://localhost:3001       # 웹에서 초기 패스워드 설정 → 대�
 bun install
 bun run typecheck   # 전체 워크스페이스
 bun run test        # 전체 워크스페이스
-(cd apps/server && bun run dev)                                  # API :3000
-(cd apps/web && MESSAGE_API_URL=http://localhost:3000 bun run dev) # 웹 :3001
+(cd apps/server && bun run dev)                                  # API :33000
+(cd apps/web && MESSAGE_API_URL=http://localhost:33000 bun run dev) # 웹 :32000
 ```

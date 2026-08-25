@@ -4,7 +4,7 @@ import { envSchema } from '@/lib/env'
 
 const DEFAULT_SYNC_INTERVAL_MS = 5000
 const DEFAULT_SYNC_BATCH_SIZE = 1000
-const DEFAULT_PORT = 3000
+const DEFAULT_PORT = 33000
 
 describe('envSchema', () => {
     test('DATABASE_URL 이 있으면 mysql 기본값으로 파싱한다', () => {
