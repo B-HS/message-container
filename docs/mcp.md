@@ -1,5 +1,7 @@
 # MCP 가이드
 
+> 최종 갱신: 2026-08-25 · 기준: dev 브랜치
+
 AI 클라이언트(Claude Code 등)가 `/mcp` 로 접속해 macOS Messages 데이터를 조회하기 위한 연동 가이드. REST API 스펙은 [docs/api.md](./api.md), 서버 내부 구조는 [docs/architecture.md](./architecture.md) 참고.
 
 ## 1. 개요

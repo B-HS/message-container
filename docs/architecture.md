@@ -1,5 +1,7 @@
 # 아키텍처
 
+> 최종 갱신: 2026-08-25 · 기준: dev 브랜치
+
 macOS Messages(`chat.db`)를 읽어 조회 API 로 제공하는 백엔드의 계층 구조·데이터 흐름·설계 근거.
 스택 합의는 [docs/acknowledge/2026-08-25-project-stack.md](./acknowledge/2026-08-25-project-stack.md), 실행 절차는 [docs/setup.md](./setup.md), API 스펙은 [docs/api.md](./api.md), MCP 가이드는 [docs/mcp.md](./mcp.md), 테스트 구성은 [docs/testing.md](./testing.md) 참고.
 
