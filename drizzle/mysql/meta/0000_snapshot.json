@@ -1,0 +1,361 @@
+{
+    "version": "5",
+    "dialect": "mysql",
+    "id": "304a1be8-6f79-45ee-b7f0-b7e57d938175",
+    "prevId": "00000000-0000-0000-0000-000000000000",
+    "tables": {
+        "attachments": {
+            "name": "attachments",
+            "columns": {
+                "source_row_id": {
+                    "name": "source_row_id",
+                    "type": "bigint",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "message_source_row_id": {
+                    "name": "message_source_row_id",
+                    "type": "bigint",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "guid": {
+                    "name": "guid",
+                    "type": "varchar(191)",
+                    "primaryKey": false,
+                    "notNull": false,
+                    "autoincrement": false
+                },
+                "transfer_name": {
+                    "name": "transfer_name",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false,
+                    "autoincrement": false
+                },
+                "mime_type": {
+                    "name": "mime_type",
+                    "type": "varchar(255)",
+                    "primaryKey": false,
+                    "notNull": false,
+                    "autoincrement": false
+                },
+                "total_bytes": {
+                    "name": "total_bytes",
+                    "type": "bigint",
+                    "primaryKey": false,
+                    "notNull": false,
+                    "autoincrement": false
+                },
+                "source_path": {
+                    "name": "source_path",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false,
+                    "autoincrement": false
+                }
+            },
+            "indexes": {
+                "attachments_message_idx": {
+                    "name": "attachments_message_idx",
+                    "columns": ["message_source_row_id"],
+                    "isUnique": false
+                }
+            },
+            "foreignKeys": {},
+            "compositePrimaryKeys": {
+                "attachments_source_row_id": {
+                    "name": "attachments_source_row_id",
+                    "columns": ["source_row_id"]
+                }
+            },
+            "uniqueConstraints": {},
+            "checkConstraint": {}
+        },
+        "chat_handles": {
+            "name": "chat_handles",
+            "columns": {
+                "chat_source_row_id": {
+                    "name": "chat_source_row_id",
+                    "type": "bigint",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "handle_source_row_id": {
+                    "name": "handle_source_row_id",
+                    "type": "bigint",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {},
+            "compositePrimaryKeys": {
+                "chat_handles_chat_source_row_id_handle_source_row_id_pk": {
+                    "name": "chat_handles_chat_source_row_id_handle_source_row_id_pk",
+                    "columns": ["chat_source_row_id", "handle_source_row_id"]
+                }
+            },
+            "uniqueConstraints": {},
+            "checkConstraint": {}
+        },
+        "chats": {
+            "name": "chats",
+            "columns": {
+                "source_row_id": {
+                    "name": "source_row_id",
+                    "type": "bigint",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "guid": {
+                    "name": "guid",
+                    "type": "varchar(191)",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "identifier": {
+                    "name": "identifier",
+                    "type": "varchar(255)",
+                    "primaryKey": false,
+                    "notNull": false,
+                    "autoincrement": false
+                },
+                "service_name": {
+                    "name": "service_name",
+                    "type": "varchar(64)",
+                    "primaryKey": false,
+                    "notNull": false,
+                    "autoincrement": false
+                },
+                "display_name": {
+                    "name": "display_name",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false,
+                    "autoincrement": false
+                },
+                "is_group": {
+                    "name": "is_group",
+                    "type": "boolean",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false,
+                    "default": false
+                },
+                "synced_at_ms": {
+                    "name": "synced_at_ms",
+                    "type": "bigint",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {},
+            "compositePrimaryKeys": {
+                "chats_source_row_id": {
+                    "name": "chats_source_row_id",
+                    "columns": ["source_row_id"]
+                }
+            },
+            "uniqueConstraints": {
+                "chats_guid_unique": {
+                    "name": "chats_guid_unique",
+                    "columns": ["guid"]
+                }
+            },
+            "checkConstraint": {}
+        },
+        "handles": {
+            "name": "handles",
+            "columns": {
+                "source_row_id": {
+                    "name": "source_row_id",
+                    "type": "bigint",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "address": {
+                    "name": "address",
+                    "type": "varchar(255)",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "service": {
+                    "name": "service",
+                    "type": "varchar(64)",
+                    "primaryKey": false,
+                    "notNull": false,
+                    "autoincrement": false
+                },
+                "synced_at_ms": {
+                    "name": "synced_at_ms",
+                    "type": "bigint",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {},
+            "compositePrimaryKeys": {
+                "handles_source_row_id": {
+                    "name": "handles_source_row_id",
+                    "columns": ["source_row_id"]
+                }
+            },
+            "uniqueConstraints": {},
+            "checkConstraint": {}
+        },
+        "messages": {
+            "name": "messages",
+            "columns": {
+                "source_row_id": {
+                    "name": "source_row_id",
+                    "type": "bigint",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "guid": {
+                    "name": "guid",
+                    "type": "varchar(191)",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "chat_source_row_id": {
+                    "name": "chat_source_row_id",
+                    "type": "bigint",
+                    "primaryKey": false,
+                    "notNull": false,
+                    "autoincrement": false
+                },
+                "handle_source_row_id": {
+                    "name": "handle_source_row_id",
+                    "type": "bigint",
+                    "primaryKey": false,
+                    "notNull": false,
+                    "autoincrement": false
+                },
+                "is_from_me": {
+                    "name": "is_from_me",
+                    "type": "boolean",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "text": {
+                    "name": "text",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false,
+                    "autoincrement": false
+                },
+                "service": {
+                    "name": "service",
+                    "type": "varchar(64)",
+                    "primaryKey": false,
+                    "notNull": false,
+                    "autoincrement": false
+                },
+                "sent_at_ms": {
+                    "name": "sent_at_ms",
+                    "type": "bigint",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "has_attachments": {
+                    "name": "has_attachments",
+                    "type": "boolean",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false,
+                    "default": false
+                },
+                "synced_at_ms": {
+                    "name": "synced_at_ms",
+                    "type": "bigint",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                }
+            },
+            "indexes": {
+                "messages_chat_sent_idx": {
+                    "name": "messages_chat_sent_idx",
+                    "columns": ["chat_source_row_id", "sent_at_ms"],
+                    "isUnique": false
+                },
+                "messages_sent_idx": {
+                    "name": "messages_sent_idx",
+                    "columns": ["sent_at_ms"],
+                    "isUnique": false
+                }
+            },
+            "foreignKeys": {},
+            "compositePrimaryKeys": {
+                "messages_source_row_id": {
+                    "name": "messages_source_row_id",
+                    "columns": ["source_row_id"]
+                }
+            },
+            "uniqueConstraints": {
+                "messages_guid_unique": {
+                    "name": "messages_guid_unique",
+                    "columns": ["guid"]
+                }
+            },
+            "checkConstraint": {}
+        },
+        "sync_state": {
+            "name": "sync_state",
+            "columns": {
+                "key": {
+                    "name": "key",
+                    "type": "varchar(64)",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "value": {
+                    "name": "value",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {},
+            "compositePrimaryKeys": {
+                "sync_state_key": {
+                    "name": "sync_state_key",
+                    "columns": ["key"]
+                }
+            },
+            "uniqueConstraints": {},
+            "checkConstraint": {}
+        }
+    },
+    "views": {},
+    "_meta": {
+        "schemas": {},
+        "tables": {},
+        "columns": {}
+    },
+    "internal": {
+        "tables": {},
+        "indexes": {}
+    }
+}
