@@ -1,5 +1,7 @@
 # containers 스택 통합 가이드 (chore/containers 브랜치)
 
+> 최종 갱신: 2026-08-25 · 기준: dev 브랜치
+
 [containers](https://github.com/B-HS) 자가호스팅 Docker 패널과 **같은 호스트**에서 message-container 를 운영하기 위한 변형. 이 브랜치(`chore/containers`)에만 존재하는 `compose.containers.yaml` 을 사용한다.
 
 ## 왜 패널 Deployment 가 아니라 별도 compose 인가

@@ -1,5 +1,7 @@
 # API 스펙
 
+> 최종 갱신: 2026-08-25 · 기준: dev 브랜치
+
 macOS Messages(`chat.db`) 조회 API 의 엔드포인트·인증·응답 봉투·에러 코드 스펙. 계층 구조·설계 근거는 [docs/architecture.md](./architecture.md), 실행 절차는 [docs/setup.md](./setup.md) 참고.
 
 Base URL: `http://localhost:33000` (기본 `PORT`, `lib/env.ts`)

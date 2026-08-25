@@ -1,5 +1,7 @@
 # 테스트 구성
 
+> 최종 갱신: 2026-08-25 · 기준: dev 브랜치
+
 `bun:test` 러너 기준. 계층 구조·에러 체계 등 코드가 전제하는 설계는 [docs/architecture.md](./architecture.md) 참고.
 
 ## 1. 실행 명령
