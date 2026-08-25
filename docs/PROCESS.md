@@ -2,6 +2,23 @@
 
 기준 문서: `~/.claude/convention/*.md` (특히 backend.md · common.md · git.md), `docs/acknowledge/2026-08-25-project-stack.md`
 
+## 작업: 인증(앱 패스워드 + API 키) + MCP + 스펙 문서 (2026-08-25)
+
+기준: docs/acknowledge/2026-08-25-auth-mcp.md
+
+- [x] a. 공식 문서 확인 — @modelcontextprotocol/sdk(zod 호환·Streamable HTTP stateless), @hono/mcp
+- [x] b. 스키마 — auth_state(KV)·api_keys 테이블 3 dialect + 마이그레이션 재생성
+- [x] c. auth 서비스 — 패스워드 설정/검증(argon2id·실패 잠금), 인메모리 패널 세션, API 키 생성(msg_ prefix·SHA-256 해시)/목록/폐기/검증
+- [x] d. API 보호 — UNAUTHORIZED 에러 코드, middleware/require-api-key(경로 게이트), /api/* 적용
+- [x] e. 웹 패널 — /panel: 초기 패스워드 설정 → 로그인 → API 키 관리(생성 1회 표시·폐기)
+- [x] f. MCP — /mcp Streamable HTTP, API 키 인증, 도구: list_chats·get_chat_messages·search_messages·get_sync_status·run_sync·get_attachment(base64)
+- [x] g. OpenAPI — 항상 노출 + bearer security scheme 반영
+- [x] h. 테스트 — auth 단위, 패널·보호 API·MCP e2e (기존 e2e 의 인증 반영 수정 포함)
+- [x] i. 문서 — docs/api.md(스펙), docs/mcp.md(AI 용 가이드), setup·architecture·README 갱신
+- [x] j. 검증(typecheck→format→test→실행: 로컬·docker mysql/postgres 패널·키·MCP 실 호출) 및 커밋 (dev)
+
+검증 결과(a~i, 2026-08-25): `bun run typecheck` 통과(에러 0). `bun run format:check` 최초 실패(문서 작업 중 생성된 `docs/acknowledge/2026-08-25-auth-mcp.md` 미포맷) → `bun run format` 후 재검사 통과. `bun test` 전체 23개 파일 127 pass / 0 fail(244 expect) — 신규 단위 3개(auth-service·panel dto·bearer-token) + e2e 2개(panel·mcp) 포함. 소스·테스트 코드는 수정하지 않고 문서만 갱신했다. j(커밋)는 사용자 요청 전이라 미완료로 남긴다.
+
 ## 작업: 테스트 확충 + docs 정합화 (2026-08-25, workflow 병렬)
 
 - [x] a. 공용 테스트 헬퍼 — tests/helpers/test-env.ts (getEnv 경로용 env 고정)
