@@ -2,6 +2,10 @@
 
 기준 문서: `~/.claude/convention/*.md` (특히 backend.md · common.md · git.md), `docs/acknowledge/2026-08-25-project-stack.md`
 
+## 작업: 기동·검증 스크립트 (2026-08-25)
+
+- [x] scripts/smoke-test.sh 추가 — compose 기동+패널 설정/로그인+키 발급+API·MCP 검증 자동화, 3개 경로(초기 설정·재로그인·오류) 검증 완료, docs/utils/smoke-test.md 기록
+
 ## 작업: 인증(앱 패스워드 + API 키) + MCP + 스펙 문서 (2026-08-25)
 
 기준: docs/acknowledge/2026-08-25-auth-mcp.md

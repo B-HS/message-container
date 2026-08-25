@@ -17,6 +17,16 @@ macOS Messages(chat.db)를 읽어 조회 API 를 제공하는 컨테이너의 �
 
 ## 2. 실행
 
+### 한 번에 (기동 + 검증 스크립트)
+
+```bash
+PANEL_PASSWORD='원하는패스워드' ./scripts/smoke-test.sh          # MySQL
+PANEL_PASSWORD='원하는패스워드' ./scripts/smoke-test.sh sqlite   # SQLite 단일 컨테이너
+./scripts/smoke-test.sh down                                     # 정리
+```
+
+기동부터 패스워드 설정/로그인 → API 키 발급 → 보호 API·MCP 검증까지 자동 수행하고, 발급된 키와 Claude Code MCP 연결 명령을 출력한다. 상세는 [docs/utils/smoke-test.md](./utils/smoke-test.md).
+
 ### 기본 (MySQL provider)
 
 ```bash
