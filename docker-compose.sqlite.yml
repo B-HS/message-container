@@ -17,3 +17,15 @@ services:
             - ${HOME}/Library/Messages:/host/messages:ro
             - ./data:/data
         restart: unless-stopped
+
+    web:
+        build:
+            context: .
+            dockerfile: apps/web/Dockerfile
+        ports:
+            - '${WEB_PORT:-3001}:3001'
+        environment:
+            MESSAGE_API_URL: http://api:3000
+        depends_on:
+            - api
+        restart: unless-stopped
