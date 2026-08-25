@@ -11,15 +11,16 @@ macOS 의 Messages 데이터(chat.db)를 읽어 조회 API 를 제공하는 Dock
 
 ## 합의된 결정
 
-| 항목         | 결정                                                                                          |
-| ------------ | --------------------------------------------------------------------------------------------- |
-| 런타임       | Bun                                                                                           |
-| 서버         | Hono (backend.md 계층 구조: Route → Service → ServiceDb → Drizzle)                            |
-| ORM          | Drizzle                                                                                       |
-| 컨테이너 DB  | provider 선택형 — 기본 `mysql`, 추가 `sqlite` · `postgres`                                    |
-| chat.db 읽기 | 직접 read-only 열기 + 커서 기반 증분 SELECT. 실패 시 해당 틱 스킵, 다음 틱 재시도             |
-| git          | init 완료, 자동 커밋(`llm-rules.auto-commit=true`), push 는 수동(`llm-rules.auto-push=false`) |
-| 커밋 언어    | 신규 레포 — Conventional Commits + 한국어 description (git.md 기본값)                         |
+| 항목         | 결정                                                                                                  |
+| ------------ | ----------------------------------------------------------------------------------------------------- |
+| 런타임       | Bun                                                                                                   |
+| 서버         | Hono (backend.md 계층 구조: Route → Service → ServiceDb → Drizzle)                                    |
+| ORM          | Drizzle                                                                                               |
+| 컨테이너 DB  | provider 선택형 — 기본 `mysql`, 추가 `sqlite` · `postgres`                                            |
+| chat.db 읽기 | 직접 read-only 열기 + 커서 기반 증분 SELECT. 실패 시 해당 틱 스킵, 다음 틱 재시도                     |
+| git          | init 완료, 자동 커밋(`llm-rules.auto-commit=true`), push 는 수동(`llm-rules.auto-push=false`)         |
+| 커밋 언어    | 신규 레포 — Conventional Commits + 한국어 description (git.md 기본값)                                 |
+| 브랜치 정책  | `dev`/`prod` 2브랜치 — `prod` 가 main 역할(GitHub 기본 브랜치), 작업 커밋은 `dev`, 병합은 사용자 수행 |
 
 ## 기술 전제 (사용자와 공유된 제약)
 
