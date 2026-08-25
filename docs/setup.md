@@ -11,9 +11,17 @@ macOS Messages(chat.db)를 읽어 조회 API 를 제공하는 컨테이너의 �
 
 `~/Library/Messages` 는 macOS TCC 보호 경로라, Docker 의 파일 공유 데몬에 Full Disk Access 가 없으면 마운트가 빈 디렉토리로 보이거나 실패한다.
 
-1. 시스템 설정 → 개인정보 보호 및 보안 → 전체 디스크 접근 권한
-2. Docker(또는 OrbStack) 를 목록에 추가하고 활성화
-3. Docker Desktop/OrbStack 재시작
+1. 시스템 설정 → 개인정보 보호 및 보안 → 전체 디스크 접근 권한 (터미널에서 `open "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles"` 로 바로 열 수 있다)
+2. Docker(`/Applications/Docker.app`, OrbStack 이면 OrbStack.app)를 목록에 추가하고 활성화
+3. Docker Desktop/OrbStack 을 **완전히 종료(Quit) 후 재실행** — 재시작해야 권한이 파일 공유 데몬에 반영된다
+
+### 이 권한이 없을 때의 증상
+
+```
+Error response from daemon: error while creating mount source path '/host_mnt/Users/<user>/Library/Messages': mkdir /host_mnt/Users/<user>/Library/Messages: operation not permitted
+```
+
+컨테이너 기동 자체가 위 에러로 실패하거나, 마운트는 되지만 빈 디렉토리로 보여 `/api/sync/status` 의 `lastError` 에 `SYNC_SOURCE_UNAVAILABLE` 사유가 남는다. 두 경우 모두 위 1~3 을 수행하고 다시 기동하면 해결된다.
 
 ## 2. 실행
 
