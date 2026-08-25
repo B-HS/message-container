@@ -203,6 +203,8 @@ export const createPgServiceDb = (db: BunSQLDatabase) => {
 
     const attachment: AttachmentServiceDb = {
         getAttachmentById: async (id) => (await db.select().from(attachments).where(eq(attachments.sourceRowId, id))).at(0) ?? null,
+        getAttachmentsByMessageIds: async (messageIds) =>
+            messageIds.length === 0 ? [] : db.select().from(attachments).where(inArray(attachments.messageSourceRowId, messageIds)),
     }
 
     const apiKeySelection = {

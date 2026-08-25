@@ -1,12 +1,14 @@
 import { Hono } from 'hono'
 import { describeRoute, validator } from 'hono-openapi'
 
-import { errorResponses } from '@/lib/api-response'
+import { errorResponses, successResponse } from '@/lib/api-response'
 import { createAppError } from '@/lib/error'
 import { validationHook } from '@/lib/validation-hook'
 import { withErrorHandling } from '@/lib/with-error-handling'
+import { attachmentListQuerySchema } from '@/dto/attachment'
 import { idParamSchema } from '@/dto/common'
 
+import type { AttachmentListQuery } from '@/dto/attachment'
 import type { IdParam } from '@/dto/common'
 import type { AttachmentService } from '@/service/domain/message/attachment-service'
 
@@ -18,6 +20,16 @@ const DEFAULT_MIME_TYPE = 'application/octet-stream'
 
 export const createAttachmentRoute = (deps: AttachmentRouteDeps) => {
     const route = new Hono()
+
+    route.get(
+        '/',
+        describeRoute({ tags: ['Attachment'], summary: '메시지별 첨부 메타데이터 일괄 조회', responses: { 200: { description: '첨부 목록' } } }),
+        validator('query', attachmentListQuerySchema, validationHook),
+        withErrorHandling(async (c) => {
+            const query = c.req.valid('query' as never) as AttachmentListQuery
+            return c.json(successResponse({ attachments: await deps.attachmentService.listByMessageIds(query.messageIds) }))
+        }),
+    )
 
     route.get(
         '/:id/file',

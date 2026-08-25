@@ -18,7 +18,7 @@ const buildRecord = (sourcePath: string | null): AttachmentRecord => ({
 })
 
 const createService = (record: AttachmentRecord | null) => {
-    const db: AttachmentServiceDb = { getAttachmentById: async () => record }
+    const db: AttachmentServiceDb = { getAttachmentById: async () => record, getAttachmentsByMessageIds: async () => [] }
     return createAttachmentService({ db, attachmentsRoot: ATTACHMENTS_ROOT })
 }
 

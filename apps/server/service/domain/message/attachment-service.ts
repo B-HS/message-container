@@ -14,6 +14,7 @@ export type AttachmentRecord = {
 
 export type AttachmentServiceDb = {
     getAttachmentById: (id: number) => Promise<AttachmentRecord | null>
+    getAttachmentsByMessageIds: (messageIds: number[]) => Promise<AttachmentRecord[]>
 }
 
 type AttachmentServiceDeps = {
@@ -32,6 +33,8 @@ const toRelativeSourcePath = (sourcePath: string) => {
 }
 
 export const createAttachmentService = (deps: AttachmentServiceDeps) => ({
+    listByMessageIds: async (messageIds: number[]) =>
+        (await deps.db.getAttachmentsByMessageIds(messageIds)).map(({ sourcePath, ...record }) => record),
     getFileById: async (id: number) => {
         const record = await deps.db.getAttachmentById(id)
         if (!record) return null
