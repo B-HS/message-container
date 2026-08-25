@@ -10,12 +10,12 @@ macOS 의 Messages(chat.db)를 읽기 전용으로 증분 동기화해 웹 대�
 ## 2. 현재 목표
 
 - 최종 목표: 개인용 Messages 조회 스택 완성 — v1 완결 후 후속 기능 확장 중
-- 현재 마일스톤: 없음(전부 완료·검증). 남은 것은 §8 후속 과제뿐
-- 직전 작업: 기존 행 갱신 감지(최근 윈도 재스캔 — 편집·읽음·tapback) + 로깅 시스템(DB 적재·/api/logs·FE 로그 메뉴) + db 3306 비노출 + 쿠키명 msg_api_key 교정 + README 스크린샷 재촬영
+- 현재 마일스톤: 없음(전부 완료·검증·push). 남은 것은 §8 후속 과제와 §6 의 스택 재기동뿐
+- 직전 작업: 기존 행 갱신 감지(최근 윈도 재스캔 — 편집·읽음·tapback) + 로깅 시스템(DB 적재·/api/logs·FE 로그 메뉴) + db 3306 비노출 + 쿠키명 msg_api_key 교정 + README 스크린샷 재촬영 + 3 브랜치 push(dev `af13e0f` = prod, chore/containers merge `3eb582a`)
 
 ## 3. 완료 / 진행 중 / 미착수
 
-**완료 (전부 커밋·검증됨)** — 시간순 상세는 `docs/history/` 8개 파일:
+**완료 (전부 커밋·push·검증됨)** — 시간순 상세는 `docs/history/` 8개 파일:
 
 1. BE 코어: chat.db 리더(커서 증분·typedstream 본문 추출·WAL 실패 틱 스킵) → 3-provider(sqlite 기본·mysql·pg, Drizzle) 적재 → 조회 API. `apps/server/service/`·`compose/provider/`
 2. 인증: 앱 패스워드(argon2id) + `msg_` API 키(SHA-256 해시 저장) + `/panel` HTML + `/api/*` Bearer 게이트(`middleware/require-api-key.ts`) + 공개 JSON auth API(`route/auth.ts`: status·setup·login·revoke) + 키 관리 API(`route/key.ts`)
@@ -52,6 +52,8 @@ macOS 의 Messages(chat.db)를 읽기 전용으로 증분 동기화해 웹 대�
 - **우측 컨텍스트 패널(DESIGN 3열)** — 글로벌 필터 실수요 없음
 - **스피너** — 스켈레톤만 (DESIGN 규칙 + 사용자 지시)
 - **git 히스토리 재작성(.next blob 제거)** — force push 금지라 보류, 과거 커밋에 빌드 산출물 blob 잔존
+- **재스캔 축소안(편집만/편집+읽음)** — 사용자가 C안(tapback 구조화까지) 선택. **stdout 단독 로깅** — 관리 기능 FE 완결 원칙에 어긋나 기각(DB 적재 + FE 화면 채택)
+- **api.unhandled 를 위해 withErrorHandling 시그니처 변경·전역 싱크** — 호출부 전파가 과해 기각, 응답 500 관측 미들웨어(`route/index.ts`)로 대체. **sync.batch 를 워커에서만 기록** — 수동 `/api/sync/run` 누락이라 `SyncService.runOnce` 내부 기록으로 변경
 
 ## 5. 사용자 방향성 & 작업 규칙
 
@@ -64,16 +66,19 @@ macOS 의 Messages(chat.db)를 읽기 전용으로 증분 동기화해 웹 대�
 - 병렬 가능한 큰 작업(테스트 확충·문서화)은 **Workflow + sonnet** 병렬 선호
 - **포트 번호로 프로세스 kill 절대 금지** — compose 포트 리스너는 `com.docker.backend`라 Docker 데몬이 죽음. 사고 2회 (`docs/feedback/2026-08-25-port-kill-docker-daemon.md`). 실행 중 스택(33000/32000) 무접촉, 테스트는 34xxx 대역 + PID 지정 종료
 - 스크린샷 등 산출물에 **실제 메시지 데이터 노출 금지** — 데모 fake chat.db 사용
+- **사용자가 지정한 세부 네이밍을 정확히 따른다** — 쿠키명을 `mc_api_key` 로 임의 명명했다가 교정받음(`msg_api_key`). 이름·키·상수 지시가 있었는지 먼저 확인
+- 임시 프로세스는 백그라운드 태스크로 띄우고 태스크 중지로만 종료, 검증용 DB 컨테이너는 34xxx 포트 + 고유 이름(`mc-test-*`)으로 만들고 이름 지정 삭제
 
 ## 6. 미해결 질문 / 사용자 확인 필요
 
-- 없음. (과거 커밋의 .next blob 정리는 force push 가 필요해 사용자가 원할 때만 — §4 기각 항목)
+- **실행 중인 compose 스택은 아직 이전 이미지다** — 마이그레이션 0002(재스캔·로그)·로그 메뉴·쿠키명 변경을 반영하려면 사용자가 원하는 시점에 재빌드·재기동(`docker compose up -d --build`)해야 하고, 쿠키명 변경(`msg_api_key`)으로 최초 1회 재로그인이 필요하다. 임의 재기동 금지(§5).
+- 과거 커밋의 .next blob 정리는 force push 가 필요해 사용자가 원할 때만 — §4 기각 항목.
 
 ## 7. 환경 & 전제
 
 - macOS(Apple Silicon) + Docker Desktop 4.83(FDA 부여됨), Bun 1.3.x, TS 7.0.2(`baseUrl` 제거됨 주의), Next 16.3.2, Drizzle 0.45.2, MCP SDK 1.30(zod4 직접 지원), hono-openapi(peer `@hono/standard-validator` 필수)
 - 실행: `./scripts/smoke-test.sh` → `localhost:32000` 초기설정. 개발: 각 앱 디렉토리에서 `bun run dev`. 루트 `bun run typecheck|test` 는 워크스페이스 필터 실행
-- 함정 기록: drizzle SELECT 필드 내 컬럼 참조는 비정규화 렌더 → 상관 서브쿼리는 리터럴 식별자 사용(`history/2026-08-25-chat-ordering.md`) / chat.db 는 `display_name` 등에 `''` 저장 / message.date 는 ns·s 혼재(SQL 에서 판별) / bun-sqlite drizzle 트랜잭션은 동기 콜백 / `.env.example` 은 권한 훅이 차단 → `env.example` 사용
+- 함정 기록: drizzle SELECT 필드 내 컬럼 참조는 비정규화 렌더 → 상관 서브쿼리는 리터럴 식별자 사용(`history/2026-08-25-chat-ordering.md`) / chat.db 는 `display_name` 등에 `''` 저장 / message.date·date_read 는 ns·s 혼재(SQL 에서 판별, date_read 0=미읽음) / bun-sqlite drizzle 트랜잭션은 동기 콜백 / `.env.example` 은 권한 훅이 차단 → `env.example` 사용 / 브라우저 쿠키는 호스트 단위(포트 무시)라 localhost 데모 검증 시 실 스택 쿠키가 오염됨 + fake chat.db 시딩은 Apple epoch(2001) 기준 ns(`history/2026-08-25-row-update-logging.md` 함정 기록)
 - 사용자 실 스택이 이 머신에서 compose 로 상시 실행 중 (실데이터 776 대화·6천+ 메시지 동기화 검증됨)
 
 ## 8. 다음 세션 TODO (우선순위 순)
@@ -104,4 +109,4 @@ macOS 의 Messages(chat.db)를 읽기 전용으로 증분 동기화해 웹 대�
 
 ## 복기 신뢰도
 
-세션 전체(초기 구축→핸드오프)를 커밋 로그·docs 와 대조해 작성했으며 낮은 신뢰도 구간 없음. 세부 수치(테스트 개수 등)는 각 시점 기록이 `docs/history/`·`docs/PROCESS.md` 에 있다.
+행 갱신·로깅 세션(2026-08-25, 커밋 `d5e122d`~`af13e0f`)까지 커밋 로그·docs 와 대조해 작성했으며 낮은 신뢰도 구간 없음. 세부 수치(테스트 개수 등)는 각 시점 기록이 `docs/history/`·`docs/PROCESS.md` 에 있다.

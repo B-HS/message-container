@@ -17,7 +17,8 @@
 - [x] h. 로깅 FE — 사이드바 "로그" 메뉴 + /logs 페이지(SSR prefetch·level 필터·DataTable·스켈레톤)
 - [x] i. compose — db(MySQL) 3306 호스트 포트 매핑 제거 + (사용자 교정) FE 쿠키명 mc_api_key → msg_api_key
 - [x] j. 검증 — typecheck·format·test(서버 152·웹 6)·web build + sqlite 로컬(34110)·mysql(34306)·postgres(34432) 실 DB 로 "기존 행 text 수정 재동기화·읽음·tapback·/api/logs" 실기동 확인
-- [x] k. README 스크린샷 재촬영(데모 34150/34151, 로그 메뉴·tapback·읽음 포함) + docs 갱신(architecture §8.1·§10, api.md, testing.md, README, QA, history) + 커밋
+- [x] k. README 스크린샷 재촬영(데모 34150/34151, 로그 메뉴·tapback·읽음 포함) + docs 갱신(architecture §8.1·§10, api.md, testing.md, README, QA, history) + 커밋 5건
+- [x] l. push — dev(`af13e0f`)·prod(ff 동일 커밋)·chore/containers(merge `3eb582a`, compose.containers.yaml 은 web 32000/127.0.0.1 만 노출이라 무수정) — 실행 중 스택 재기동은 사용자 결정 대기(HANDOFF §6)
 
 ## 작업: 단일 origin 프록시 모델 전환 (2026-08-25)
 
