@@ -1,5 +1,5 @@
 var R = require('../../chunks/ssr/[turbopack]_runtime.js')('server/app/(shell)/page.js')
-R.c('server/chunks/ssr/[root-of-the-server]__0_5zpmf._.js')
+R.c('server/chunks/ssr/[root-of-the-server]__16wq5ex._.js')
 R.c('server/chunks/ssr/12-l_next_dist_1ael6k7._.js')
 R.c('server/chunks/ssr/[root-of-the-server]__094asrq._.js')
 R.c('server/chunks/ssr/[root-of-the-server]__188r8uu._.js')
@@ -11,6 +11,7 @@ R.c('server/chunks/ssr/12-l_next_dist_client_components_builtin_global-error_1ss
 R.c('server/chunks/ssr/_0q0681d._.js')
 R.c('server/chunks/ssr/12-l_next_dist_0l9o52o._.js')
 R.c('server/chunks/ssr/12-l_next_09a35l4._.js')
+R.c('server/chunks/ssr/apps_web_app_(shell)_error_tsx_0o7mv5o._.js')
 R.c('server/chunks/ssr/apps_web__next-internal_server_app_(shell)_page_actions_03zn3a4.js')
-R.m(90264)
-module.exports = R.m(90264).exports
+R.m(75405)
+module.exports = R.m(75405).exports

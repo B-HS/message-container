@@ -16,7 +16,7 @@ self.__SERVER_FILES_MANIFEST = {
         generateEtags: true,
         pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
         instrumentationClientInject: [],
-        poweredByHeader: true,
+        poweredByHeader: false,
         compress: true,
         images: {
             deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],

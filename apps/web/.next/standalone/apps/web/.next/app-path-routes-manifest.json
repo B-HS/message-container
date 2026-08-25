@@ -9,5 +9,6 @@
     "/_not-found/page": "/_not-found",
     "/api/be/[...path]/route": "/api/be/[...path]",
     "/api/session/route": "/api/session",
+    "/icon.svg/route": "/icon.svg",
     "/setup/page": "/setup"
 }

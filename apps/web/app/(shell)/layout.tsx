@@ -13,7 +13,7 @@ const ShellLayout = async ({ children }: PropsWithChildren) => {
     return (
         <div className='h-dvh min-h-0 bg-background'>
             <Rail />
-            <main className='h-full min-h-0 min-w-0 overflow-y-auto pl-64'>{children}</main>
+            <main className='h-full min-h-0 min-w-0 overflow-y-auto pt-12 md:pt-0 md:pl-64'>{children}</main>
         </div>
     )
 }

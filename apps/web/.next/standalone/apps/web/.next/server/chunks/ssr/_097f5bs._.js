@@ -5,13 +5,14 @@ module.exports = [
         var b = a.i(90329),
             c = a.i(94805),
             d = a.i(32802),
-            e = a.i(66373)
-        let f = (0, e.default)('log-out', [
+            e = a.i(77010),
+            f = a.i(66373)
+        let g = (0, f.default)('log-out', [
                 ['path', { d: 'm16 17 5-5-5-5', key: '1bji2h' }],
                 ['path', { d: 'M21 12H9', key: 'dn1m92' }],
                 ['path', { d: 'M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4', key: '1uf3rs' }],
             ]),
-            g = (0, e.default)('messages-square', [
+            h = (0, f.default)('messages-square', [
                 [
                     'path',
                     {
@@ -24,7 +25,7 @@ module.exports = [
                     { d: 'M20 9a2 2 0 0 1 2 2v10.286a.71.71 0 0 1-1.212.502l-2.202-2.202A2 2 0 0 0 17.172 19H10a2 2 0 0 1-2-2v-1', key: '1qfcsi' },
                 ],
             ]),
-            h = (0, e.default)('moon', [
+            i = (0, f.default)('moon', [
                 [
                     'path',
                     {
@@ -33,17 +34,21 @@ module.exports = [
                     },
                 ],
             ]),
-            i = (0, e.default)('refresh-cw', [
+            j = (0, f.default)('panel-left', [
+                ['rect', { width: '18', height: '18', x: '3', y: '3', rx: '2', key: 'afitv7' }],
+                ['path', { d: 'M9 3v18', key: 'fh3hqa' }],
+            ]),
+            k = (0, f.default)('refresh-cw', [
                 ['path', { d: 'M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8', key: 'v9h5vc' }],
                 ['path', { d: 'M21 3v5h-5', key: '1q7to0' }],
                 ['path', { d: 'M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16', key: '3uifl3' }],
                 ['path', { d: 'M8 16H3v5', key: '1cv678' }],
             ]),
-            j = (0, e.default)('search', [
+            l = (0, f.default)('search', [
                 ['path', { d: 'm21 21-4.34-4.34', key: '14j7rj' }],
                 ['circle', { cx: '11', cy: '11', r: '8', key: '4ej97u' }],
             ]),
-            k = (0, e.default)('settings', [
+            m = (0, f.default)('settings', [
                 [
                     'path',
                     {
@@ -53,7 +58,7 @@ module.exports = [
                 ],
                 ['circle', { cx: '12', cy: '12', r: '3', key: '1v7zrd' }],
             ]),
-            l = (0, e.default)('sun', [
+            n = (0, f.default)('sun', [
                 ['circle', { cx: '12', cy: '12', r: '4', key: '4exip2' }],
                 ['path', { d: 'M12 2v2', key: 'tus03m' }],
                 ['path', { d: 'M12 20v2', key: '1lh1kg' }],
@@ -64,83 +69,138 @@ module.exports = [
                 ['path', { d: 'm6.34 17.66-1.41 1.41', key: '1m8zz5' }],
                 ['path', { d: 'm19.07 4.93-1.41 1.41', key: '1shlcs' }],
             ])
-        var m = a.i(28396),
-            n = a.i(30583)
-        let o = [
-            { href: '/chats', label: '대화', icon: g },
-            { href: '/messages', label: '메시지 검색', icon: j },
-            { href: '/sync', label: '동기화', icon: i },
-            { href: '/settings', label: '설정', icon: k },
-        ]
+        var o = a.i(28396),
+            p = a.i(30583)
+        let q = [
+                { href: '/chats', label: '대화', icon: h },
+                { href: '/messages', label: '메시지 검색', icon: l },
+                { href: '/sync', label: '동기화', icon: k },
+                { href: '/settings', label: '설정', icon: m },
+            ],
+            r = ({ onNavigate: a }) => {
+                let e = (0, d.usePathname)(),
+                    f = (0, d.useRouter)(),
+                    h = async () => {
+                        ;(await fetch('/api/session', { method: 'DELETE' }), f.replace('/setup'))
+                    },
+                    { resolvedTheme: j, setTheme: k } = (0, o.useTheme)()
+                return (0, b.jsxs)(b.Fragment, {
+                    children: [
+                        (0, b.jsx)('header', {
+                            className: 'flex h-12 shrink-0 items-center px-3',
+                            children: (0, b.jsx)('span', {
+                                className: 'truncate text-sm font-semibold tracking-tight',
+                                children: 'message-container',
+                            }),
+                        }),
+                        (0, b.jsx)('nav', {
+                            className: 'flex min-h-0 flex-1 flex-col overflow-y-auto',
+                            children: q.map((d) =>
+                                (0, b.jsxs)(
+                                    c.default,
+                                    {
+                                        href: d.href,
+                                        onClick: a,
+                                        'aria-current': e === d.href ? 'page' : void 0,
+                                        className: (0, p.cn)(
+                                            'flex h-9 shrink-0 items-center gap-3 rounded-none px-3 text-sm font-medium',
+                                            'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+                                            e === d.href && 'bg-sidebar-accent text-sidebar-accent-foreground',
+                                        ),
+                                        children: [
+                                            (0, b.jsx)(d.icon, { className: 'size-4 shrink-0' }),
+                                            (0, b.jsx)('span', { className: 'truncate', children: d.label }),
+                                        ],
+                                    },
+                                    d.href,
+                                ),
+                            ),
+                        }),
+                        (0, b.jsxs)('footer', {
+                            className: 'flex h-12 shrink-0 items-center justify-end gap-1 px-3',
+                            children: [
+                                (0, b.jsxs)('button', {
+                                    type: 'button',
+                                    'aria-label': '테마 전환',
+                                    onClick: () => k('dark' === j ? 'light' : 'dark'),
+                                    className: 'flex size-8 items-center justify-center hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+                                    children: [
+                                        (0, b.jsx)(n, { className: 'size-4 dark:hidden' }),
+                                        (0, b.jsx)(i, { className: 'hidden size-4 dark:block' }),
+                                    ],
+                                }),
+                                (0, b.jsx)('button', {
+                                    type: 'button',
+                                    'aria-label': '로그아웃',
+                                    onClick: h,
+                                    className: 'flex size-8 items-center justify-center hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+                                    children: (0, b.jsx)(g, { className: 'size-4' }),
+                                }),
+                            ],
+                        }),
+                    ],
+                })
+            }
         a.s(
             [
                 'Rail',
                 0,
                 () => {
-                    let a = (0, d.usePathname)(),
-                        e = (0, d.useRouter)(),
-                        g = async () => {
-                            ;(await fetch('/api/session', { method: 'DELETE' }), e.replace('/setup'))
-                        },
-                        { resolvedTheme: i, setTheme: j } = (0, m.useTheme)()
-                    return (0, b.jsxs)('aside', {
-                        className: 'fixed inset-y-0 left-0 z-10 flex w-64 flex-col bg-sidebar text-sidebar-foreground',
-                        children: [
-                            (0, b.jsx)('header', {
-                                className: 'flex h-12 shrink-0 items-center px-3',
-                                children: (0, b.jsx)('span', {
-                                    className: 'truncate text-sm font-semibold tracking-tight',
-                                    children: 'message-container',
+                    let [a, c] = (0, e.useState)(!1)
+                    return (
+                        (0, e.useEffect)(() => {
+                            if (!a) return
+                            let b = (a) => {
+                                'Escape' === a.key && c(!1)
+                            }
+                            return (window.addEventListener('keydown', b), () => window.removeEventListener('keydown', b))
+                        }, [a]),
+                        (0, b.jsxs)(b.Fragment, {
+                            children: [
+                                (0, b.jsx)('aside', {
+                                    className: 'fixed inset-y-0 left-0 z-10 hidden w-64 flex-col bg-sidebar text-sidebar-foreground md:flex',
+                                    children: (0, b.jsx)(r, {}),
                                 }),
-                            }),
-                            (0, b.jsx)('nav', {
-                                className: 'flex min-h-0 flex-1 flex-col',
-                                children: o.map((d) =>
-                                    (0, b.jsxs)(
-                                        c.default,
-                                        {
-                                            href: d.href,
-                                            'aria-current': a === d.href ? 'page' : void 0,
-                                            className: (0, n.cn)(
-                                                'flex h-9 items-center gap-3 rounded-none px-3 text-sm font-medium',
-                                                'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
-                                                a === d.href && 'bg-sidebar-accent text-sidebar-accent-foreground',
-                                            ),
-                                            children: [
-                                                (0, b.jsx)(d.icon, { className: 'size-4 shrink-0' }),
-                                                (0, b.jsx)('span', { className: 'truncate', children: d.label }),
-                                            ],
-                                        },
-                                        d.href,
-                                    ),
-                                ),
-                            }),
-                            (0, b.jsxs)('footer', {
-                                className: 'flex h-12 shrink-0 items-center justify-end gap-1 px-3',
-                                children: [
-                                    (0, b.jsxs)('button', {
-                                        type: 'button',
-                                        'aria-label': '테마 전환',
-                                        onClick: () => j('dark' === i ? 'light' : 'dark'),
-                                        className:
-                                            'flex size-8 items-center justify-center hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
-                                        children: [
-                                            (0, b.jsx)(l, { className: 'size-4 dark:hidden' }),
-                                            (0, b.jsx)(h, { className: 'hidden size-4 dark:block' }),
-                                        ],
-                                    }),
-                                    (0, b.jsx)('button', {
-                                        type: 'button',
-                                        'aria-label': '로그아웃',
-                                        onClick: g,
-                                        className:
-                                            'flex size-8 items-center justify-center hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
-                                        children: (0, b.jsx)(f, { className: 'size-4' }),
-                                    }),
-                                ],
-                            }),
-                        ],
-                    })
+                                (0, b.jsxs)('div', {
+                                    className:
+                                        'fixed inset-x-0 top-0 z-10 flex h-12 items-center gap-2 bg-sidebar px-3 text-sidebar-foreground md:hidden',
+                                    children: [
+                                        (0, b.jsx)('button', {
+                                            type: 'button',
+                                            'aria-label': '내비게이션 열기',
+                                            'aria-expanded': a,
+                                            onClick: () => c(!0),
+                                            className:
+                                                'flex size-8 items-center justify-center hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+                                            children: (0, b.jsx)(j, { className: 'size-4' }),
+                                        }),
+                                        (0, b.jsx)('span', {
+                                            className: 'truncate text-sm font-semibold tracking-tight',
+                                            children: 'message-container',
+                                        }),
+                                    ],
+                                }),
+                                a
+                                    ? (0, b.jsxs)('div', {
+                                          className: 'fixed inset-0 z-50 md:hidden',
+                                          children: [
+                                              (0, b.jsx)('button', {
+                                                  type: 'button',
+                                                  'aria-label': '내비게이션 닫기',
+                                                  className: 'absolute inset-0',
+                                                  style: { background: 'oklch(0 0 0 / 50%)' },
+                                                  onClick: () => c(!1),
+                                              }),
+                                              (0, b.jsx)('aside', {
+                                                  className: 'absolute inset-y-0 left-0 flex w-72 flex-col bg-sidebar text-sidebar-foreground',
+                                                  children: (0, b.jsx)(r, { onNavigate: () => c(!1) }),
+                                              }),
+                                          ],
+                                      })
+                                    : null,
+                            ],
+                        })
+                    )
                 },
             ],
             56357,

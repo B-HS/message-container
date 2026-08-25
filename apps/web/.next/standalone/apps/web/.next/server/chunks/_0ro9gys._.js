@@ -45,7 +45,7 @@ module.exports = [
                 'ZodEmail',
                 () => oN,
                 'ZodEmoji',
-                () => oK,
+                () => oW,
                 'ZodEnum',
                 () => sd,
                 'ZodExactOptional',
@@ -103,7 +103,7 @@ module.exports = [
                 'ZodPromise',
                 () => sX,
                 'ZodReadonly',
-                () => sW,
+                () => sK,
                 'ZodRecord',
                 () => si,
                 'ZodSet',
@@ -137,7 +137,7 @@ module.exports = [
                 'ZodUnknown',
                 () => uJ,
                 'ZodVoid',
-                () => uK,
+                () => uW,
                 'ZodXID',
                 () => o4,
                 'ZodXor',
@@ -209,7 +209,7 @@ module.exports = [
                 'hostname',
                 () => uv,
                 'httpUrl',
-                () => oW,
+                () => oK,
                 'instanceof',
                 () => s7,
                 'int',
@@ -255,7 +255,7 @@ module.exports = [
                 'nativeEnum',
                 () => sm,
                 'never',
-                () => uW,
+                () => uK,
                 'nonoptional',
                 () => sj,
                 'null',
@@ -281,7 +281,7 @@ module.exports = [
                 'promise',
                 () => sH,
                 'readonly',
-                () => sK,
+                () => sW,
                 'record',
                 () => sn,
                 'refine',
@@ -583,10 +583,10 @@ module.exports = [
                 { inst: r, continue: a, input: o, ...u } = e
             return (u.path ?? (u.path = []), (u.message = n), t?.reportInput && (u.input = o), u)
         }
-        function W(e) {
+        function K(e) {
             return e instanceof Set ? 'set' : e instanceof Map ? 'map' : e instanceof File ? 'file' : 'unknown'
         }
-        function K(e) {
+        function W(e) {
             return Array.isArray(e) ? 'array' : 'string' == typeof e ? 'string' : 'unknown'
         }
         function B(e) {
@@ -849,7 +849,7 @@ module.exports = [
                 m,
                 'getLengthableOrigin',
                 0,
-                K,
+                W,
                 'getParsedType',
                 0,
                 (e) => {
@@ -884,7 +884,7 @@ module.exports = [
                 },
                 'getSizableOrigin',
                 0,
-                W,
+                K,
                 'hexToUint8Array',
                 0,
                 function (e) {
@@ -1383,8 +1383,8 @@ module.exports = [
         function eM() {
             return RegExp('^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$', 'u')
         }
-        let eW = /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])$/,
-            eK =
+        let eK = /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])$/,
+            eW =
                 /^(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))$/,
             eB = (e) => {
                 let t = D(e ?? ':')
@@ -1524,10 +1524,10 @@ module.exports = [
                 e3,
                 'ipv4',
                 0,
-                eW,
+                eK,
                 'ipv6',
                 0,
-                eK,
+                eW,
                 'ksuid',
                 0,
                 eN,
@@ -1785,7 +1785,7 @@ module.exports = [
                     (e._zod.check = (i) => {
                         let n = i.value
                         n.size <= t.maximum ||
-                            i.issues.push({ origin: W(n), code: 'too_big', maximum: t.maximum, inclusive: !0, input: n, inst: e, continue: !t.abort })
+                            i.issues.push({ origin: K(n), code: 'too_big', maximum: t.maximum, inclusive: !0, input: n, inst: e, continue: !t.abort })
                     }))
             }),
             tk = o('$ZodCheckMinSize', (e, t) => {
@@ -1804,7 +1804,7 @@ module.exports = [
                         let n = i.value
                         n.size >= t.minimum ||
                             i.issues.push({
-                                origin: W(n),
+                                origin: K(n),
                                 code: 'too_small',
                                 minimum: t.minimum,
                                 inclusive: !0,
@@ -1832,7 +1832,7 @@ module.exports = [
                         if (r === t.size) return
                         let a = r > t.size
                         i.issues.push({
-                            origin: W(n),
+                            origin: K(n),
                             ...(a ? { code: 'too_big', maximum: t.size } : { code: 'too_small', minimum: t.size }),
                             inclusive: !0,
                             exact: !0,
@@ -1857,7 +1857,7 @@ module.exports = [
                     (e._zod.check = (i) => {
                         let n = i.value
                         if (n.length <= t.maximum) return
-                        let r = K(n)
+                        let r = W(n)
                         i.issues.push({ origin: r, code: 'too_big', maximum: t.maximum, inclusive: !0, input: n, inst: e, continue: !t.abort })
                     }))
             }),
@@ -1876,7 +1876,7 @@ module.exports = [
                     (e._zod.check = (i) => {
                         let n = i.value
                         if (n.length >= t.minimum) return
-                        let r = K(n)
+                        let r = W(n)
                         i.issues.push({ origin: r, code: 'too_small', minimum: t.minimum, inclusive: !0, input: n, inst: e, continue: !t.abort })
                     }))
             }),
@@ -1896,7 +1896,7 @@ module.exports = [
                         let n = i.value,
                             r = n.length
                         if (r === t.length) return
-                        let a = K(n),
+                        let a = W(n),
                             o = r > t.length
                         i.issues.push({
                             origin: a,
@@ -2223,10 +2223,10 @@ module.exports = [
             tM = o('$ZodStringFormat', (e, t) => {
                 ;(tZ.init(e, t), tF.init(e, t))
             }),
-            tW = o('$ZodGUID', (e, t) => {
+            tK = o('$ZodGUID', (e, t) => {
                 ;(t.pattern ?? (t.pattern = eT), tM.init(e, t))
             }),
-            tK = o('$ZodUUID', (e, t) => {
+            tW = o('$ZodUUID', (e, t) => {
                 if (t.version) {
                     let e = { v1: 1, v2: 2, v3: 3, v4: 4, v5: 5, v6: 6, v7: 7, v8: 8 }[t.version]
                     if (void 0 === e) throw Error(`Invalid UUID version: "${t.version}"`)
@@ -2317,10 +2317,10 @@ module.exports = [
                 ;(t.pattern ?? (t.pattern = eE), tM.init(e, t))
             }),
             t9 = o('$ZodIPv4', (e, t) => {
-                ;(t.pattern ?? (t.pattern = eW), tM.init(e, t), (e._zod.bag.format = 'ipv4'))
+                ;(t.pattern ?? (t.pattern = eK), tM.init(e, t), (e._zod.bag.format = 'ipv4'))
             }),
             t3 = o('$ZodIPv6', (e, t) => {
-                ;(t.pattern ?? (t.pattern = eK),
+                ;(t.pattern ?? (t.pattern = eW),
                     tM.init(e, t),
                     (e._zod.bag.format = 'ipv6'),
                     (e._zod.check = (i) => {
@@ -3050,7 +3050,7 @@ module.exports = [
                           })),
                 i.value.set(e.value, t.value))
         }
-        let iW = o('$ZodSet', (e, t) => {
+        let iK = o('$ZodSet', (e, t) => {
             ;(tJ.init(e, t),
                 (e._zod.parse = (i, n) => {
                     let r = i.value
@@ -3058,12 +3058,12 @@ module.exports = [
                     let a = []
                     for (let e of ((i.value = new Set()), r)) {
                         let r = t.valueType._zod.run({ value: e, issues: [] }, n)
-                        r instanceof Promise ? a.push(r.then((e) => iK(e, i))) : iK(r, i)
+                        r instanceof Promise ? a.push(r.then((e) => iW(e, i))) : iW(r, i)
                     }
                     return a.length ? Promise.all(a).then(() => i) : i
                 }))
         })
-        function iK(e, t) {
+        function iW(e, t) {
             ;(e.issues.length && t.issues.push(...e.issues), t.value.add(e.value))
         }
         let iB = o('$ZodEnum', (e, t) => {
@@ -3478,7 +3478,7 @@ module.exports = [
                 nu,
                 '$ZodGUID',
                 0,
-                tW,
+                tK,
                 '$ZodIPv4',
                 0,
                 t9,
@@ -3571,7 +3571,7 @@ module.exports = [
                 iJ,
                 '$ZodSet',
                 0,
-                iW,
+                iK,
                 '$ZodString',
                 0,
                 tF,
@@ -3604,7 +3604,7 @@ module.exports = [
                 tG,
                 '$ZodUUID',
                 0,
-                tK,
+                tW,
                 '$ZodUndefined',
                 0,
                 ig,
@@ -3715,7 +3715,7 @@ module.exports = [
                     nu,
                     '$ZodGUID',
                     0,
-                    tW,
+                    tK,
                     '$ZodIPv4',
                     0,
                     t9,
@@ -3808,7 +3808,7 @@ module.exports = [
                     iJ,
                     '$ZodSet',
                     0,
-                    iW,
+                    iK,
                     '$ZodString',
                     0,
                     tF,
@@ -3841,7 +3841,7 @@ module.exports = [
                     tG,
                     '$ZodUUID',
                     0,
-                    tK,
+                    tW,
                     '$ZodUndefined',
                     0,
                     ig,
@@ -8648,10 +8648,10 @@ module.exports = [
         function nM(e, t) {
             return new e({ type: 'string', format: 'ksuid', check: 'string_format', abort: !1, ...P(t) })
         }
-        function nW(e, t) {
+        function nK(e, t) {
             return new e({ type: 'string', format: 'ipv4', check: 'string_format', abort: !1, ...P(t) })
         }
-        function nK(e, t) {
+        function nW(e, t) {
             return new e({ type: 'string', format: 'ipv6', check: 'string_format', abort: !1, ...P(t) })
         }
         function nB(e, t) {
@@ -8839,10 +8839,10 @@ module.exports = [
         function rM() {
             return rL((e) => e.toLowerCase())
         }
-        function rW() {
+        function rK() {
             return rL((e) => e.toUpperCase())
         }
-        function rK() {
+        function rW() {
             return rL((e) => I(e))
         }
         function rB(e, t, i) {
@@ -9368,10 +9368,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
                 rX,
                 '_ipv4',
                 0,
-                nW,
+                nK,
                 '_ipv6',
                 0,
-                nK,
+                nW,
                 '_isoDate',
                 0,
                 n4,
@@ -9512,7 +9512,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
                 rZ,
                 '_slugify',
                 0,
-                rK,
+                rW,
                 '_startsWith',
                 0,
                 rT,
@@ -9542,7 +9542,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
                 rM,
                 '_toUpperCase',
                 0,
-                rW,
+                rK,
                 '_transform',
                 0,
                 r9,
@@ -9765,10 +9765,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
             aM = (e, t, i, n) => {
                 if ('throw' === t.unrepresentable) throw Error('Map cannot be represented in JSON Schema')
             },
-            aW = (e, t, i, n) => {
+            aK = (e, t, i, n) => {
                 if ('throw' === t.unrepresentable) throw Error('Set cannot be represented in JSON Schema')
             },
-            aK = (e, t, i, n) => {
+            aW = (e, t, i, n) => {
                 let r = e._zod.def,
                     { minimum: a, maximum: o } = e._zod.bag
                 ;('number' == typeof a && (i.minItems = a),
@@ -9917,8 +9917,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
                 function: aJ,
                 transform: aF,
                 map: aM,
-                set: aW,
-                array: aK,
+                set: aK,
+                array: aW,
                 object: aB,
                 union: aG,
                 intersection: aV,
@@ -10109,7 +10109,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
                 nu,
                 '$ZodGUID',
                 0,
-                tW,
+                tK,
                 '$ZodIPv4',
                 0,
                 t9,
@@ -10208,7 +10208,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
                 nS,
                 '$ZodSet',
                 0,
-                iW,
+                iK,
                 '$ZodString',
                 0,
                 tF,
@@ -10241,7 +10241,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
                 tG,
                 '$ZodUUID',
                 0,
-                tK,
+                tW,
                 '$ZodUndefined',
                 0,
                 ig,
@@ -10462,10 +10462,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
                 rX,
                 '_ipv4',
                 0,
-                nW,
+                nK,
                 '_ipv6',
                 0,
-                nK,
+                nW,
                 '_isoDate',
                 0,
                 n4,
@@ -10630,7 +10630,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
                 rZ,
                 '_slugify',
                 0,
-                rK,
+                rW,
                 '_startsWith',
                 0,
                 rT,
@@ -10660,7 +10660,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
                 rM,
                 '_toUpperCase',
                 0,
-                rW,
+                rK,
                 '_transform',
                 0,
                 r9,
@@ -11052,7 +11052,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
                             return sC(this, e)
                         },
                         readonly() {
-                            return sK(this)
+                            return sW(this)
                         },
                         describe(e) {
                             let t = this.clone()
@@ -11124,10 +11124,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
                             return this.check(rM())
                         },
                         toUpperCase() {
-                            return this.check(rW())
+                            return this.check(rK())
                         },
                         slugify() {
-                            return this.check(rK())
+                            return this.check(rW())
                         },
                     }))
             }),
@@ -11137,7 +11137,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
                     (e.email = (t) => e.check(nO(oN, t))),
                     (e.url = (t) => e.check(nT(oF, t))),
                     (e.jwt = (t) => e.check(nY(uc, t))),
-                    (e.emoji = (t) => e.check(nA(oK, t))),
+                    (e.emoji = (t) => e.check(nA(oW, t))),
                     (e.guid = (t) => e.check(nj(oE, t))),
                     (e.uuid = (t) => e.check(nD(oA, t))),
                     (e.uuidv4 = (t) => e.check(nN(oA, t))),
@@ -11152,8 +11152,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
                     (e.base64url = (t) => e.check(nX(uu, t))),
                     (e.xid = (t) => e.check(nF(o4, t))),
                     (e.ksuid = (t) => e.check(nM(o1, t))),
-                    (e.ipv4 = (t) => e.check(nW(o9, t))),
-                    (e.ipv6 = (t) => e.check(nK(o8, t))),
+                    (e.ipv4 = (t) => e.check(nK(o9, t))),
+                    (e.ipv6 = (t) => e.check(nW(o8, t))),
                     (e.cidrv4 = (t) => e.check(nG(ut, t))),
                     (e.cidrv6 = (t) => e.check(nV(un, t))),
                     (e.e164 = (t) => e.check(nH(ul, t))),
@@ -11175,13 +11175,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
             return nO(oN, e)
         }
         let oE = o('ZodGUID', (e, t) => {
-            ;(tW.init(e, t), oD.init(e, t))
+            ;(tK.init(e, t), oD.init(e, t))
         })
         function oT(e) {
             return nj(oE, e)
         }
         let oA = o('ZodUUID', (e, t) => {
-            ;(tK.init(e, t), oD.init(e, t))
+            ;(tW.init(e, t), oD.init(e, t))
         })
         function oR(e) {
             return nD(oA, e)
@@ -11201,14 +11201,14 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
         function oM(e) {
             return nT(oF, e)
         }
-        function oW(e) {
+        function oK(e) {
             return nT(oF, { protocol: ot.httpProtocol, hostname: ot.domain, ...oi.normalizeParams(e) })
         }
-        let oK = o('ZodEmoji', (e, t) => {
+        let oW = o('ZodEmoji', (e, t) => {
             ;(tV.init(e, t), oD.init(e, t))
         })
         function oB(e) {
-            return nA(oK, e)
+            return nA(oW, e)
         }
         let oG = o('ZodNanoID', (e, t) => {
             ;(tq.init(e, t), oD.init(e, t))
@@ -11250,7 +11250,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
             ;(t9.init(e, t), oD.init(e, t))
         })
         function o3(e) {
-            return nW(o9, e)
+            return nK(o9, e)
         }
         let o7 = o('ZodMAC', (e, t) => {
             ;(t7.init(e, t), oD.init(e, t))
@@ -11262,7 +11262,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
             ;(t3.init(e, t), oD.init(e, t))
         })
         function ue(e) {
-            return nK(o8, e)
+            return nW(o8, e)
         }
         let ut = o('ZodCIDRv4', (e, t) => {
             ;(t5.init(e, t), oD.init(e, t))
@@ -11469,14 +11469,14 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
         let uM = o('ZodNever', (e, t) => {
             ;(iy.init(e, t), oZ.init(e, t), (e._zod.processJSONSchema = (t, i, n) => aO(e, t, i, n)))
         })
-        function uW(e) {
+        function uK(e) {
             return rm(uM, e)
         }
-        let uK = o('ZodVoid', (e, t) => {
+        let uW = o('ZodVoid', (e, t) => {
             ;(ib.init(e, t), oZ.init(e, t), (e._zod.processJSONSchema = (t, i, n) => aU(e, t, i, n)))
         })
         function uB(e) {
-            return rf(uK, e)
+            return rf(uW, e)
         }
         let uG = o('ZodDate', (e, t) => {
             ;(ix.init(e, t),
@@ -11493,7 +11493,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
         let uq = o('ZodArray', (e, t) => {
             ;(iI.init(e, t),
                 oZ.init(e, t),
-                (e._zod.processJSONSchema = (t, i, n) => aK(e, t, i, n)),
+                (e._zod.processJSONSchema = (t, i, n) => aW(e, t, i, n)),
                 (e.element = t.element),
                 oz(e, 'ZodArray', {
                     min(e, t) {
@@ -11538,7 +11538,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
                         return this.clone({ ...this._zod.def, catchall: uF() })
                     },
                     strict() {
-                        return this.clone({ ...this._zod.def, catchall: uW() })
+                        return this.clone({ ...this._zod.def, catchall: uK() })
                     },
                     strip() {
                         return this.clone({ ...this._zod.def, catchall: void 0 })
@@ -11570,7 +11570,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
             return new uY({ type: 'object', shape: e ?? {}, ...oi.normalizeParams(t) })
         }
         function u0(e, t) {
-            return new uY({ type: 'object', shape: e, catchall: uW(), ...oi.normalizeParams(t) })
+            return new uY({ type: 'object', shape: e, catchall: uK(), ...oi.normalizeParams(t) })
         }
         function u4(e, t) {
             return new uY({ type: 'object', shape: e, catchall: uF(), ...oi.normalizeParams(t) })
@@ -11646,9 +11646,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
             return new so({ type: 'map', keyType: e, valueType: t, ...oi.normalizeParams(i) })
         }
         let ss = o('ZodSet', (e, t) => {
-            ;(iW.init(e, t),
+            ;(iK.init(e, t),
                 oZ.init(e, t),
-                (e._zod.processJSONSchema = (t, i, n) => aW(e, t, i, n)),
+                (e._zod.processJSONSchema = (t, i, n) => aK(e, t, i, n)),
                 (e.min = (...t) => e.check(rz(...t))),
                 (e.nonempty = (t) => e.check(rz(1, t))),
                 (e.max = (...t) => e.check(rw(...t))),
@@ -11829,11 +11829,11 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
         let sM = o('ZodPreprocess', (e, t) => {
                 ;(sR.init(e, t), nn.init(e, t))
             }),
-            sW = o('ZodReadonly', (e, t) => {
+            sK = o('ZodReadonly', (e, t) => {
                 ;(nr.init(e, t), oZ.init(e, t), (e._zod.processJSONSchema = (t, i, n) => a1(e, t, i, n)), (e.unwrap = () => e._zod.def.innerType))
             })
-        function sK(e) {
-            return new sW({ type: 'readonly', innerType: e })
+        function sW(e) {
+            return new sK({ type: 'readonly', innerType: e })
         }
         let sB = o('ZodTemplateLiteral', (e, t) => {
             ;(no.init(e, t), oZ.init(e, t), (e._zod.processJSONSchema = (t, i, n) => aA(e, t, i, n)))
@@ -11972,7 +11972,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
                     rZ,
                     'slugify',
                     0,
-                    rK,
+                    rW,
                     'startsWith',
                     0,
                     rT,
@@ -11981,7 +11981,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
                     rM,
                     'toUpperCase',
                     0,
-                    rW,
+                    rK,
                     'trim',
                     0,
                     rF,
@@ -12193,7 +12193,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
                 oN,
                 'ZodEmoji',
                 0,
-                oK,
+                oW,
                 'ZodEnum',
                 0,
                 sd,
@@ -12301,7 +12301,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
                 sX,
                 'ZodReadonly',
                 0,
-                sW,
+                sK,
                 'ZodRealError',
                 0,
                 of,
@@ -12355,7 +12355,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
                 uJ,
                 'ZodVoid',
                 0,
-                uK,
+                uW,
                 'ZodXID',
                 0,
                 o4,
@@ -12780,7 +12780,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
                 uv,
                 'httpUrl',
                 0,
-                oW,
+                oK,
                 'includes',
                 0,
                 rE,
@@ -12891,7 +12891,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
                 rx,
                 'never',
                 0,
-                uW,
+                uK,
                 'nonnegative',
                 0,
                 rI,
@@ -12957,7 +12957,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
                 rR,
                 'readonly',
                 0,
-                sK,
+                sW,
                 'record',
                 0,
                 sn,
@@ -13001,7 +13001,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
                 rZ,
                 'slugify',
                 0,
-                rK,
+                rW,
                 'startsWith',
                 0,
                 rT,
@@ -13037,7 +13037,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
                 rM,
                 'toUpperCase',
                 0,
-                rW,
+                rK,
                 'transform',
                 0,
                 s$,
@@ -13102,37 +13102,40 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
         )
         var ld = e.i(2547),
             ld = ld,
-            lc = e.i(68348)
-        let lm = process.env.MESSAGE_API_URL ?? 'http://localhost:3000',
-            lf = ld.object({ password: ld.string().min(8) }),
-            lp = ld.object({ success: ld.literal(!0), data: ld.object({ passwordSet: ld.boolean() }) }),
-            lv = ld.object({ success: ld.literal(!0), data: ld.object({ key: ld.string() }) }),
-            lg = ld.object({ success: ld.literal(!1), error: ld.object({ code: ld.string(), message: ld.string() }) }),
-            lh = async (e) => {
-                let t = lf.safeParse(await e.json().catch(() => null))
+            lc = e.i(68348),
+            lm = e.i(87682)
+        let lf = process.env.MESSAGE_API_URL ?? 'http://localhost:3000',
+            lp = ld.object({ password: ld.string().min(8) }),
+            lv = ld.object({ success: ld.literal(!0), data: ld.object({ passwordSet: ld.boolean() }) }),
+            lg = ld.object({ success: ld.literal(!0), data: ld.object({ key: ld.string() }) }),
+            lh = ld.object({ success: ld.literal(!1), error: ld.object({ code: ld.string(), message: ld.string() }) }),
+            l$ = () => Response.json({ success: !1, error: { code: 'FORBIDDEN', message: '허용되지 않은 출처입니다' } }, { status: 403 }),
+            l_ = async (e) => {
+                if (!(0, lm.isTrustedOrigin)(e)) return l$()
+                let t = lp.safeParse(await e.json().catch(() => null))
                 if (!t.success)
                     return Response.json(
                         { success: !1, error: { code: 'VALIDATION_ERROR', message: '패스워드는 최소 8자여야 합니다' } },
                         { status: 400 },
                     )
-                let i = await fetch(`${lm}/api/auth/status`, { cache: 'no-store' }),
-                    n = lp.safeParse(await i.json().catch(() => null))
+                let i = await fetch(`${lf}/api/auth/status`, { cache: 'no-store' }),
+                    n = lv.safeParse(await i.json().catch(() => null))
                 if (!n.success)
                     return Response.json(
                         { success: !1, error: { code: 'BACKEND_UNAVAILABLE', message: 'API 서버에 연결할 수 없습니다' } },
                         { status: 502 },
                     )
                 let a = n.data.data.passwordSet ? 'login' : 'setup',
-                    o = await fetch(`${lm}/api/auth/${a}`, {
+                    o = await fetch(`${lf}/api/auth/${a}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ password: t.data.password, keyName: 'web' }),
                         cache: 'no-store',
                     }),
                     u = await o.json().catch(() => null),
-                    s = lv.safeParse(u)
+                    s = lg.safeParse(u)
                 if (!s.success) {
-                    let e = lg.safeParse(u)
+                    let e = lh.safeParse(u)
                     return e.success
                         ? Response.json(e.data, { status: o.status })
                         : Response.json(
@@ -13150,8 +13153,20 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
                     Response.json({ success: !0, data: { mode: a } })
                 )
             },
-            l$ = async () => ((await (0, r.cookies)()).delete(lc.API_KEY_COOKIE_NAME), Response.json({ success: !0, data: { loggedOut: !0 } }))
-        e.s(['DELETE', 0, l$, 'POST', 0, lh], 46441)
+            ly = async (e) => {
+                if (!(0, lm.isTrustedOrigin)(e)) return l$()
+                let t = await (0, r.cookies)(),
+                    i = t.get(lc.API_KEY_COOKIE_NAME)?.value
+                return (
+                    i &&
+                        (await fetch(`${lf}/api/auth/revoke`, { method: 'POST', headers: { Authorization: `Bearer ${i}` }, cache: 'no-store' }).catch(
+                            () => null,
+                        )),
+                    t.delete(lc.API_KEY_COOKIE_NAME),
+                    Response.json({ success: !0, data: { loggedOut: !0 } })
+                )
+            }
+        e.s(['DELETE', 0, ly, 'POST', 0, l_], 46441)
     },
     17113,
     (e) => {
@@ -13226,9 +13241,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
                 J = (0, a.getTracer)(),
                 F = J.getActiveScopeSpan(),
                 M = !!(null == Z ? void 0 : Z.isWrappedByNextServer),
-                W = !!(0, r.getRequestMeta)(e, 'minimalMode'),
-                K = (0, r.getRequestMeta)(e, 'incrementalCache') || (await $.getIncrementalCache(e, I, z, W))
-            ;(null == K || K.resetRequestCache(), (globalThis.__incrementalCache = K))
+                K = !!(0, r.getRequestMeta)(e, 'minimalMode'),
+                W = (0, r.getRequestMeta)(e, 'incrementalCache') || (await $.getIncrementalCache(e, I, z, K))
+            ;(null == W || W.resetRequestCache(), (globalThis.__incrementalCache = W))
             let B = {
                     params: k,
                     previewProps: z.preview,
@@ -13237,7 +13252,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
                         cacheComponents: !!I.cacheComponents,
                         validationLevel: I.experimental.instantInsights.validationLevel,
                         supportsDynamicResponse: R,
-                        incrementalCache: K,
+                        incrementalCache: W,
                         hmrRefreshHash: (0, r.getRequestMeta)(e, 'hmrRefreshHash'),
                         cacheLifeProfiles: I.cacheLife,
                         staticPageGenerationTimeout: I.staticPageGenerationTimeout,
@@ -13255,7 +13270,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
                 q = l.NextRequestAdapter.fromNodeNextRequest(G, (0, l.signalFromNodeResponse)(t)),
                 X = async ({ previousCacheEntry: i }) => {
                     try {
-                        if (!W && U && O && !i)
+                        if (!K && U && O && !i)
                             return ((t.statusCode = 404), t.setHeader('x-nextjs-cache', 'REVALIDATED'), t.end('This page could not be found'), null)
                         let r = await $.handle(q, B)
                         e.fetchMetrics = B.renderOpts.fetchMetrics
@@ -13316,7 +13331,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
                             revalidateOnlyGenerated: O,
                             responseGenerator: X,
                             waitUntil: n.waitUntil,
-                            isMinimalMode: W,
+                            isMinimalMode: K,
                         })
                         if (!E) return
                         if ((null == r || null == (u = r.value) ? void 0 : u.kind) !== h.CachedRouteKind.APP_ROUTE)
@@ -13325,10 +13340,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
                                 '__NEXT_ERROR_CODE',
                                 { value: 'E701', enumerable: !1, configurable: !0 },
                             )
-                        ;(W || t.setHeader('x-nextjs-cache', U ? 'REVALIDATED' : r.isMiss ? 'MISS' : r.isStale ? 'STALE' : 'HIT'),
+                        ;(K || t.setHeader('x-nextjs-cache', U ? 'REVALIDATED' : r.isMiss ? 'MISS' : r.isStale ? 'STALE' : 'HIT'),
                             w && t.setHeader('Cache-Control', 'private, no-cache, no-store, max-age=0, must-revalidate'))
                         let a = (0, f.fromNodeOutgoingHttpHeaders)(r.value.headers)
-                        ;((W && E) || a.delete(v.NEXT_CACHE_TAGS_HEADER),
+                        ;((K && E) || a.delete(v.NEXT_CACHE_TAGS_HEADER),
                             !r.cacheControl ||
                                 t.getHeader('Cache-Control') ||
                                 a.get('Cache-Control') ||

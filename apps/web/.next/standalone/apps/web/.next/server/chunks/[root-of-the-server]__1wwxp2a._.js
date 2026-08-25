@@ -49,31 +49,34 @@ module.exports = [
     (e) => {
         'use strict'
         var t = e.i(21806),
-            r = e.i(68348)
-        let a = process.env.MESSAGE_API_URL ?? 'http://localhost:3000',
-            n = ['content-type', 'content-disposition', 'content-length'],
-            s = async (e, s) => {
-                let o = (await (0, t.cookies)()).get(r.API_KEY_COOKIE_NAME)?.value
-                if (!o) return Response.json({ success: !1, error: { code: 'UNAUTHORIZED', message: '로그인이 필요합니다' } }, { status: 401 })
-                let i = new URL(e.url),
-                    l = i.pathname.replace(/^\/api\/be/, '/api'),
-                    d = await fetch(`${a}${l}${i.search}`, {
-                        method: s,
+            r = e.i(68348),
+            a = e.i(87682)
+        let n = process.env.MESSAGE_API_URL ?? 'http://localhost:3000',
+            s = ['content-type', 'content-disposition', 'content-length'],
+            o = async (e, o) => {
+                if ('POST' === o && !(0, a.isTrustedOrigin)(e))
+                    return Response.json({ success: !1, error: { code: 'FORBIDDEN', message: '허용되지 않은 출처입니다' } }, { status: 403 })
+                let i = (await (0, t.cookies)()).get(r.API_KEY_COOKIE_NAME)?.value
+                if (!i) return Response.json({ success: !1, error: { code: 'UNAUTHORIZED', message: '로그인이 필요합니다' } }, { status: 401 })
+                let l = new URL(e.url),
+                    d = l.pathname.replace(/^\/api\/be/, '/api'),
+                    u = await fetch(`${n}${d}${l.search}`, {
+                        method: o,
                         cache: 'no-store',
                         headers: {
-                            Authorization: `Bearer ${o}`,
-                            ...('POST' === s ? { 'Content-Type': e.headers.get('Content-Type') ?? 'application/json' } : {}),
+                            Authorization: `Bearer ${i}`,
+                            ...('POST' === o ? { 'Content-Type': e.headers.get('Content-Type') ?? 'application/json' } : {}),
                         },
-                        body: 'POST' === s ? await e.arrayBuffer() : void 0,
+                        body: 'POST' === o ? await e.arrayBuffer() : void 0,
                     }),
                     p = new Headers()
-                for (let e of n) {
-                    let t = d.headers.get(e)
+                for (let e of s) {
+                    let t = u.headers.get(e)
                     t && p.set(e, t)
                 }
-                return new Response(d.body, { status: d.status, headers: p })
+                return new Response(u.body, { status: u.status, headers: p })
             }
-        e.s(['GET', 0, (e) => s(e, 'GET'), 'POST', 0, (e) => s(e, 'POST')])
+        e.s(['GET', 0, (e) => o(e, 'GET'), 'POST', 0, (e) => o(e, 'POST')])
     },
     41198,
     (e) => {
@@ -87,13 +90,13 @@ module.exports = [
             i = e.i(13212),
             l = e.i(34556),
             d = e.i(43115),
-            p = e.i(15724),
-            u = e.i(64681),
+            u = e.i(15724),
+            p = e.i(64681),
             c = e.i(45635),
             h = e.i(79682),
             x = e.i(28408),
-            v = e.i(17802),
-            R = e.i(93695)
+            R = e.i(17802),
+            v = e.i(93695)
         e.i(60166)
         var g = e.i(88044)
         let m = new t.AppRouteRouteModule({
@@ -111,16 +114,16 @@ module.exports = [
                 userland: () => e.r(46388),
                 ...{},
             }),
-            { workAsyncStorage: f, workUnitAsyncStorage: w, serverHooks: E } = m
+            { workAsyncStorage: f, workUnitAsyncStorage: E, serverHooks: w } = m
         async function y(e, t, a) {
             ;(a.requestMeta && (0, n.setRequestMeta)(e, a.requestMeta),
                 m.isDev && (0, n.addRequestMeta)(e, 'devRequestTimingInternalsEnd', process.hrtime.bigint()))
             let f = '/api/be/[...path]/route'
             f = f.replace(/\/index$/, '') || '/'
-            let w = await m.prepare(e, t, { srcPage: f, multiZoneDraftMode: !1 })
-            if (!w) return ((t.statusCode = 400), t.end('Bad Request'), null == a.waitUntil || a.waitUntil.call(a, Promise.resolve()), null)
+            let E = await m.prepare(e, t, { srcPage: f, multiZoneDraftMode: !1 })
+            if (!E) return ((t.statusCode = 400), t.end('Bad Request'), null == a.waitUntil || a.waitUntil.call(a, Promise.resolve()), null)
             let {
-                    buildId: E,
+                    buildId: w,
                     deploymentId: y,
                     params: C,
                     nextConfig: T,
@@ -128,34 +131,34 @@ module.exports = [
                     isDraftMode: A,
                     prerenderManifest: P,
                     routerServerContext: S,
-                    isOnDemandRevalidate: q,
-                    revalidateOnlyGenerated: O,
-                    resolvedPathname: _,
-                    clientReferenceManifest: N,
+                    isOnDemandRevalidate: O,
+                    revalidateOnlyGenerated: q,
+                    resolvedPathname: N,
+                    clientReferenceManifest: _,
                     serverActionsManifest: j,
-                } = w,
+                } = E,
                 k = (0, i.normalizeAppPath)(f),
-                H = !!(P.dynamicRoutes[k] || P.routes[_]),
-                I = async () => ((null == S ? void 0 : S.render404) ? await S.render404(e, t, b, !1) : t.end('This page could not be found'), null)
-            if (H && !A) {
-                let e = !!P.routes[_],
+                I = !!(P.dynamicRoutes[k] || P.routes[N]),
+                H = async () => ((null == S ? void 0 : S.render404) ? await S.render404(e, t, b, !1) : t.end('This page could not be found'), null)
+            if (I && !A) {
+                let e = !!P.routes[N],
                     t = P.dynamicRoutes[k]
                 if (t && !1 === t.fallback && !e) {
-                    if (T.adapterPath) return await I()
-                    throw new R.NoFallbackError()
+                    if (T.adapterPath) return await H()
+                    throw new v.NoFallbackError()
                 }
             }
             let U = null
-            !H || m.isDev || A || (U = '/index' === (U = _) ? '/' : U)
-            let M = !0 === m.isDev || !H,
-                D = H && !M
-            j && N && (0, o.setManifestsSingleton)({ page: f, clientReferenceManifest: N, serverActionsManifest: j })
+            !I || m.isDev || A || (U = '/index' === (U = N) ? '/' : U)
+            let M = !0 === m.isDev || !I,
+                D = I && !M
+            j && _ && (0, o.setManifestsSingleton)({ page: f, clientReferenceManifest: _, serverActionsManifest: j })
             let $ = e.method || 'GET',
                 K = (0, s.getTracer)(),
-                L = K.getActiveScopeSpan(),
-                B = !!(null == S ? void 0 : S.isWrappedByNextServer),
-                F = !!(0, n.getRequestMeta)(e, 'minimalMode'),
-                G = (0, n.getRequestMeta)(e, 'incrementalCache') || (await m.getIncrementalCache(e, T, P, F))
+                B = K.getActiveScopeSpan(),
+                F = !!(null == S ? void 0 : S.isWrappedByNextServer),
+                L = !!(0, n.getRequestMeta)(e, 'minimalMode'),
+                G = (0, n.getRequestMeta)(e, 'incrementalCache') || (await m.getIncrementalCache(e, T, P, L))
             ;(null == G || G.resetRequestCache(), (globalThis.__incrementalCache = G))
             let V = {
                     params: C,
@@ -176,31 +179,31 @@ module.exports = [
                         onAfterTaskError: void 0,
                         onInstrumentationRequestError: (t, r, a, n) => m.onRequestError(e, t, a, n, S),
                     },
-                    sharedContext: { buildId: E, deploymentId: y },
+                    sharedContext: { buildId: w, deploymentId: y },
                 },
                 X = new l.NodeNextRequest(e),
                 z = new l.NodeNextResponse(t),
                 W = d.NextRequestAdapter.fromNodeNextRequest(X, (0, d.signalFromNodeResponse)(t)),
                 Z = async ({ previousCacheEntry: r }) => {
                     try {
-                        if (!F && q && O && !r)
+                        if (!L && O && q && !r)
                             return ((t.statusCode = 404), t.setHeader('x-nextjs-cache', 'REVALIDATED'), t.end('This page could not be found'), null)
                         let n = await m.handle(W, V)
                         e.fetchMetrics = V.renderOpts.fetchMetrics
                         let s = V.renderOpts.pendingWaitUntil
                         s && a.waitUntil && (a.waitUntil(s), (s = void 0))
                         let o = V.renderOpts.collectedTags
-                        if (!H) return (await (0, c.sendResponse)(X, z, n, s), null)
+                        if (!I) return (await (0, c.sendResponse)(X, z, n, s), null)
                         {
                             let e = await n.blob(),
                                 t = (0, h.toNodeOutgoingHttpHeaders)(n.headers)
-                            ;(o && (t[v.NEXT_CACHE_TAGS_HEADER] = o), !t['content-type'] && e.type && (t['content-type'] = e.type))
+                            ;(o && (t[R.NEXT_CACHE_TAGS_HEADER] = o), !t['content-type'] && e.type && (t['content-type'] = e.type))
                             let r =
                                     void 0 !== V.renderOpts.collectedRevalidate &&
-                                    !(V.renderOpts.collectedRevalidate >= v.INFINITE_CACHE) &&
+                                    !(V.renderOpts.collectedRevalidate >= R.INFINITE_CACHE) &&
                                     V.renderOpts.collectedRevalidate,
                                 a =
-                                    void 0 === V.renderOpts.collectedExpire || V.renderOpts.collectedExpire >= v.INFINITE_CACHE
+                                    void 0 === V.renderOpts.collectedExpire || V.renderOpts.collectedExpire >= R.INFINITE_CACHE
                                         ? !1 !== r && r > 0
                                             ? T.expireTime
                                             : void 0
@@ -220,7 +223,7 @@ module.exports = [
                                         routerKind: 'App Router',
                                         routePath: f,
                                         routeType: 'route',
-                                        revalidateReason: (0, u.getRevalidateReason)({ isStaticGeneration: D, isOnDemandRevalidate: q }),
+                                        revalidateReason: (0, p.getRevalidateReason)({ isStaticGeneration: D, isOnDemandRevalidate: O }),
                                     },
                                     !1,
                                     S,
@@ -240,23 +243,23 @@ module.exports = [
                             isFallback: !1,
                             prerenderManifest: P,
                             isRoutePPREnabled: !1,
-                            isOnDemandRevalidate: q,
-                            revalidateOnlyGenerated: O,
+                            isOnDemandRevalidate: O,
+                            revalidateOnlyGenerated: q,
                             responseGenerator: Z,
                             waitUntil: a.waitUntil,
-                            isMinimalMode: F,
+                            isMinimalMode: L,
                         })
-                        if (!H) return
+                        if (!I) return
                         if ((null == n || null == (i = n.value) ? void 0 : i.kind) !== g.CachedRouteKind.APP_ROUTE)
                             throw Object.defineProperty(
                                 Error(`Invariant: app-route received invalid cache entry ${null == n || null == (l = n.value) ? void 0 : l.kind}`),
                                 '__NEXT_ERROR_CODE',
                                 { value: 'E701', enumerable: !1, configurable: !0 },
                             )
-                        ;(F || t.setHeader('x-nextjs-cache', q ? 'REVALIDATED' : n.isMiss ? 'MISS' : n.isStale ? 'STALE' : 'HIT'),
+                        ;(L || t.setHeader('x-nextjs-cache', O ? 'REVALIDATED' : n.isMiss ? 'MISS' : n.isStale ? 'STALE' : 'HIT'),
                             A && t.setHeader('Cache-Control', 'private, no-cache, no-store, max-age=0, must-revalidate'))
                         let s = (0, h.fromNodeOutgoingHttpHeaders)(n.value.headers)
-                        ;((F && H) || s.delete(v.NEXT_CACHE_TAGS_HEADER),
+                        ;((L && I) || s.delete(R.NEXT_CACHE_TAGS_HEADER),
                             !n.cacheControl ||
                                 t.getHeader('Cache-Control') ||
                                 s.get('Cache-Control') ||
@@ -265,7 +268,7 @@ module.exports = [
                         return
                     } catch (t) {
                         if (
-                            (t instanceof R.NoFallbackError ||
+                            (t instanceof v.NoFallbackError ||
                                 (await m.onRequestError(
                                     e,
                                     t,
@@ -273,12 +276,12 @@ module.exports = [
                                         routerKind: 'App Router',
                                         routePath: k,
                                         routeType: 'route',
-                                        revalidateReason: (0, u.getRevalidateReason)({ isStaticGeneration: D, isOnDemandRevalidate: q }),
+                                        revalidateReason: (0, p.getRevalidateReason)({ isStaticGeneration: D, isOnDemandRevalidate: O }),
                                     },
                                     !1,
                                     S,
                                 )),
-                            H)
+                            I)
                         )
                             throw t
                         await (0, c.sendResponse)(X, z, new Response(null, { status: 500 }))
@@ -291,7 +294,7 @@ module.exports = [
                                 e && e >= 500 && (n.setStatus({ code: s.SpanStatusCode.ERROR }), n.setAttribute('error.type', e.toString())))
                             let r = K.getRootSpanAttributes()
                             if (!r) return
-                            if (r.get('next.span_type') !== p.BaseServerSpan.handleRequest)
+                            if (r.get('next.span_type') !== u.BaseServerSpan.handleRequest)
                                 return console.warn(
                                     `Unexpected root span type '${r.get('next.span_type')}'. Please report this Next.js issue https://github.com/vercel/next.js`,
                                 )
@@ -303,19 +306,19 @@ module.exports = [
                         })()
                     }
                 }
-            if (B && L) await Y(L, void 0)
+            if (F && B) await Y(B, void 0)
             else {
                 let t = K.getActiveScopeSpan()
                 await K.withPropagatedContext(
                     e.headers,
                     () =>
                         K.trace(
-                            p.BaseServerSpan.handleRequest,
+                            u.BaseServerSpan.handleRequest,
                             { spanName: `${$} ${f}`, kind: s.SpanKind.SERVER, attributes: { 'http.method': $, 'http.target': e.url } },
                             (e) => Y(e, t),
                         ),
                     void 0,
-                    !B,
+                    !F,
                 )
             }
         }
@@ -326,20 +329,20 @@ module.exports = [
             'patchFetch',
             0,
             function () {
-                return (0, a.patchFetch)({ workAsyncStorage: f, workUnitAsyncStorage: w })
+                return (0, a.patchFetch)({ workAsyncStorage: f, workUnitAsyncStorage: E })
             },
             'routeModule',
             0,
             m,
             'serverHooks',
             0,
-            E,
+            w,
             'workAsyncStorage',
             0,
             f,
             'workUnitAsyncStorage',
             0,
-            w,
+            E,
         ])
     },
 ]

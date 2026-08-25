@@ -158,7 +158,6 @@ module.exports = [
     55335,
     44958,
     45473,
-    35711,
     76846,
     83443,
     (a) => {
@@ -209,13 +208,7 @@ module.exports = [
             ],
             44958,
         )
-        class c extends Error {
-            code
-            status
-            constructor(a, b, c) {
-                ;(super(b), (this.code = a), (this.status = c), (this.name = 'ApiError'))
-            }
-        }
+        var c = a.i(27)
         let d = b.z.object({ success: b.z.literal(!1), error: b.z.object({ code: b.z.string(), message: b.z.string() }) }),
             e = async (b, c) => {
                 let { cookies: d } = await a.A(12723),
@@ -227,14 +220,13 @@ module.exports = [
                 let f = await e(a, b),
                     g = await f.json(),
                     h = d.safeParse(g)
-                if (h.success) throw new c(h.data.error.code, h.data.error.message, f.status)
-                if (!f.ok) throw new c(`HTTP_${f.status}`, f.statusText, f.status)
+                if (h.success) throw new c.ApiError(h.data.error.code, h.data.error.message, f.status)
+                if (!f.ok) throw new c.ApiError(`HTTP_${f.status}`, f.statusText, f.status)
                 return g
             }
         a.s(['apiFetch', 0, f], 45473)
-        var g = a.i(90329)
-        a.s(['PageRoot', 0, ({ children: a }) => (0, g.jsx)('div', { className: 'flex flex-col gap-px', children: a })], 35711)
-        var h = a.i(30583)
+        var g = a.i(90329),
+            h = a.i(30583)
         a.s(
             [
                 'PanelCard',

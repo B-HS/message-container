@@ -9,5 +9,6 @@
     "/_not-found/page": "app/_not-found/page.js",
     "/api/be/[...path]/route": "app/api/be/[...path]/route.js",
     "/api/session/route": "app/api/session/route.js",
+    "/icon.svg/route": "app/icon.svg/route.js",
     "/setup/page": "app/setup/page.js"
 }

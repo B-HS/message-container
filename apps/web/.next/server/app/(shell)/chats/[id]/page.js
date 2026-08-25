@@ -1,8 +1,8 @@
 var R = require('../../../../chunks/ssr/[turbopack]_runtime.js')('server/app/(shell)/chats/[id]/page.js')
-R.c('server/chunks/ssr/[root-of-the-server]__0lb_e2c._.js')
+R.c('server/chunks/ssr/[root-of-the-server]__0_geog5._.js')
 R.c('server/chunks/ssr/node_modules__bun_1t3rux9._.js')
-R.c('server/chunks/ssr/13z9_zod_v4_classic_external_0lirb1f.js')
 R.c('server/chunks/ssr/12-l_next_dist_1ael6k7._.js')
+R.c('server/chunks/ssr/13z9_zod_v4_classic_external_0lirb1f.js')
 R.c('server/chunks/ssr/[root-of-the-server]__094asrq._.js')
 R.c('server/chunks/ssr/[root-of-the-server]__188r8uu._.js')
 R.c('server/chunks/ssr/apps_web_app_0-fl2wl._.js')
@@ -13,9 +13,10 @@ R.c('server/chunks/ssr/12-l_next_dist_client_components_builtin_global-error_1ss
 R.c('server/chunks/ssr/_0q0681d._.js')
 R.c('server/chunks/ssr/12-l_next_dist_0l9o52o._.js')
 R.c('server/chunks/ssr/12-l_next_09a35l4._.js')
+R.c('server/chunks/ssr/apps_web_app_(shell)_error_tsx_0o7mv5o._.js')
 R.c('server/chunks/ssr/apps_web_1ro_qv9._.js')
 R.c('server/chunks/ssr/apps_web_shared_lib_utils_ts_0iinkme._.js')
 R.c('server/chunks/ssr/apps_web_app_(shell)_chats_[id]_loading_tsx_1advmy4._.js')
 R.c('server/chunks/ssr/apps_web__next-internal_server_app_(shell)_chats_[id]_page_actions_04id_ep.js')
-R.m(88786)
-module.exports = R.m(88786).exports
+R.m(33877)
+module.exports = R.m(33877).exports

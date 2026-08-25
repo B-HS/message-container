@@ -58,8 +58,8 @@ globalThis.__RSC_MANIFEST['/setup/page'] = {
             chunks: [
                 '/_next/static/chunks/02e79w8049o6q.js',
                 '/_next/static/chunks/3_apwxu53-qq6.js',
-                '/_next/static/chunks/0r0nqtvs8osnu.js',
-                '/_next/static/chunks/382u6kbj9q-za.js',
+                '/_next/static/chunks/25a_iedwv6sl6.js',
+                '/_next/static/chunks/2wq7k1mtqm1ds.js',
                 '/_next/static/chunks/2p0s7vz_cd6zk.js',
             ],
             async: false,
@@ -72,7 +72,7 @@ globalThis.__RSC_MANIFEST['/setup/page'] = {
                 name: '*',
                 chunks: [
                     'server/chunks/ssr/[root-of-the-server]__0c0blpb._.js',
-                    'server/chunks/ssr/_054o__4._.js',
+                    'server/chunks/ssr/_00mvdl5._.js',
                     'server/chunks/ssr/node_modules__bun_1fprycj._.js',
                     'server/chunks/ssr/12-l_next_dist_019jsoo._.js',
                 ],
@@ -85,7 +85,7 @@ globalThis.__RSC_MANIFEST['/setup/page'] = {
                 name: '*',
                 chunks: [
                     'server/chunks/ssr/[root-of-the-server]__0c0blpb._.js',
-                    'server/chunks/ssr/_054o__4._.js',
+                    'server/chunks/ssr/_00mvdl5._.js',
                     'server/chunks/ssr/node_modules__bun_1fprycj._.js',
                     'server/chunks/ssr/12-l_next_dist_019jsoo._.js',
                 ],
@@ -98,7 +98,7 @@ globalThis.__RSC_MANIFEST['/setup/page'] = {
                 name: '*',
                 chunks: [
                     'server/chunks/ssr/[root-of-the-server]__0c0blpb._.js',
-                    'server/chunks/ssr/_054o__4._.js',
+                    'server/chunks/ssr/_00mvdl5._.js',
                     'server/chunks/ssr/node_modules__bun_1fprycj._.js',
                     'server/chunks/ssr/12-l_next_dist_019jsoo._.js',
                 ],
@@ -111,7 +111,7 @@ globalThis.__RSC_MANIFEST['/setup/page'] = {
                 name: '*',
                 chunks: [
                     'server/chunks/ssr/[root-of-the-server]__0c0blpb._.js',
-                    'server/chunks/ssr/_054o__4._.js',
+                    'server/chunks/ssr/_00mvdl5._.js',
                     'server/chunks/ssr/node_modules__bun_1fprycj._.js',
                     'server/chunks/ssr/12-l_next_dist_019jsoo._.js',
                 ],
@@ -124,7 +124,7 @@ globalThis.__RSC_MANIFEST['/setup/page'] = {
                 name: '*',
                 chunks: [
                     'server/chunks/ssr/[root-of-the-server]__0c0blpb._.js',
-                    'server/chunks/ssr/_054o__4._.js',
+                    'server/chunks/ssr/_00mvdl5._.js',
                     'server/chunks/ssr/node_modules__bun_1fprycj._.js',
                     'server/chunks/ssr/12-l_next_dist_019jsoo._.js',
                 ],
@@ -137,7 +137,7 @@ globalThis.__RSC_MANIFEST['/setup/page'] = {
                 name: '*',
                 chunks: [
                     'server/chunks/ssr/[root-of-the-server]__0c0blpb._.js',
-                    'server/chunks/ssr/_054o__4._.js',
+                    'server/chunks/ssr/_00mvdl5._.js',
                     'server/chunks/ssr/node_modules__bun_1fprycj._.js',
                     'server/chunks/ssr/12-l_next_dist_019jsoo._.js',
                 ],
@@ -150,7 +150,7 @@ globalThis.__RSC_MANIFEST['/setup/page'] = {
                 name: '*',
                 chunks: [
                     'server/chunks/ssr/[root-of-the-server]__0c0blpb._.js',
-                    'server/chunks/ssr/_054o__4._.js',
+                    'server/chunks/ssr/_00mvdl5._.js',
                     'server/chunks/ssr/node_modules__bun_1fprycj._.js',
                     'server/chunks/ssr/12-l_next_dist_019jsoo._.js',
                 ],
@@ -163,7 +163,7 @@ globalThis.__RSC_MANIFEST['/setup/page'] = {
                 name: '*',
                 chunks: [
                     'server/chunks/ssr/[root-of-the-server]__0c0blpb._.js',
-                    'server/chunks/ssr/_054o__4._.js',
+                    'server/chunks/ssr/_00mvdl5._.js',
                     'server/chunks/ssr/node_modules__bun_1fprycj._.js',
                     'server/chunks/ssr/12-l_next_dist_019jsoo._.js',
                 ],
@@ -176,7 +176,7 @@ globalThis.__RSC_MANIFEST['/setup/page'] = {
                 name: '*',
                 chunks: [
                     'server/chunks/ssr/[root-of-the-server]__0c0blpb._.js',
-                    'server/chunks/ssr/_054o__4._.js',
+                    'server/chunks/ssr/_00mvdl5._.js',
                     'server/chunks/ssr/node_modules__bun_1fprycj._.js',
                     'server/chunks/ssr/12-l_next_dist_019jsoo._.js',
                     'server/chunks/ssr/node_modules__bun_0bg-14r._.js',
@@ -190,10 +190,10 @@ globalThis.__RSC_MANIFEST['/setup/page'] = {
                 name: '*',
                 chunks: [
                     'server/chunks/ssr/[root-of-the-server]__0c0blpb._.js',
-                    'server/chunks/ssr/_054o__4._.js',
+                    'server/chunks/ssr/_00mvdl5._.js',
                     'server/chunks/ssr/node_modules__bun_1fprycj._.js',
                     'server/chunks/ssr/12-l_next_dist_019jsoo._.js',
-                    'server/chunks/ssr/_0hvw2mc._.js',
+                    'server/chunks/ssr/_0tumqwu._.js',
                     'server/chunks/ssr/node_modules__bun_0_37dor._.js',
                     'server/chunks/ssr/13z9_zod_v4_classic_external_0pwcmzl.js',
                     'server/chunks/ssr/12-l_next_dist_17w4j8_._.js',
@@ -218,11 +218,11 @@ globalThis.__RSC_MANIFEST['/setup/page'] = {
     },
     edgeRscModuleMapping: {},
     entryCSSFiles: {
-        '[project]/apps/web/app/layout': [{ path: 'static/chunks/40_--iik-uz78.css', inlined: false }],
+        '[project]/apps/web/app/layout': [{ path: 'static/chunks/3j0wcrigs4eb4.css', inlined: false }],
         '[project]/node_modules/.bun/next@16.3.2+f291276adcc5d530/node_modules/next/dist/client/components/builtin/global-error': [
-            { path: 'static/chunks/40_--iik-uz78.css', inlined: false },
+            { path: 'static/chunks/3j0wcrigs4eb4.css', inlined: false },
         ],
-        '[project]/apps/web/app/setup/page': [{ path: 'static/chunks/40_--iik-uz78.css', inlined: false }],
+        '[project]/apps/web/app/setup/page': [{ path: 'static/chunks/3j0wcrigs4eb4.css', inlined: false }],
     },
     entryJSFiles: {
         '[project]/apps/web/app/layout': ['static/chunks/02e79w8049o6q.js', 'static/chunks/3_apwxu53-qq6.js'],
@@ -233,8 +233,8 @@ globalThis.__RSC_MANIFEST['/setup/page'] = {
         '[project]/apps/web/app/setup/page': [
             'static/chunks/02e79w8049o6q.js',
             'static/chunks/3_apwxu53-qq6.js',
-            'static/chunks/0r0nqtvs8osnu.js',
-            'static/chunks/382u6kbj9q-za.js',
+            'static/chunks/25a_iedwv6sl6.js',
+            'static/chunks/2wq7k1mtqm1ds.js',
             'static/chunks/2p0s7vz_cd6zk.js',
         ],
     },

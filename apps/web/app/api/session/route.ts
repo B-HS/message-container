@@ -2,6 +2,7 @@ import { cookies } from 'next/headers'
 import { z } from 'zod'
 
 import { API_KEY_COOKIE_MAX_AGE_S, API_KEY_COOKIE_NAME } from '@shared/constants/auth'
+import { isTrustedOrigin } from '@shared/lib/origin'
 
 const PASSWORD_MIN_LENGTH = 8
 const BASE_URL = process.env.MESSAGE_API_URL ?? 'http://localhost:3000'
@@ -13,7 +14,10 @@ const statusEnvelopeSchema = z.object({ success: z.literal(true), data: z.object
 const keyEnvelopeSchema = z.object({ success: z.literal(true), data: z.object({ key: z.string() }) })
 const errorEnvelopeSchema = z.object({ success: z.literal(false), error: z.object({ code: z.string(), message: z.string() }) })
 
+const forbiddenResponse = () => Response.json({ success: false, error: { code: 'FORBIDDEN', message: '허용되지 않은 출처입니다' } }, { status: 403 })
+
 export const POST = async (request: Request) => {
+    if (!isTrustedOrigin(request)) return forbiddenResponse()
     const parsed = sessionCreateSchema.safeParse(await request.json().catch(() => null))
     if (!parsed.success) {
         return Response.json(
@@ -57,8 +61,17 @@ export const POST = async (request: Request) => {
     return Response.json({ success: true, data: { mode } })
 }
 
-export const DELETE = async () => {
+export const DELETE = async (request: Request) => {
+    if (!isTrustedOrigin(request)) return forbiddenResponse()
     const cookieStore = await cookies()
+    const apiKey = cookieStore.get(API_KEY_COOKIE_NAME)?.value
+    if (apiKey) {
+        await fetch(`${BASE_URL}/api/auth/revoke`, {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${apiKey}` },
+            cache: 'no-store',
+        }).catch(() => null)
+    }
     cookieStore.delete(API_KEY_COOKIE_NAME)
     return Response.json({ success: true, data: { loggedOut: true } })
 }

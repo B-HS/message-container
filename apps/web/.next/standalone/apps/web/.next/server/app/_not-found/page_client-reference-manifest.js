@@ -60,7 +60,7 @@ globalThis.__RSC_MANIFEST['/_not-found/page'] = {
                 name: '*',
                 chunks: [
                     'server/chunks/ssr/[root-of-the-server]__0c0blpb._.js',
-                    'server/chunks/ssr/_054o__4._.js',
+                    'server/chunks/ssr/_00mvdl5._.js',
                     'server/chunks/ssr/node_modules__bun_1fprycj._.js',
                     'server/chunks/ssr/12-l_next_dist_019jsoo._.js',
                 ],
@@ -73,7 +73,7 @@ globalThis.__RSC_MANIFEST['/_not-found/page'] = {
                 name: '*',
                 chunks: [
                     'server/chunks/ssr/[root-of-the-server]__0c0blpb._.js',
-                    'server/chunks/ssr/_054o__4._.js',
+                    'server/chunks/ssr/_00mvdl5._.js',
                     'server/chunks/ssr/node_modules__bun_1fprycj._.js',
                     'server/chunks/ssr/12-l_next_dist_019jsoo._.js',
                 ],
@@ -86,7 +86,7 @@ globalThis.__RSC_MANIFEST['/_not-found/page'] = {
                 name: '*',
                 chunks: [
                     'server/chunks/ssr/[root-of-the-server]__0c0blpb._.js',
-                    'server/chunks/ssr/_054o__4._.js',
+                    'server/chunks/ssr/_00mvdl5._.js',
                     'server/chunks/ssr/node_modules__bun_1fprycj._.js',
                     'server/chunks/ssr/12-l_next_dist_019jsoo._.js',
                 ],
@@ -99,7 +99,7 @@ globalThis.__RSC_MANIFEST['/_not-found/page'] = {
                 name: '*',
                 chunks: [
                     'server/chunks/ssr/[root-of-the-server]__0c0blpb._.js',
-                    'server/chunks/ssr/_054o__4._.js',
+                    'server/chunks/ssr/_00mvdl5._.js',
                     'server/chunks/ssr/node_modules__bun_1fprycj._.js',
                     'server/chunks/ssr/12-l_next_dist_019jsoo._.js',
                 ],
@@ -112,7 +112,7 @@ globalThis.__RSC_MANIFEST['/_not-found/page'] = {
                 name: '*',
                 chunks: [
                     'server/chunks/ssr/[root-of-the-server]__0c0blpb._.js',
-                    'server/chunks/ssr/_054o__4._.js',
+                    'server/chunks/ssr/_00mvdl5._.js',
                     'server/chunks/ssr/node_modules__bun_1fprycj._.js',
                     'server/chunks/ssr/12-l_next_dist_019jsoo._.js',
                 ],
@@ -125,7 +125,7 @@ globalThis.__RSC_MANIFEST['/_not-found/page'] = {
                 name: '*',
                 chunks: [
                     'server/chunks/ssr/[root-of-the-server]__0c0blpb._.js',
-                    'server/chunks/ssr/_054o__4._.js',
+                    'server/chunks/ssr/_00mvdl5._.js',
                     'server/chunks/ssr/node_modules__bun_1fprycj._.js',
                     'server/chunks/ssr/12-l_next_dist_019jsoo._.js',
                 ],
@@ -138,7 +138,7 @@ globalThis.__RSC_MANIFEST['/_not-found/page'] = {
                 name: '*',
                 chunks: [
                     'server/chunks/ssr/[root-of-the-server]__0c0blpb._.js',
-                    'server/chunks/ssr/_054o__4._.js',
+                    'server/chunks/ssr/_00mvdl5._.js',
                     'server/chunks/ssr/node_modules__bun_1fprycj._.js',
                     'server/chunks/ssr/12-l_next_dist_019jsoo._.js',
                 ],
@@ -151,7 +151,7 @@ globalThis.__RSC_MANIFEST['/_not-found/page'] = {
                 name: '*',
                 chunks: [
                     'server/chunks/ssr/[root-of-the-server]__0c0blpb._.js',
-                    'server/chunks/ssr/_054o__4._.js',
+                    'server/chunks/ssr/_00mvdl5._.js',
                     'server/chunks/ssr/node_modules__bun_1fprycj._.js',
                     'server/chunks/ssr/12-l_next_dist_019jsoo._.js',
                 ],
@@ -164,7 +164,7 @@ globalThis.__RSC_MANIFEST['/_not-found/page'] = {
                 name: '*',
                 chunks: [
                     'server/chunks/ssr/[root-of-the-server]__0c0blpb._.js',
-                    'server/chunks/ssr/_054o__4._.js',
+                    'server/chunks/ssr/_00mvdl5._.js',
                     'server/chunks/ssr/node_modules__bun_1fprycj._.js',
                     'server/chunks/ssr/12-l_next_dist_019jsoo._.js',
                     'server/chunks/ssr/node_modules__bun_0bg-14r._.js',
@@ -187,9 +187,9 @@ globalThis.__RSC_MANIFEST['/_not-found/page'] = {
     },
     edgeRscModuleMapping: {},
     entryCSSFiles: {
-        '[project]/apps/web/app/layout': [{ path: 'static/chunks/40_--iik-uz78.css', inlined: false }],
+        '[project]/apps/web/app/layout': [{ path: 'static/chunks/3j0wcrigs4eb4.css', inlined: false }],
         '[project]/node_modules/.bun/next@16.3.2+f291276adcc5d530/node_modules/next/dist/client/components/builtin/global-error': [
-            { path: 'static/chunks/40_--iik-uz78.css', inlined: false },
+            { path: 'static/chunks/3j0wcrigs4eb4.css', inlined: false },
         ],
     },
     entryJSFiles: {

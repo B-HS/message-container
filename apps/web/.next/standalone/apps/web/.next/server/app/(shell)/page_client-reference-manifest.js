@@ -58,8 +58,20 @@ globalThis.__RSC_MANIFEST['/(shell)/page'] = {
             chunks: [
                 '/_next/static/chunks/02e79w8049o6q.js',
                 '/_next/static/chunks/3_apwxu53-qq6.js',
-                '/_next/static/chunks/2dv4c5yj-qywx.js',
+                '/_next/static/chunks/1pt5uqfs5oi55.js',
                 '/_next/static/chunks/2p0s7vz_cd6zk.js',
+            ],
+            async: false,
+        },
+        '[project]/apps/web/app/(shell)/error.tsx': {
+            id: 3138,
+            name: '*',
+            chunks: [
+                '/_next/static/chunks/02e79w8049o6q.js',
+                '/_next/static/chunks/3_apwxu53-qq6.js',
+                '/_next/static/chunks/1pt5uqfs5oi55.js',
+                '/_next/static/chunks/2p0s7vz_cd6zk.js',
+                '/_next/static/chunks/1xpzo7cnsqppn.js',
             ],
             async: false,
         },
@@ -71,7 +83,7 @@ globalThis.__RSC_MANIFEST['/(shell)/page'] = {
                 name: '*',
                 chunks: [
                     'server/chunks/ssr/[root-of-the-server]__0c0blpb._.js',
-                    'server/chunks/ssr/_054o__4._.js',
+                    'server/chunks/ssr/_00mvdl5._.js',
                     'server/chunks/ssr/node_modules__bun_1fprycj._.js',
                     'server/chunks/ssr/12-l_next_dist_019jsoo._.js',
                 ],
@@ -84,7 +96,7 @@ globalThis.__RSC_MANIFEST['/(shell)/page'] = {
                 name: '*',
                 chunks: [
                     'server/chunks/ssr/[root-of-the-server]__0c0blpb._.js',
-                    'server/chunks/ssr/_054o__4._.js',
+                    'server/chunks/ssr/_00mvdl5._.js',
                     'server/chunks/ssr/node_modules__bun_1fprycj._.js',
                     'server/chunks/ssr/12-l_next_dist_019jsoo._.js',
                 ],
@@ -97,7 +109,7 @@ globalThis.__RSC_MANIFEST['/(shell)/page'] = {
                 name: '*',
                 chunks: [
                     'server/chunks/ssr/[root-of-the-server]__0c0blpb._.js',
-                    'server/chunks/ssr/_054o__4._.js',
+                    'server/chunks/ssr/_00mvdl5._.js',
                     'server/chunks/ssr/node_modules__bun_1fprycj._.js',
                     'server/chunks/ssr/12-l_next_dist_019jsoo._.js',
                 ],
@@ -110,7 +122,7 @@ globalThis.__RSC_MANIFEST['/(shell)/page'] = {
                 name: '*',
                 chunks: [
                     'server/chunks/ssr/[root-of-the-server]__0c0blpb._.js',
-                    'server/chunks/ssr/_054o__4._.js',
+                    'server/chunks/ssr/_00mvdl5._.js',
                     'server/chunks/ssr/node_modules__bun_1fprycj._.js',
                     'server/chunks/ssr/12-l_next_dist_019jsoo._.js',
                 ],
@@ -123,7 +135,7 @@ globalThis.__RSC_MANIFEST['/(shell)/page'] = {
                 name: '*',
                 chunks: [
                     'server/chunks/ssr/[root-of-the-server]__0c0blpb._.js',
-                    'server/chunks/ssr/_054o__4._.js',
+                    'server/chunks/ssr/_00mvdl5._.js',
                     'server/chunks/ssr/node_modules__bun_1fprycj._.js',
                     'server/chunks/ssr/12-l_next_dist_019jsoo._.js',
                 ],
@@ -136,7 +148,7 @@ globalThis.__RSC_MANIFEST['/(shell)/page'] = {
                 name: '*',
                 chunks: [
                     'server/chunks/ssr/[root-of-the-server]__0c0blpb._.js',
-                    'server/chunks/ssr/_054o__4._.js',
+                    'server/chunks/ssr/_00mvdl5._.js',
                     'server/chunks/ssr/node_modules__bun_1fprycj._.js',
                     'server/chunks/ssr/12-l_next_dist_019jsoo._.js',
                 ],
@@ -149,7 +161,7 @@ globalThis.__RSC_MANIFEST['/(shell)/page'] = {
                 name: '*',
                 chunks: [
                     'server/chunks/ssr/[root-of-the-server]__0c0blpb._.js',
-                    'server/chunks/ssr/_054o__4._.js',
+                    'server/chunks/ssr/_00mvdl5._.js',
                     'server/chunks/ssr/node_modules__bun_1fprycj._.js',
                     'server/chunks/ssr/12-l_next_dist_019jsoo._.js',
                 ],
@@ -162,7 +174,7 @@ globalThis.__RSC_MANIFEST['/(shell)/page'] = {
                 name: '*',
                 chunks: [
                     'server/chunks/ssr/[root-of-the-server]__0c0blpb._.js',
-                    'server/chunks/ssr/_054o__4._.js',
+                    'server/chunks/ssr/_00mvdl5._.js',
                     'server/chunks/ssr/node_modules__bun_1fprycj._.js',
                     'server/chunks/ssr/12-l_next_dist_019jsoo._.js',
                 ],
@@ -175,7 +187,7 @@ globalThis.__RSC_MANIFEST['/(shell)/page'] = {
                 name: '*',
                 chunks: [
                     'server/chunks/ssr/[root-of-the-server]__0c0blpb._.js',
-                    'server/chunks/ssr/_054o__4._.js',
+                    'server/chunks/ssr/_00mvdl5._.js',
                     'server/chunks/ssr/node_modules__bun_1fprycj._.js',
                     'server/chunks/ssr/12-l_next_dist_019jsoo._.js',
                     'server/chunks/ssr/node_modules__bun_0bg-14r._.js',
@@ -189,7 +201,7 @@ globalThis.__RSC_MANIFEST['/(shell)/page'] = {
                 name: '*',
                 chunks: [
                     'server/chunks/ssr/[root-of-the-server]__0c0blpb._.js',
-                    'server/chunks/ssr/_054o__4._.js',
+                    'server/chunks/ssr/_00mvdl5._.js',
                     'server/chunks/ssr/node_modules__bun_1fprycj._.js',
                     'server/chunks/ssr/12-l_next_dist_019jsoo._.js',
                     'server/chunks/ssr/_097f5bs._.js',
@@ -197,6 +209,25 @@ globalThis.__RSC_MANIFEST['/(shell)/page'] = {
                     'server/chunks/ssr/apps_web_shared_lib_utils_ts_1b2dlbl._.js',
                     'server/chunks/ssr/12-l_next_dist_04r5c4e._.js',
                     'server/chunks/ssr/12-l_next_dist_14g51cf._.js',
+                ],
+                async: false,
+            },
+        },
+        3138: {
+            '*': {
+                id: 63359,
+                name: '*',
+                chunks: [
+                    'server/chunks/ssr/[root-of-the-server]__0c0blpb._.js',
+                    'server/chunks/ssr/_00mvdl5._.js',
+                    'server/chunks/ssr/node_modules__bun_1fprycj._.js',
+                    'server/chunks/ssr/12-l_next_dist_019jsoo._.js',
+                    'server/chunks/ssr/_097f5bs._.js',
+                    'server/chunks/ssr/node_modules__bun_0_37dor._.js',
+                    'server/chunks/ssr/apps_web_shared_lib_utils_ts_1b2dlbl._.js',
+                    'server/chunks/ssr/12-l_next_dist_04r5c4e._.js',
+                    'server/chunks/ssr/12-l_next_dist_14g51cf._.js',
+                    'server/chunks/ssr/apps_web_1bddj1k._.js',
                 ],
                 async: false,
             },
@@ -214,14 +245,16 @@ globalThis.__RSC_MANIFEST['/(shell)/page'] = {
         45744: { '*': { id: 92221, name: '*', chunks: [], async: false } },
         48273: { '*': { id: 81100, name: '*', chunks: [], async: false } },
         28802: { '*': { id: 45553, name: '*', chunks: [], async: false } },
+        3138: { '*': { id: 87079, name: '*', chunks: [], async: false } },
     },
     edgeRscModuleMapping: {},
     entryCSSFiles: {
-        '[project]/apps/web/app/layout': [{ path: 'static/chunks/40_--iik-uz78.css', inlined: false }],
+        '[project]/apps/web/app/layout': [{ path: 'static/chunks/3j0wcrigs4eb4.css', inlined: false }],
         '[project]/node_modules/.bun/next@16.3.2+f291276adcc5d530/node_modules/next/dist/client/components/builtin/global-error': [
-            { path: 'static/chunks/40_--iik-uz78.css', inlined: false },
+            { path: 'static/chunks/3j0wcrigs4eb4.css', inlined: false },
         ],
-        '[project]/apps/web/app/(shell)/layout': [{ path: 'static/chunks/40_--iik-uz78.css', inlined: false }],
+        '[project]/apps/web/app/(shell)/layout': [{ path: 'static/chunks/3j0wcrigs4eb4.css', inlined: false }],
+        '[project]/apps/web/app/(shell)/error': [{ path: 'static/chunks/3j0wcrigs4eb4.css', inlined: false }],
     },
     entryJSFiles: {
         '[project]/apps/web/app/layout': ['static/chunks/02e79w8049o6q.js', 'static/chunks/3_apwxu53-qq6.js'],
@@ -232,8 +265,15 @@ globalThis.__RSC_MANIFEST['/(shell)/page'] = {
         '[project]/apps/web/app/(shell)/layout': [
             'static/chunks/02e79w8049o6q.js',
             'static/chunks/3_apwxu53-qq6.js',
-            'static/chunks/2dv4c5yj-qywx.js',
+            'static/chunks/1pt5uqfs5oi55.js',
             'static/chunks/2p0s7vz_cd6zk.js',
+        ],
+        '[project]/apps/web/app/(shell)/error': [
+            'static/chunks/02e79w8049o6q.js',
+            'static/chunks/3_apwxu53-qq6.js',
+            'static/chunks/1pt5uqfs5oi55.js',
+            'static/chunks/2p0s7vz_cd6zk.js',
+            'static/chunks/1xpzo7cnsqppn.js',
         ],
     },
 }
