@@ -1,0 +1,13 @@
+{
+    "/(shell)/chats/[id]/page": "/chats/[id]",
+    "/(shell)/chats/page": "/chats",
+    "/(shell)/messages/page": "/messages",
+    "/(shell)/page": "/",
+    "/(shell)/settings/page": "/settings",
+    "/(shell)/sync/page": "/sync",
+    "/_global-error/page": "/_global-error",
+    "/_not-found/page": "/_not-found",
+    "/api/be/[...path]/route": "/api/be/[...path]",
+    "/api/session/route": "/api/session",
+    "/setup/page": "/setup"
+}

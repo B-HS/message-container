@@ -1,0 +1,12 @@
+var R = require('../../chunks/ssr/[turbopack]_runtime.js')('server/app/_not-found/page.js')
+R.c('server/chunks/ssr/[root-of-the-server]__1ekgitv._.js')
+R.c('server/chunks/ssr/12-l_next_dist_1ael6k7._.js')
+R.c('server/chunks/ssr/[root-of-the-server]__094asrq._.js')
+R.c('server/chunks/ssr/[root-of-the-server]__188r8uu._.js')
+R.c('server/chunks/ssr/apps_web_app_0-fl2wl._.js')
+R.c('server/chunks/ssr/12-l_next_dist_client_components_0003n3b._.js')
+R.c('server/chunks/ssr/12-l_next_dist_client_components_builtin_forbidden_0n0dzcj.js')
+R.c('server/chunks/ssr/12-l_next_dist_client_components_builtin_unauthorized_03do0ot.js')
+R.c('server/chunks/ssr/apps_web__next-internal_server_app__not-found_page_actions_0iqyci7.js')
+R.m(72506)
+module.exports = R.m(72506).exports

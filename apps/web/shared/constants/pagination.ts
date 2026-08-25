@@ -1,0 +1,3 @@
+export const DEFAULT_PAGE_LIMIT = 20
+
+export const CHAT_MESSAGES_PAGE_LIMIT = 50
