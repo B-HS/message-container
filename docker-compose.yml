@@ -1,7 +1,9 @@
 # 기본 구성: MySQL provider. Messages 마운트는 Docker Desktop/OrbStack 에 Full Disk Access 필요 (docs/setup.md)
 services:
     api:
-        build: .
+        build:
+            context: .
+            dockerfile: apps/server/Dockerfile
         ports:
             - '${API_PORT:-3000}:3000'
         environment:
