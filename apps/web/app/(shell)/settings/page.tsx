@@ -4,13 +4,10 @@ import { z } from 'zod'
 import { apiKeyListQueryOptions } from '@entities/api-key/api-key.query'
 import { SettingsPanel } from '@widgets/settings/settings-panel'
 
-const DEFAULT_PUBLIC_API_PORT = '33000'
-
 const statusEnvelopeSchema = z.object({ success: z.literal(true), data: z.object({ passwordSet: z.boolean() }) })
 
 const SettingsPage = async () => {
     const baseUrl = process.env.MESSAGE_API_URL ?? 'http://localhost:33000'
-    const publicApiPort = process.env.MESSAGE_API_PUBLIC_PORT ?? DEFAULT_PUBLIC_API_PORT
 
     let backendReachable = false
     try {
@@ -25,7 +22,7 @@ const SettingsPage = async () => {
 
     return (
         <HydrationBoundary state={dehydrate(queryClient)}>
-            <SettingsPanel publicApiPort={publicApiPort} backendReachable={backendReachable} />
+            <SettingsPanel backendReachable={backendReachable} />
         </HydrationBoundary>
     )
 }

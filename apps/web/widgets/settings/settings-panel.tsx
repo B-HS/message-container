@@ -16,13 +16,12 @@ import type { DataTableColumn } from '@features/data-table/data-table'
 import type { FC, FormEvent } from 'react'
 
 type SettingsPanelProps = {
-    publicApiPort: string
     backendReachable: boolean
 }
 
 const msToDateTime = (ms: number | null) => (ms === null ? '-' : formatDateTime(new Date(ms).toISOString()))
 
-export const SettingsPanel: FC<SettingsPanelProps> = ({ publicApiPort, backendReachable }) => {
+export const SettingsPanel: FC<SettingsPanelProps> = ({ backendReachable }) => {
     const [apiBase, setApiBase] = useState<string | null>(null)
     const [keyName, setKeyName] = useState('')
     const [issuedKey, setIssuedKey] = useState<CreatedApiKey | null>(null)
@@ -85,14 +84,14 @@ export const SettingsPanel: FC<SettingsPanelProps> = ({ publicApiPort, backendRe
     ]
 
     useEffect(() => {
-        setApiBase(`${window.location.protocol}//${window.location.hostname}:${publicApiPort}`)
-    }, [publicApiPort])
+        setApiBase(window.location.origin)
+    }, [])
 
     return (
         <PageRoot>
             <PanelCard title='연결' contentClassName='flex flex-col gap-2 text-xs'>
                 <div className='flex flex-wrap items-center gap-2'>
-                    <span className='text-muted-foreground'>API 서버</span>
+                    <span className='text-muted-foreground'>API·MCP origin (웹과 동일 — 백엔드는 비노출 프록시 경유)</span>
                     <span className='font-mono' suppressHydrationWarning>
                         {apiBase ?? '-'}
                     </span>
@@ -131,7 +130,9 @@ export const SettingsPanel: FC<SettingsPanelProps> = ({ publicApiPort, backendRe
                 <p className='text-xs text-muted-foreground'>현재 웹 세션이 사용 중인 키를 폐기하면 즉시 로그아웃됩니다.</p>
             </PanelCard>
             <PanelCard title='MCP' contentClassName='flex flex-col gap-2 text-xs'>
-                <p className='text-muted-foreground'>AI 클라이언트는 위에서 발급한 API 키로 MCP 엔드포인트에 접속할 수 있습니다.</p>
+                <p className='text-muted-foreground'>
+                    AI 클라이언트는 위에서 발급한 API 키로 MCP 엔드포인트에 접속합니다. 요청은 웹이 백엔드로 프록시합니다.
+                </p>
                 <code className='font-mono break-all' suppressHydrationWarning>
                     {apiBase ? `${apiBase}/mcp` : '-'}
                 </code>

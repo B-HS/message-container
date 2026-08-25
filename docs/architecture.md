@@ -5,6 +5,10 @@
 macOS Messages(`chat.db`)를 읽어 조회 API 로 제공하는 백엔드의 계층 구조·데이터 흐름·설계 근거.
 스택 합의는 [docs/acknowledge/2026-08-25-project-stack.md](./acknowledge/2026-08-25-project-stack.md), 실행 절차는 [docs/setup.md](./setup.md), API 스펙은 [docs/api.md](./api.md), MCP 가이드는 [docs/mcp.md](./mcp.md), 테스트 구성은 [docs/testing.md](./testing.md) 참고.
 
+## 0. 노출 모델 (단일 origin)
+
+웹(Next, 32000)이 유일한 노출면이다. 브라우저·스크립트·MCP 클라이언트 모두 웹 origin 으로 접근하고, 웹의 라우트 핸들러가 내부 네트워크의 백엔드(33000)로 중계한다: `/api/be/[...path]`(쿠키 또는 Bearer 패스스루) · `/mcp`(스트리밍 프록시) · `/openapi.json`(패스스루). 백엔드 직접 노출은 compose `ports` 옵트인 + `CORS_ALLOWED_ORIGINS` 옵트인. 근거: [acknowledge/2026-08-25-single-origin-proxy.md](./acknowledge/2026-08-25-single-origin-proxy.md)
+
 ## 1. 계층 구조
 
 backend.md 의 계층형 구조를 따른다: `Route → Service → ServiceDb(compose 구현) → Drizzle`.

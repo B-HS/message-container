@@ -24,7 +24,7 @@ macOS 의 Messages(chat.db)를 읽기 전용으로 증분 동기화해 웹 대�
 5. FE 인증: httpOnly 쿠키(`mc_api_key`) + `/api/be/[...path]` 프록시(서버측 키 주입) + `/api/session`(로그인=BE 키 발급, 로그아웃=BE revoke)
 6. 보안·반응형: 보안 헤더(web headers()/api secureHeaders), Origin 검증, non-root 컨테이너(+`/data` bun 소유), 768px 모바일 드로어
 7. 대화 로직 3연타 수정: ROWID→최근 메시지 정렬 → identifier 기준 SMS/iMessage 병합(`chat-service.ts` 도메인 로직, `chatIds` 로 상세도 병합) → 빈 문자열 displayName/identifier null 정규화
-8. 운영: 포트 33000(api)/32000(web), `scripts/smoke-test.sh`(무입력), README(데모 스크린샷 `assets/screenshot-chat.png`), `chore/containers` 브랜치(`compose.containers.yaml`)
+8. 운영: **단일 origin 노출 모델** — 웹 32000 만 노출, BE 33000 은 내부 전용(웹이 `/api/be`·`/mcp`·`/openapi.json` 프록시, Bearer 패스스루). `scripts/smoke-test.sh`(무입력·웹 origin 기준), README(데모 스크린샷), `chore/containers` 브랜치(`compose.containers.yaml`)
 
 **진행 중**: 없음.
 
@@ -39,6 +39,7 @@ macOS 의 Messages(chat.db)를 읽기 전용으로 증분 동기화해 웹 대�
 - FE 프록시 인증(쿠키) + SSR prefetch — `-monorepo-fe.md`
 - 대화 병합은 chat-service 도메인 로직 (provider 는 행 통계만) — `history/2026-08-25-chat-merge.md`
 - containers 통합은 패널 Deployment 가 아닌 1급 compose + `chore/containers` 브랜치(compose 만 브랜치 전용, docs 는 dev 와 동일) — `acknowledge/2026-08-25-containers-branch.md`
+- 단일 origin 프록시 모델(BE 비노출, 웹이 API·MCP 중계, CORS 는 옵트인) — `acknowledge/2026-08-25-single-origin-proxy.md`
 - 브랜치: dev(작업)·prod(main 역할, dev 를 ff 로 따라감)·chore/containers(dev merge 로 갱신)
 
 기각된 대안 (같은 삽질 금지):

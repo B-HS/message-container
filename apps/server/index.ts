@@ -1,4 +1,5 @@
 import { Hono } from 'hono'
+import { cors } from 'hono/cors'
 import { secureHeaders } from 'hono/secure-headers'
 import { openAPIRouteHandler } from 'hono-openapi'
 
@@ -18,6 +19,16 @@ const composed = compose({ env, client })
 
 const app = new Hono()
 app.use('*', secureHeaders())
+if (env.CORS_ALLOWED_ORIGINS && env.CORS_ALLOWED_ORIGINS.length > 0) {
+    const corsMiddleware = cors({
+        origin: env.CORS_ALLOWED_ORIGINS,
+        allowMethods: ['GET', 'POST', 'OPTIONS'],
+        allowHeaders: ['Authorization', 'Content-Type'],
+        maxAge: 600,
+    })
+    app.use('/api/*', corsMiddleware)
+    app.use('/mcp', corsMiddleware)
+}
 app.get('/', (c) => c.redirect('/panel'))
 app.route('/panel', createPanelRoute({ authService: composed.authService }))
 app.route('/mcp', createMcpRoute(composed))

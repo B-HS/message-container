@@ -2,6 +2,12 @@
 
 기준 문서: `~/.claude/convention/*.md` (특히 backend.md · common.md · git.md), `docs/acknowledge/2026-08-25-project-stack.md`
 
+## 작업: 단일 origin 프록시 모델 전환 (2026-08-25)
+
+- [x] 웹(32000)을 유일한 노출면으로 — BE 포트 매핑 제거, /api/be 프록시에 Bearer 패스스루+공개 allowlist(auth/status), /mcp 스트리밍 프록시, /openapi.json 패스스루
+- [x] 설정 화면 주소를 window.location.origin 으로 단순화(MESSAGE_API_PUBLIC_* 폐기), 서버에 옵트인 CORS(CORS_ALLOWED_ORIGINS) 추가
+- [x] smoke-test·api.md·mcp.md·setup·architecture·containers-integration·acknowledge(ADR) 갱신 — 기존 :33000/mcp 등록은 :32000/mcp 로 재등록 필요
+
 ## 작업: containers 통합 + 정합 스윕 (2026-08-25)
 
 - [x] chore/containers 브랜치 신설 — compose.containers.yaml(edge 네트워크 합류·하드닝·bun 헬스체크·message-* 서비스명) + docs/containers-integration.md

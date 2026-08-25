@@ -6,7 +6,8 @@ AI 클라이언트(Claude Code 등)가 `/mcp` 로 접속해 macOS Messages 데�
 
 ## 1. 개요
 
-- 엔드포인트: `POST/GET /mcp` (단일 경로), 전송 방식은 **Streamable HTTP**(`@hono/mcp` 의 `StreamableHTTPTransport`).
+- 엔드포인트: **`http://localhost:32000/mcp`** — 웹이 백엔드로 스트리밍 프록시한다(`apps/web/app/mcp/route.ts`, 백엔드는 기본 비노출). 전송 방식은 **Streamable HTTP**(`@hono/mcp` 의 `StreamableHTTPTransport`).
+- 이전에 `:33000/mcp` 로 등록했다면 `:32000/mcp` 로 재등록해야 한다(백엔드 포트가 기본 비노출로 바뀜).
 - 인증: REST API 와 동일한 `msg_` prefix API 키를 `Authorization: Bearer` 헤더로 전달한다(`/panel` 에서 발급 — [docs/setup.md §4](./setup.md), [docs/api.md §1](./api.md)). 키가 없거나 유효하지 않으면 MCP 프로토콜이 아니라 이 서버의 표준 에러 봉투로 `401 { success: false, error: { code: "UNAUTHORIZED", ... } }` 를 반환한다.
 - 상태: 요청마다 새 `McpServer` + `StreamableHTTPTransport` 를 만들어 연결한다(`route/mcp.ts`) — 서버 프로세스에 별도 MCP 세션을 유지하지 않는 stateless 처리다.
 - 도구는 REST API 와 같은 Service 계층(`ChatService`·`MessageService`·`AttachmentService`·`SyncService`)을 호출하므로, 조회 결과는 REST API 응답과 동일하다.
@@ -16,7 +17,7 @@ AI 클라이언트(Claude Code 등)가 `/mcp` 로 접속해 macOS Messages 데�
 ### Claude Code CLI
 
 ```bash
-claude mcp add --transport http message-container http://localhost:33000/mcp \
+claude mcp add --transport http message-container http://localhost:32000/mcp \
   --header "Authorization: Bearer msg_xxxxxxxxxxxxxxxx"
 ```
 
@@ -27,7 +28,7 @@ claude mcp add --transport http message-container http://localhost:33000/mcp \
     "mcpServers": {
         "message-container": {
             "type": "http",
-            "url": "http://localhost:33000/mcp",
+            "url": "http://localhost:32000/mcp",
             "headers": {
                 "Authorization": "Bearer msg_xxxxxxxxxxxxxxxx"
             }
@@ -42,7 +43,7 @@ claude mcp add --transport http message-container http://localhost:33000/mcp \
 
 ```json
 {
-    "url": "http://localhost:33000/mcp",
+    "url": "http://localhost:32000/mcp",
     "transport": "http",
     "headers": {
         "Authorization": "Bearer msg_xxxxxxxxxxxxxxxx"

@@ -10,14 +10,14 @@ containers 패널의 compose-stack 배포는 보안 정책상 **호스트 바인
 
 ## 설계
 
-| 항목     | 값                                                                                            | 이유                                                                            |
-| -------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| 서비스명 | `message-api` · `message-web`                                                                 | containers 스택의 `api`/`web` 과 `containers_edge` 위 DNS alias 충돌 방지       |
-| DB       | SQLite (`message-data` named volume)                                                          | 패널 관리 하에서 이동부 최소화 (mysql 불필요)                                   |
-| 네트워크 | 자체 `internal` + 외부 `containers_edge`                                                      | 패널 nginx 가 `message-web:32000` / `message-api:33000` 으로 upstream 지정 가능 |
-| 포트     | 기본 `127.0.0.1:33000`(api) · `127.0.0.1:32000`(web)                                          | 루프백 한정. `MC_API_BIND=0.0.0.0` 등으로 개방 가능                             |
-| 하드닝   | `cap_drop: ALL` · `no-new-privileges` · pids/메모리 제한 · 로그 로테이션 · non-root(USER bun) | containers 스택 컨벤션과 동급                                                   |
-| 헬스체크 | bun 내장 fetch (`/api/auth/status`, `/setup`)                                                 | 이미지에 wget/curl 없음                                                         |
+| 항목     | 값                                                                                            | 이유                                                                                                                |
+| -------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| 서비스명 | `message-api` · `message-web`                                                                 | containers 스택의 `api`/`web` 과 `containers_edge` 위 DNS alias 충돌 방지                                           |
+| DB       | SQLite (`message-data` named volume)                                                          | 패널 관리 하에서 이동부 최소화 (mysql 불필요)                                                                       |
+| 네트워크 | 자체 `internal` + 외부 `containers_edge`                                                      | 패널 nginx 는 `message-web:32000` 하나만 upstream 으로 지정하면 된다 (API·MCP 도 웹 경유 — 단일 origin 프록시 모델) |
+| 포트     | web 만 기본 `127.0.0.1:32000` 노출, api 는 비노출(내부 네트워크 전용)                         | 단일 origin 모델. `MC_WEB_BIND=0.0.0.0` 으로 개방 가능                                                              |
+| 하드닝   | `cap_drop: ALL` · `no-new-privileges` · pids/메모리 제한 · 로그 로테이션 · non-root(USER bun) | containers 스택 컨벤션과 동급                                                                                       |
+| 헬스체크 | bun 내장 fetch (`/api/auth/status`, `/setup`)                                                 | 이미지에 wget/curl 없음                                                                                             |
 
 ## 절차
 
@@ -33,8 +33,8 @@ open http://localhost:32000   # 초기 패스워드 설정 → 대시보드
 ```
 
 - 패널에서는 `message-container-message-api-1` / `message-container-message-web-1` 컨테이너로 보이며 로그·제어·트래픽이 그대로 잡힌다.
-- 패널 nginx 로 도메인을 붙이려면 GUI 에서 upstream 을 `message-web:32000`(웹) / `message-api:33000`(API·MCP) 으로 라우트를 추가한다.
-- MCP 는 `http://<호스트>:33000/mcp` (또는 nginx 라우트 도메인) + 설정 화면에서 발급한 `msg_` 키.
+- 패널 nginx 로 도메인을 붙이려면 GUI 에서 upstream 을 `message-web:32000` 하나로 라우트를 추가한다 — API(`/api/be/*`)·MCP(`/mcp`)·OpenAPI 가 같은 origin 에서 동작한다.
+- MCP 는 `http://<호스트>:32000/mcp` (또는 nginx 라우트 도메인) + 설정 화면에서 발급한 `msg_` 키.
 
 ## 브랜치 운영
 
