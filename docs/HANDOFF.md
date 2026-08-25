@@ -9,28 +9,29 @@ macOS 의 Messages(chat.db)를 읽기 전용으로 증분 동기화해 웹 대�
 
 ## 2. 현재 목표
 
-- 최종 목표: 개인용 Messages 조회 스택 완성 — **이번 세션에서 v1 완결됨**
-- 현재 마일스톤: 없음(전부 완료·검증·push). 남은 것은 §8 후속 과제뿐
-- 직전 작업: containers 패널 호스트 통합 브랜치(`chore/containers`) 신설 + docs 정합 스윕 + 이 핸드오프
+- 최종 목표: 개인용 Messages 조회 스택 완성 — v1 완결 후 후속 기능 확장 중
+- 현재 마일스톤: 없음(전부 완료·검증). 남은 것은 §8 후속 과제뿐
+- 직전 작업: 기존 행 갱신 감지(최근 윈도 재스캔 — 편집·읽음·tapback) + 로깅 시스템(DB 적재·/api/logs·FE 로그 메뉴) + db 3306 비노출 + 쿠키명 msg_api_key 교정 + README 스크린샷 재촬영
 
 ## 3. 완료 / 진행 중 / 미착수
 
-**완료 (전부 커밋·push·검증됨)** — 시간순 상세는 `docs/history/` 7개 파일:
+**완료 (전부 커밋·검증됨)** — 시간순 상세는 `docs/history/` 8개 파일:
 
 1. BE 코어: chat.db 리더(커서 증분·typedstream 본문 추출·WAL 실패 틱 스킵) → 3-provider(sqlite 기본·mysql·pg, Drizzle) 적재 → 조회 API. `apps/server/service/`·`compose/provider/`
 2. 인증: 앱 패스워드(argon2id) + `msg_` API 키(SHA-256 해시 저장) + `/panel` HTML + `/api/*` Bearer 게이트(`middleware/require-api-key.ts`) + 공개 JSON auth API(`route/auth.ts`: status·setup·login·revoke) + 키 관리 API(`route/key.ts`)
 3. MCP: `/mcp` Streamable HTTP, 도구 6종, 키 인증 (`route/mcp.ts`)
 4. FE: Next 16(App Router·React Compiler·standalone) + shadcn + Tailwind v4 + TanStack Query v5, FSD(`app/widgets/features/entities/shared`), DESIGN.md(flunti-otel Surface A) 토큰 전면 적용. 화면: setup / 대화 목록(병합·미리보기) / 대화 상세(AI Elements 말풍선·첨부 인라인) / 검색 / 동기화 / 설정(키 관리·origin 기반 주소). 전 페이지 서버 prefetch + HydrationBoundary + useSuspenseQuery
-5. FE 인증: httpOnly 쿠키(`mc_api_key`) + `/api/be/[...path]` 프록시(서버측 키 주입) + `/api/session`(로그인=BE 키 발급, 로그아웃=BE revoke)
+5. FE 인증: httpOnly 쿠키(`msg_api_key`) + `/api/be/[...path]` 프록시(서버측 키 주입) + `/api/session`(로그인=BE 키 발급, 로그아웃=BE revoke)
 6. 보안·반응형: 보안 헤더(web headers()/api secureHeaders), Origin 검증, non-root 컨테이너(+`/data` bun 소유), 768px 모바일 드로어
 7. 대화 로직 3연타 수정: ROWID→최근 메시지 정렬 → identifier 기준 SMS/iMessage 병합(`chat-service.ts` 도메인 로직, `chatIds` 로 상세도 병합) → 빈 문자열 displayName/identifier null 정규화
-8. 운영: **단일 origin 노출 모델** — 웹 32000 만 노출, BE 33000 은 내부 전용(웹이 `/api/be`·`/mcp`·`/openapi.json` 프록시, Bearer 패스스루). `scripts/smoke-test.sh`(무입력·웹 origin 기준), README(데모 스크린샷), `chore/containers` 브랜치(`compose.containers.yaml`)
+8. 운영: **단일 origin 노출 모델** — 웹 32000 만 노출, BE 33000 은 내부 전용(웹이 `/api/be`·`/mcp`·`/openapi.json` 프록시, Bearer 패스스루), MySQL 3306 도 호스트 비노출. `scripts/smoke-test.sh`(무입력·웹 origin 기준), README(데모 스크린샷), `chore/containers` 브랜치(`compose.containers.yaml`)
+9. 행 갱신 감지 + 로깅: 매 틱 최근 500행 재스캔(커서 무전진, upsert 재사용)으로 편집·읽음 반영, messages 에 isRead·dateReadMs·associated\* 컬럼(마이그레이션 0002), `LogService` + `/api/logs` + FE "로그" 메뉴, tapback 말풍선 배지·"읽음" 마커 — `architecture.md §8.1·§10`, `history/2026-08-25-row-update-logging.md`
 
 **진행 중**: 없음.
 
 **미착수**: §8 참조.
 
-## 4. 의사결정 요약 (상세: docs/acknowledge/ 4개 파일)
+## 4. 의사결정 요약 (상세: docs/acknowledge/ 6개 파일)
 
 채택:
 
@@ -40,6 +41,7 @@ macOS 의 Messages(chat.db)를 읽기 전용으로 증분 동기화해 웹 대�
 - 대화 병합은 chat-service 도메인 로직 (provider 는 행 통계만) — `history/2026-08-25-chat-merge.md`
 - containers 통합은 패널 Deployment 가 아닌 1급 compose + `chore/containers` 브랜치(compose 만 브랜치 전용, docs 는 dev 와 동일) — `acknowledge/2026-08-25-containers-branch.md`
 - 단일 origin 프록시 모델(BE 비노출, 웹이 API·MCP 중계, CORS 는 옵트인) — `acknowledge/2026-08-25-single-origin-proxy.md`
+- 행 갱신 감지는 매 틱 500행 재스캔(C안: 편집+읽음+tapback), 로깅은 DB 적재+FE 화면 — `acknowledge/2026-08-25-row-update-logging.md`
 - 브랜치: dev(작업)·prod(main 역할, dev 를 ff 로 따라감)·chore/containers(dev merge 로 갱신)
 
 기각된 대안 (같은 삽질 금지):
@@ -76,29 +78,29 @@ macOS 의 Messages(chat.db)를 읽기 전용으로 증분 동기화해 웹 대�
 
 ## 8. 다음 세션 TODO (우선순위 순)
 
-1. (후속) 기존 행 갱신 감지 — 읽음 상태·메시지 편집·tapback 은 커서 증분으로 못 잡음. 최근 윈도 재스캔 설계 필요. 관련: `apps/server/service/domain/message/sync-service.ts`, `docs/PROCESS.md` 후속 과제
-2. (후속) FE 레일 접힘(48px)·Cmd+B — DESIGN.md §10-11 대비 단순화된 부분. `apps/web/widgets/rail/rail.tsx`
-3. (후속) CSP 도입(Next nonce 체계)·https 배포 시 쿠키 `Secure` — `docs/quality-assurance/security-responsive.md` 미체크 2건
-4. (후속) FE 테스트 확충(현재 6개: format·envelope 단위뿐) — 위젯·프록시·세션 라우트
-5. (선택) 대화 목록 UX — 안 읽음 표시 등은 1번(행 갱신 감지)이 선행 조건
+1. (후속) FE 레일 접힘(48px)·Cmd+B — DESIGN.md §10-11 대비 단순화된 부분. `apps/web/widgets/rail/rail.tsx`
+2. (후속) CSP 도입(Next nonce 체계)·https 배포 시 쿠키 `Secure` — `docs/quality-assurance/security-responsive.md` 미체크 2건
+3. (후속) FE 테스트 확충(현재 6개: format·envelope 단위뿐) — 위젯·프록시·세션 라우트
+4. (선택) 대화 목록 UX — 안 읽음 표시(행 갱신 감지 완료로 선행 조건 해소됨, `isRead` 데이터 사용 가능)
+5. (선택) 재스캔 윈도(500행) 밖의 늦은 읽음 처리·편집은 미반영 — 필요해지면 전체 재스캔 명령 추가 검토
 
 ## 9. 문서 지도
 
-| 문서                             | 내용                                                                     |
-| -------------------------------- | ------------------------------------------------------------------------ |
-| `docs/HANDOFF.md`                | (이 문서) 세션 스냅샷                                                    |
-| `docs/PROCESS.md`                | 작업 체크리스트 누적 (세션 연속성, 최신 작업이 위)                       |
-| `docs/architecture.md`           | 계층·데이터 흐름·provider·에러 체계·인증·MCP 구조                        |
-| `docs/api.md`                    | REST API 스펙 (인증 흐름·엔드포인트·병합된 ChatSummary·에러 코드표·curl) |
-| `docs/mcp.md`                    | AI 용 MCP 가이드 (연결 설정·도구 6종·한계)                               |
-| `docs/setup.md`                  | 실행 가이드 (FDA·smoke-test·provider 변형·문제 해결)                     |
-| `docs/testing.md`                | 테스트 분류·실행법·헬퍼 (server 139 · web 6)                             |
-| `docs/containers-integration.md` | containers 패널 호스트 통합 (chore/containers 브랜치 사용법)             |
-| `docs/acknowledge/`              | 의사결정 4건 (스택 / auth·MCP / 모노레포·FE / containers 브랜치)         |
-| `docs/history/`                  | 시간순 작업 이력 7건                                                     |
-| `docs/feedback/`                 | 교정 1건 — 포트 기준 kill 금지 (Docker 데몬 사고)                        |
-| `docs/quality-assurance/`        | 검증 체크리스트 2건 (provider 실연동 / 보안·반응형)                      |
-| `docs/utils/smoke-test.md`       | 기동 스크립트 사용법                                                     |
+| 문서                             | 내용                                                                                          |
+| -------------------------------- | --------------------------------------------------------------------------------------------- |
+| `docs/HANDOFF.md`                | (이 문서) 세션 스냅샷                                                                         |
+| `docs/PROCESS.md`                | 작업 체크리스트 누적 (세션 연속성, 최신 작업이 위)                                            |
+| `docs/architecture.md`           | 계층·데이터 흐름·provider·에러 체계·인증·MCP 구조                                             |
+| `docs/api.md`                    | REST API 스펙 (인증 흐름·엔드포인트·병합된 ChatSummary·에러 코드표·curl)                      |
+| `docs/mcp.md`                    | AI 용 MCP 가이드 (연결 설정·도구 6종·한계)                                                    |
+| `docs/setup.md`                  | 실행 가이드 (FDA·smoke-test·provider 변형·문제 해결)                                          |
+| `docs/testing.md`                | 테스트 분류·실행법·헬퍼 (server 152 · web 6)                                                  |
+| `docs/containers-integration.md` | containers 패널 호스트 통합 (chore/containers 브랜치 사용법)                                  |
+| `docs/acknowledge/`              | 의사결정 6건 (스택 / auth·MCP / 모노레포·FE / containers 브랜치 / 단일 origin / 행 갱신·로깅) |
+| `docs/history/`                  | 시간순 작업 이력 8건                                                                          |
+| `docs/feedback/`                 | 교정 1건 — 포트 기준 kill 금지 (Docker 데몬 사고)                                             |
+| `docs/quality-assurance/`        | 검증 체크리스트 2건 (provider 실연동 / 보안·반응형)                                           |
+| `docs/utils/smoke-test.md`       | 기동 스크립트 사용법                                                                          |
 
 ## 복기 신뢰도
 

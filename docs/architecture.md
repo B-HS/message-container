@@ -42,9 +42,10 @@ chat.db(macOS, read-only) → chatDbReader.readBatch() → syncService.runOnce()
 | `route/`                     | HTTP 엔드포인트 팩토리(`createChatRoute` 등) + `route/index.ts` 의 `createRouter` 조립, `panel.ts`(웹 패널), `mcp.ts`(MCP 서버)                                                           |
 | `middleware/`                | Hono 미들웨어 — `require-api-key.ts`(`/api/*` 전체 게이트, §6)                                                                                                                            |
 | `service/domain/message/`    | 도메인 서비스 — `chat-service.ts`·`message-service.ts`·`attachment-service.ts`·`sync-service.ts`                                                                                          |
-| `service/domain/auth/`       | 인증 서비스 — `auth-service.ts`(패스워드·세션·API 키, §6)                                                                                                                                 |
+| `service/domain/auth/`       | 인증 서비스 — `auth-service.ts`(패스워드·세션·API 키, §6). 인증 이벤트를 §10 의 logService 로 기록한다                                                                                    |
+| `service/domain/log/`        | 로깅 서비스 — `log-service.ts`(기록·조회·보존 상한 정리, §10)                                                                                                                             |
 | `service/shared/`            | 도메인에 속하지 않는 공유 서비스 — `chat-db-reader.ts`(원본 chat.db 읽기)                                                                                                                 |
-| `dto/`                       | Zod 스키마 — `common.ts`(페이지네이션·id 파라미터), `message.ts`(검색 쿼리), `panel.ts`(패스워드 설정·로그인·키 생성, §6)                                                                 |
+| `dto/`                       | Zod 스키마 — `common.ts`(페이지네이션·id 파라미터), `message.ts`(검색 쿼리), `panel.ts`(패스워드 설정·로그인·키 생성, §6), `log.ts`(로그 조회 쿼리·level enum)                            |
 | `compose/`                   | 의존성 조립 — `index.ts`(compose 루트), `provider/{sqlite,mysql,pg}.ts`(ServiceDb 구현), `provider/constants.ts`(상태 키·청크 크기)                                                       |
 | `db/`                        | `index.ts`(provider 별 Drizzle 클라이언트 생성 + 마이그레이션 실행), `schema.{sqlite,mysql,pg}.ts`(3 dialect 스키마)                                                                      |
 | `lib/`                       | 횡단 유틸 — `env.ts`·`error*.ts`·`api-response.ts`·`with-error-handling.ts`·`validation-hook.ts`·`bearer-token.ts`·`apple-time.ts`·`typedstream.ts`·`collection.ts`                       |
@@ -97,6 +98,17 @@ Route 는 `null` 을 받으면 `throw createAppError('CHAT_NOT_FOUND')` 식으�
 
 `sync-service.ts` 의 `runOnce()` 는 `serviceDb.sync.getCursor()` 로 마지막 커서(message ROWID)를 읽고, `chatDbReader.readBatch(cursor, batchSize)` 로 그 이후 행만 가져와 `saveBatch()` 로 적재한 뒤 커서를 배치의 마지막 `rowId` 로 갱신한다. 배치가 `batchSize` 미만이면(더 읽을 게 없으면) 루프를 끝낸다. `index.ts` 는 이 `runOnce()` 를 `SYNC_INTERVAL_MS` 주기 `setInterval` 로 반복 호출하며, `isSyncRunning` 플래그로 이전 틱이 끝나기 전 중복 실행을 막는다.
 
+### 8.1 최근 윈도 재스캔 — 기존 행 갱신 감지
+
+커서 증분은 신규 행만 잡으므로, 기존 행의 in-place UPDATE(메시지 편집·읽음 상태 변화)는 별도 경로가 필요하다. `runOnce()` 는 신규분 루프가 끝난 뒤 `readBatch(max(0, cursor - RESCAN_WINDOW_ROWS), RESCAN_WINDOW_ROWS)` 로 **최근 500행 윈도를 매 틱 다시 읽어** `saveBatch()` 로 재적재한다.
+
+- 커서는 전진시키지 않는다 — `saveBatch(batch, cursor)` 에 현재 커서 값을 그대로 전달해 동일 값을 재기록한다.
+- 충돌 처리는 기존 `onConflictDoUpdate(sourceRowId)` 전 컬럼 갱신을 그대로 재사용하므로 3 provider 공통이며 재스캔 전용 로직이 없다.
+- iMessage 편집은 발신 후 15분까지만 가능하므로 최근 윈도로 충분하다. 윈도(500행) 밖의 늦은 읽음 처리·편집은 잡지 못하는 것이 알려진 한계다.
+- 읽음 상태(`is_read`·`date_read`)와 tapback 구조(`associated_message_guid`·`associated_message_type`)는 messages 테이블 컬럼(`isRead`·`dateReadMs`·`associatedMessageGuid`·`associatedMessageType`)으로 저장된다. tapback 자체는 신규 행이라 커서 증분이 적재하고, 재스캔은 편집·읽음 갱신을 맡는다. `date_read`(0=미읽음)는 `m.date` 와 같은 ns/s 판별 SQL 로 ms 변환된다.
+
+합의 근거: [acknowledge/2026-08-25-row-update-logging.md](./acknowledge/2026-08-25-row-update-logging.md)
+
 이 설계는 아래 두 제약에서 나왔다(합의 근거는 [docs/acknowledge/2026-08-25-project-stack.md](./acknowledge/2026-08-25-project-stack.md) 참고).
 
 - **WAL 모드 chat.db 를 VirtioFS 로 읽는 것은 SQLite 가 보장하지 않는다** — Docker 의 macOS 파일 공유(VirtioFS)는 WAL 파일(`-wal`)의 mmap·잠금 시맨틱을 완전히 보장하지 않아, 특정 틱에서 읽기가 실패하거나 최신 커밋 이전 상태를 볼 수 있다. `chatDbReader.readBatch()` 는 실패 시 `SYNC_SOURCE_UNAVAILABLE` 을 throw 하고, `index.ts` 의 `runSyncTick()` 은 이를 잡아 `syncService.recordError()` 로 `lastError` 만 기록한 뒤 다음 틱을 그대로 진행한다.
@@ -112,3 +124,11 @@ Route 는 `null` 을 받으면 `throw createAppError('CHAT_NOT_FOUND')` 식으�
 - 첨부파일 placeholder 문자(`￼`)는 제거하지만, 서식(굵게·링크 등) 메타데이터나 다중 run 으로 나뉜 문자열, tapback·리액션 메시지의 구조화된 내용은 복원하지 않는다.
 - 추출 실패 시 `sync-service.ts` 의 `normalizeBatch()` 는 해당 메시지의 `text` 를 `null` 로 저장한다. 클라이언트는 `text: null` 을 "본문 없음"이 아니라 "추출 실패 가능성 있음"으로 해석해야 한다.
 - 실 chat.db 기준 추출률 검증은 아직 수행되지 않았다 — [docs/quality-assurance/provider-verification.md](./quality-assurance/provider-verification.md) 의 attributedBody 추출률 항목 참고.
+
+## 10. 로깅 계층
+
+운영 이벤트를 컨테이너 DB 의 `logs` 테이블에 적재하고, `/api/logs` 와 웹 대시보드 "로그" 메뉴로 조회한다. 합의 근거: [acknowledge/2026-08-25-row-update-logging.md](./acknowledge/2026-08-25-row-update-logging.md)
+
+- **LogService**(`service/domain/log/log-service.ts`) — `record({ level, event, message, details? })` 는 `details` 를 JSON 문자열로 직렬화해 삽입하고, 기록 직후 보존 상한(`LOG_RETENTION_MAX_ROWS` 1만 건) 초과분을 `pruneLogs()` 로 삭제한다. **로깅 실패는 본 기능을 깨지 않는다** — `record()` 내부에서 예외를 잡아 `console.error('[log]', ...)` 로만 남긴다. `list()` 는 페이지네이션 + `level` 필터 조회.
+- **기록 지점** — sync: `SyncService.runOnce()` 가 `synced > 0` 일 때 `sync.batch` 를 기록하고(워커·수동 실행 공통), `index.ts` 의 워커가 실패 천이 시 `sync.error`(연속 실패 중 재기록 없음)·복구 시 `sync.recovered` 를 기록한다. auth: `AuthService` 내부에서 `auth.setup`·`auth.login.success/failure/locked`·`auth.key.created/revoked` 를 기록한다(라우트·패널 등 호출 경로와 무관하게 한 곳에서 잡힌다). api: `route/index.ts` 의 관측 미들웨어가 응답 상태 500 을 보고 `api.unhandled` 를 기록한다.
+- **조회** — `createLogRoute`(`route/log.ts`) 가 `/api/logs` 로 노출하며 `/api/*` Bearer 게이트의 보호를 받는다. 웹은 `entities/log` + `widgets/logs` + `/logs` 페이지(SSR prefetch)로 표시한다.
