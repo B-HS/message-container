@@ -2,6 +2,17 @@
 
 기준 문서: `~/.claude/convention/*.md` (특히 backend.md · common.md · git.md), `docs/acknowledge/2026-08-25-project-stack.md`
 
+## 작업: 반응형·보안 마감 (2026-08-25)
+
+- [x] a. 반응형 — <768px: 레일 숨김 + 모바일 헤더(h-12·트리거) + 288px 오버레이 드로어(50% 스크림·Escape/스크림 닫기), 콘텐츠 패딩 전환
+- [x] b. BE 보안 — secure headers 미들웨어, POST /api/auth/revoke(제시된 키 자기 폐기), e2e 추가
+- [x] c. FE 보안 — next.config 보안 헤더 + poweredByHeader off, /api/session·프록시 POST Origin 검증, 로그아웃 시 BE 키 폐기 후 쿠키 삭제
+- [x] d. 컨테이너 — 양 이미지 non-root(USER bun) 전환 및 볼륨 쓰기 검증
+- [x] e. 마감 — (shell)/error.tsx(401→/setup 리다이렉트 포함), app/icon.svg
+- [x] f. 검증 — typecheck·test(server 133·web 6)·build·docker 스모크(보안 헤더·Origin 403·revoke 401·non-root·모바일 트리거)
+- [x] g. 문서 — api.md·QA(security-responsive)·history·PROCESS 갱신
+- [x] h. 커밋 + push (dev, prod fast-forward)
+
 ## 작업: 모노레포 전환 + FE 신설 (2026-08-25)
 
 기준: docs/acknowledge/2026-08-25-monorepo-fe.md, 사용자 제공 DESIGN.md(flunti-otel Surface A)

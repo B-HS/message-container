@@ -33,6 +33,7 @@ Authorization: Bearer msg_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 | GET    | `/api/auth/status`          | 공개      | 초기 설정(패스워드) 여부 조회 — `{ passwordSet }`                 |
 | POST   | `/api/auth/setup`           | 공개      | 최초 1회 패스워드 설정 + API 키 발급 (재호출 409)                 |
 | POST   | `/api/auth/login`           | 공개      | 패스워드 검증 + API 키 발급 (틀리면 401, 연속 실패 잠금 시 429)   |
+| POST   | `/api/auth/revoke`          | API 키    | 제시한 키 자기 폐기 (웹 로그아웃 시 호출)                         |
 | GET    | `/api/chats`                | API 키    | 대화 목록 (참여자 포함, 페이지네이션)                             |
 | GET    | `/api/chats/:id`            | API 키    | 대화 단건 조회                                                    |
 | GET    | `/api/chats/:id/messages`   | API 키    | 대화별 메시지 목록 (최신순)                                       |
