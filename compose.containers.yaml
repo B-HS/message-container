@@ -1,0 +1,101 @@
+# containers(자가호스팅 Docker 패널) 스택과 같은 호스트에서 1급 compose 로 기동하는 변형.
+# 패널 Deployment 는 호스트 바인드 마운트를 거부하므로(chat.db 필요) 이 파일로 직접 올리고,
+# containers_edge 외부 네트워크에 합류해 패널 nginx 라우팅·모니터링 대상이 된다.
+# 전제: containers 스택이 먼저 기동되어 있어야 한다(containers_edge 네트워크 생성 주체).
+name: message-container
+
+services:
+    message-api:
+        build:
+            context: .
+            dockerfile: apps/server/Dockerfile
+        restart: unless-stopped
+        cap_drop:
+            - ALL
+        security_opt:
+            - no-new-privileges:true
+        deploy:
+            resources:
+                limits:
+                    memory: 512M
+                    pids: 256
+        logging:
+            driver: json-file
+            options:
+                max-size: '10m'
+                max-file: '3'
+        environment:
+            DB_PROVIDER: sqlite
+            SQLITE_PATH: /data/messages.db
+            CHAT_DB_PATH: /host/messages/chat.db
+            ATTACHMENTS_ROOT: /host/messages/Attachments
+            SYNC_INTERVAL_MS: '${SYNC_INTERVAL_MS:-5000}'
+            SYNC_BATCH_SIZE: '${SYNC_BATCH_SIZE:-1000}'
+        volumes:
+            - ${HOME}/Library/Messages:/host/messages:ro
+            - message-data:/data
+        ports:
+            - '${MC_API_BIND:-127.0.0.1}:${MC_API_PORT:-33000}:33000'
+        healthcheck:
+            test:
+                - CMD
+                - bun
+                - -e
+                - "const res = await fetch('http://127.0.0.1:33000/api/auth/status'); process.exit(res.ok ? 0 : 1)"
+            interval: 10s
+            timeout: 3s
+            retries: 5
+            start_period: 15s
+        networks:
+            - internal
+            - containers-edge
+
+    message-web:
+        build:
+            context: .
+            dockerfile: apps/web/Dockerfile
+        restart: unless-stopped
+        cap_drop:
+            - ALL
+        security_opt:
+            - no-new-privileges:true
+        deploy:
+            resources:
+                limits:
+                    memory: 512M
+                    pids: 256
+        logging:
+            driver: json-file
+            options:
+                max-size: '10m'
+                max-file: '3'
+        environment:
+            MESSAGE_API_URL: http://message-api:33000
+            MESSAGE_API_PUBLIC_PORT: '${MC_API_PORT:-33000}'
+        depends_on:
+            message-api:
+                condition: service_healthy
+        ports:
+            - '${MC_WEB_BIND:-127.0.0.1}:${MC_WEB_PORT:-32000}:32000'
+        healthcheck:
+            test:
+                - CMD
+                - bun
+                - -e
+                - "const res = await fetch('http://127.0.0.1:32000/setup'); process.exit(res.ok ? 0 : 1)"
+            interval: 10s
+            timeout: 3s
+            retries: 5
+            start_period: 15s
+        networks:
+            - internal
+            - containers-edge
+
+networks:
+    internal:
+    containers-edge:
+        external: true
+        name: containers_edge
+
+volumes:
+    message-data:
