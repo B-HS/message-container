@@ -105,6 +105,10 @@ await runMigrations(client)
 const composed = compose({ env, client })
 const app = new Hono().route('/api', createRouter(composed))
 
+const createdKey = await composed.authService.createApiKey('e2e')
+const authedRequest = (path: string, init?: RequestInit) =>
+    app.request(path, { ...init, headers: { ...init?.headers, Authorization: `Bearer ${createdKey.key}` } })
+
 afterAll(() => rmSync(tempDir, { recursive: true, force: true }))
 
 const successEnvelopeSchema = <T extends z.ZodTypeAny>(dataSchema: T) => z.object({ success: z.literal(true), data: dataSchema })
@@ -149,14 +153,14 @@ const messageSummarySchema = z.object({
 
 describe('API e2e', () => {
     test('POST /api/sync/run 은 fake chat.db 의 메시지 3건을 동기화한다', async () => {
-        const res = await app.request('/api/sync/run', { method: 'POST' })
+        const res = await authedRequest('/api/sync/run', { method: 'POST' })
         expect(res.status).toBe(200)
         const body = await parseJson(res, successEnvelopeSchema(z.object({ synced: z.number() })))
         expect(body.data.synced).toBe(3)
     })
 
     test('GET /api/sync/status 는 동기화된 카운트와 마지막 에러 없음을 반환한다', async () => {
-        const res = await app.request('/api/sync/status')
+        const res = await authedRequest('/api/sync/status')
         expect(res.status).toBe(200)
         const body = await parseJson(res, successEnvelopeSchema(syncStatusDataSchema))
         expect(body.data.counts).toEqual({ chats: 2, messages: 3, attachments: 1 })
@@ -164,7 +168,7 @@ describe('API e2e', () => {
     })
 
     test('GET /api/chats 는 참여자 정보를 포함한 대화 2건을 반환한다', async () => {
-        const res = await app.request('/api/chats')
+        const res = await authedRequest('/api/chats')
         expect(res.status).toBe(200)
         const body = await parseJson(res, paginatedEnvelopeSchema(chatSummarySchema))
 
@@ -178,7 +182,7 @@ describe('API e2e', () => {
     })
 
     test('GET /api/chats/:id/messages 는 최신 메시지 순으로 발신자 주소와 함께 반환한다', async () => {
-        const res = await app.request(`/api/chats/${INDIVIDUAL_CHAT_ROW_ID}/messages`)
+        const res = await authedRequest(`/api/chats/${INDIVIDUAL_CHAT_ROW_ID}/messages`)
         expect(res.status).toBe(200)
         const body = await parseJson(res, paginatedEnvelopeSchema(messageSummarySchema))
 
@@ -189,14 +193,14 @@ describe('API e2e', () => {
     })
 
     test('GET /api/chats/:id/messages 는 존재하지 않는 대화면 404 CHAT_NOT_FOUND 봉투를 반환한다', async () => {
-        const res = await app.request(`/api/chats/${MISSING_CHAT_ROW_ID}/messages`)
+        const res = await authedRequest(`/api/chats/${MISSING_CHAT_ROW_ID}/messages`)
         expect(res.status).toBe(404)
         const body = await parseJson(res, errorEnvelopeSchema)
         expect(body.error.code).toBe('CHAT_NOT_FOUND')
     })
 
     test('GET /api/messages 는 검색어로 메시지를 필터링한다', async () => {
-        const res = await app.request(`/api/messages?q=${encodeURIComponent(SEARCH_KEYWORD)}`)
+        const res = await authedRequest(`/api/messages?q=${encodeURIComponent(SEARCH_KEYWORD)}`)
         expect(res.status).toBe(200)
         const body = await parseJson(res, paginatedEnvelopeSchema(messageSummarySchema))
 
@@ -205,7 +209,7 @@ describe('API e2e', () => {
     })
 
     test('GET /api/attachments/:id/file 은 첨부파일 바이트를 그대로 반환한다', async () => {
-        const res = await app.request(`/api/attachments/${ATTACHMENT_ROW_ID}/file`)
+        const res = await authedRequest(`/api/attachments/${ATTACHMENT_ROW_ID}/file`)
         expect(res.status).toBe(200)
         expect(res.headers.get('content-type')).toBe(ATTACHMENT_MIME_TYPE)
         const bytes = new Uint8Array(await res.arrayBuffer())
@@ -213,16 +217,27 @@ describe('API e2e', () => {
     })
 
     test('GET /api/attachments/:id/file 은 존재하지 않는 첨부면 404 를 반환한다', async () => {
-        const res = await app.request(`/api/attachments/${MISSING_ATTACHMENT_ROW_ID}/file`)
+        const res = await authedRequest(`/api/attachments/${MISSING_ATTACHMENT_ROW_ID}/file`)
         expect(res.status).toBe(404)
         const body = await parseJson(res, errorEnvelopeSchema)
         expect(body.error.code).toBe('ATTACHMENT_NOT_FOUND')
     })
 
     test('GET /api/chats 는 limit 이 최대값을 넘으면 400 VALIDATION_ERROR 봉투를 반환한다', async () => {
-        const res = await app.request(`/api/chats?limit=${OVER_MAX_LIMIT}`)
+        const res = await authedRequest(`/api/chats?limit=${OVER_MAX_LIMIT}`)
         expect(res.status).toBe(400)
         const body = await parseJson(res, errorEnvelopeSchema)
         expect(body.error.code).toBe('VALIDATION_ERROR')
+    })
+
+    test('API 키가 없거나 폐기된 키면 401 UNAUTHORIZED 봉투를 반환한다', async () => {
+        const withoutKey = await app.request('/api/chats')
+        expect(withoutKey.status).toBe(401)
+        expect((await parseJson(withoutKey, errorEnvelopeSchema)).error.code).toBe('UNAUTHORIZED')
+
+        const revokedKey = await composed.authService.createApiKey('revoked')
+        await composed.authService.revokeApiKey(revokedKey.id)
+        const withRevokedKey = await app.request('/api/chats', { headers: { Authorization: `Bearer ${revokedKey.key}` } })
+        expect(withRevokedKey.status).toBe(401)
     })
 })
