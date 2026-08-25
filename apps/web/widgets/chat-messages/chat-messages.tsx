@@ -43,7 +43,7 @@ export const ChatMessagesWidget: FC<ChatMessagesWidgetProps> = ({ chatId, params
                         목록
                     </Link>
                     <h2 className='min-w-0 truncate text-sm font-medium'>
-                        {chat.displayName ?? chat.identifier ?? chat.participants.map((participant) => participant.address).join(', ')}
+                        {chat.displayName || chat.identifier || chat.participants.map((participant) => participant.address).join(', ') || chat.guid}
                     </h2>
                     <Badge variant={chat.isGroup ? 'secondary' : 'outline'}>{chat.isGroup ? '그룹' : '1:1'}</Badge>
                     {chat.serviceNames.map((service) => (

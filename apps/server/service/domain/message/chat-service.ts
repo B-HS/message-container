@@ -40,7 +40,9 @@ type ChatServiceDeps = {
     db: ChatServiceDb
 }
 
-const groupKeyOf = (row: ChatRowStats) => row.identifier ?? row.guid
+const presence = (value: string | null) => (value === null || value === '' ? null : value)
+
+const groupKeyOf = (row: ChatRowStats) => presence(row.identifier) ?? row.guid
 
 const mergeGroups = (rows: ChatRowStats[]) => {
     const groups = new Map<string, ChatRowStats[]>()
@@ -76,9 +78,9 @@ const toChatSummary = (group: MergedGroup, participants: Awaited<ReturnType<Chat
     return {
         sourceRowId: group.representative.sourceRowId,
         guid: group.representative.guid,
-        identifier: group.representative.identifier,
+        identifier: presence(group.representative.identifier),
         serviceNames: [...new Set(group.members.flatMap((member) => (member.serviceName ? [member.serviceName] : [])))],
-        displayName: group.members.map((member) => member.displayName).find((name) => name !== null) ?? null,
+        displayName: group.members.map((member) => presence(member.displayName)).find((name) => name !== null) ?? null,
         isGroup: group.representative.isGroup,
         chatIds: memberIds,
         participants: mergedParticipants,

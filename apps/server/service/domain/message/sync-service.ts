@@ -80,13 +80,15 @@ type SyncServiceDeps = {
     batchSize: number
 }
 
+const emptyToNull = (value: string | null) => (value === null || value === '' ? null : value)
+
 const normalizeBatch = (raw: ChatDbBatch, syncedAtMs: number): SyncBatch => ({
     chats: raw.chats.map((c) => ({
         sourceRowId: c.rowId,
         guid: c.guid,
-        identifier: c.identifier,
-        serviceName: c.serviceName,
-        displayName: c.displayName,
+        identifier: emptyToNull(c.identifier),
+        serviceName: emptyToNull(c.serviceName),
+        displayName: emptyToNull(c.displayName),
         isGroup: c.isGroup,
         syncedAtMs,
     })),

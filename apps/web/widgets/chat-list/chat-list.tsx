@@ -21,7 +21,7 @@ type ChatListWidgetProps = {
 }
 
 const chatDisplayName = (chat: ChatSummary) =>
-    chat.displayName ?? chat.identifier ?? chat.participants.map((participant) => participant.address).join(', ')
+    chat.displayName || chat.identifier || chat.participants.map((participant) => participant.address).join(', ') || chat.guid
 
 const COLUMNS: DataTableColumn<ChatSummary>[] = [
     { key: 'name', label: '대화', width: 224, truncate: true, render: (chat) => chatDisplayName(chat) },

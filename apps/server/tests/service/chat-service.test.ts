@@ -91,6 +91,19 @@ describe('chatService.getById — 병합 그룹 해석', () => {
         expect(byRepresentative?.chatIds.toSorted()).toEqual([1, 2])
     })
 
+    test('빈 문자열 displayName·identifier 는 null 로 정규화된다', async () => {
+        const service = createService([
+            buildRow({ sourceRowId: 1, identifier: '', displayName: '', guid: 'guid-empty-1', lastMessageAtMs: 2_000 }),
+            buildRow({ sourceRowId: 2, identifier: '', displayName: '', guid: 'guid-empty-2', lastMessageAtMs: 1_000 }),
+        ])
+
+        const result = await service.list({ page: 1, limit: 20 })
+
+        expect(result.total).toBe(2)
+        expect(result.data.at(0)?.displayName).toBeNull()
+        expect(result.data.at(0)?.identifier).toBeNull()
+    })
+
     test('없는 id 는 null 을 반환한다', async () => {
         const service = createService([buildRow({ sourceRowId: 1 })])
         expect(await service.getById(999)).toBeNull()
