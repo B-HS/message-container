@@ -2,6 +2,12 @@
 
 기준 문서: `~/.claude/convention/*.md` (특히 backend.md · common.md · git.md), `docs/acknowledge/2026-08-25-project-stack.md`
 
+## 작업: 대화 UI 고도화 + 설정 FE 완결 (2026-08-25)
+
+- [x] 대화 상세를 AI Elements 말풍선 대화 뷰로 교체 (stick-to-bottom·발신자 라벨·첨부 인라인, 경량화)
+- [x] BE 키 관리 JSON API(/api/keys 목록·생성·폐기) + e2e, 설정 화면에서 FE 직접 관리
+- [x] 연결·MCP 주소를 브라우저 origin + 공개 포트(MESSAGE_API_PUBLIC_PORT) 기반으로 표시
+
 ## 작업: 대화 로직 수정 + 저장소 정리 (2026-08-25)
 
 - [x] 대화 목록을 최근 메시지 기준 정렬로 수정 + 미리보기·시각·건수 추가 (drizzle 상관 서브쿼리 비정규화 함정 해결, 3 provider 실 DB 검증)
