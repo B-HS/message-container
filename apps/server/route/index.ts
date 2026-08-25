@@ -3,6 +3,7 @@ import { Hono } from 'hono'
 import { createRequireApiKey } from '@/middleware/require-api-key'
 import { createAttachmentRoute } from '@/route/attachment'
 import { createChatRoute } from '@/route/chat'
+import { createKeyRoute } from '@/route/key'
 import { createMessageRoute } from '@/route/message'
 import { createSyncRoute } from '@/route/sync'
 
@@ -16,6 +17,7 @@ export const createRouter = (composed: Composed) => {
     api.route('/messages', createMessageRoute({ messageService: composed.messageService }))
     api.route('/attachments', createAttachmentRoute({ attachmentService: composed.attachmentService }))
     api.route('/sync', createSyncRoute({ syncService: composed.syncService }))
+    api.route('/keys', createKeyRoute({ authService: composed.authService }))
 
     return api
 }
