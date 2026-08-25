@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../../../../../apps/web/app/%28shell%29/chats/%5Bid%5D/loading.tsx"],"sourcesContent":["import { PageSkeleton } from '@features/page-skeleton/page-skeleton'\n\nconst Loading = () => <PageSkeleton />\n\nexport default Loading\n"],"names":["Loading"],"mappings":"wDAAA,EAAA,EAAA,CAAA,CAAA,wBAEgB,IAAM,CAAA,EAAA,EAAA,GAAA,EAAC,EAAA,YAAY,CAAA,CAAA"}

@@ -27,3 +27,7 @@ coverage/
 # macOS
 .DS_Store
 ._*
+
+# build output
+.next/
+out/
