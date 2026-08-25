@@ -14,6 +14,7 @@ import { Conversation, ConversationContent, ConversationScrollButton } from '@sh
 import { Message, MessageContent } from '@shared/ui/ai-elements/message'
 
 import type { ChatMessagesParams } from '@entities/message/message.query'
+import type { MessageSummary } from '@entities/message/message.type'
 import type { AttachmentMeta } from '@entities/attachment/attachment.type'
 import type { FC } from 'react'
 
@@ -22,12 +23,42 @@ type ChatMessagesWidgetProps = {
     params: ChatMessagesParams
 }
 
+const TAPBACK_LABEL: Record<number, string> = { 2000: '하트', 2001: '좋아요', 2002: '싫어요', 2003: '웃음', 2004: '강조', 2005: '물음' }
+const TAPBACK_ADD_BASE = 2000
+const TAPBACK_REMOVE_BASE = 3000
+const TAPBACK_TYPE_LIMIT = 4000
+
+const isTapbackRow = (message: MessageSummary) =>
+    message.associatedMessageGuid !== null &&
+    message.associatedMessageType !== null &&
+    message.associatedMessageType >= TAPBACK_ADD_BASE &&
+    message.associatedMessageType < TAPBACK_TYPE_LIMIT
+
+const tapbackTargetGuid = (associatedMessageGuid: string) => {
+    const afterSlash = associatedMessageGuid.split('/').at(-1) ?? associatedMessageGuid
+    return afterSlash.split(':').at(-1) ?? afterSlash
+}
+
 export const ChatMessagesWidget: FC<ChatMessagesWidgetProps> = ({ chatId, params }) => {
     const router = useRouter()
     const chat = useGetChat(chatId).data
     const { data } = useGetChatMessages(chatId, params)
 
-    const orderedMessages = data.data.toReversed()
+    const tapbacksByTarget = new Map<string, Map<string, number>>()
+    for (const message of data.data) {
+        if (!isTapbackRow(message) || message.associatedMessageGuid === null || message.associatedMessageType === null) continue
+        const isRemove = message.associatedMessageType >= TAPBACK_REMOVE_BASE
+        const label =
+            TAPBACK_LABEL[isRemove ? message.associatedMessageType - (TAPBACK_REMOVE_BASE - TAPBACK_ADD_BASE) : message.associatedMessageType] ??
+            '반응'
+        const target = tapbackTargetGuid(message.associatedMessageGuid)
+        const counts = tapbacksByTarget.get(target) ?? new Map<string, number>()
+        counts.set(label, (counts.get(label) ?? 0) + (isRemove ? -1 : 1))
+        tapbacksByTarget.set(target, counts)
+    }
+
+    const orderedMessages = data.data.filter((message) => !isTapbackRow(message)).toReversed()
+    const lastReadOwnMessageId = orderedMessages.findLast((message) => message.isFromMe && message.readAt !== null)?.sourceRowId
     const attachmentMessageIds = data.data.filter((message) => message.hasAttachments).map((message) => message.sourceRowId)
     const attachments = useGetAttachmentsByMessages(attachmentMessageIds)
     const attachmentsByMessage = new Map<number, AttachmentMeta[]>()
@@ -72,6 +103,7 @@ export const ChatMessagesWidget: FC<ChatMessagesWidgetProps> = ({ chatId, params
                                 const messageAttachments = attachmentsByMessage.get(message.sourceRowId) ?? []
                                 const imageAttachments = messageAttachments.filter((attachment) => attachment.mimeType?.startsWith('image/'))
                                 const fileAttachments = messageAttachments.filter((attachment) => !attachment.mimeType?.startsWith('image/'))
+                                const tapbackChips = [...(tapbacksByTarget.get(message.guid) ?? [])].filter(([, count]) => count > 0)
 
                                 return (
                                     <Message key={message.sourceRowId} from={message.isFromMe ? 'user' : 'assistant'}>
@@ -111,8 +143,18 @@ export const ChatMessagesWidget: FC<ChatMessagesWidgetProps> = ({ chatId, params
                                                 <span className='text-xs opacity-70'>(본문 없음)</span>
                                             ) : null}
                                         </MessageContent>
+                                        {tapbackChips.length > 0 ? (
+                                            <div className='flex flex-wrap gap-1'>
+                                                {tapbackChips.map(([label, count]) => (
+                                                    <span key={label} className='bg-muted px-1.5 py-0.5 font-mono text-2xs text-muted-foreground'>
+                                                        {count > 1 ? `${label} ${count}` : label}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        ) : null}
                                         <span className='font-mono text-2xs text-muted-foreground tabular-nums' suppressHydrationWarning>
                                             {formatDateTime(message.sentAt)}
+                                            {message.sourceRowId === lastReadOwnMessageId ? ' · 읽음' : ''}
                                         </span>
                                     </Message>
                                 )

@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { LogOut, MessagesSquare, Moon, PanelLeft, RefreshCw, Search, Settings, Sun } from 'lucide-react'
+import { LogOut, MessagesSquare, Moon, PanelLeft, RefreshCw, ScrollText, Search, Settings, Sun } from 'lucide-react'
 import { useTheme } from 'next-themes'
 
 import { cn } from '@shared/lib/utils'
@@ -14,6 +14,7 @@ const NAV_ITEMS = [
     { href: '/chats', label: '대화', icon: MessagesSquare },
     { href: '/messages', label: '메시지 검색', icon: Search },
     { href: '/sync', label: '동기화', icon: RefreshCw },
+    { href: '/logs', label: '로그', icon: ScrollText },
     { href: '/settings', label: '설정', icon: Settings },
 ] as const
 

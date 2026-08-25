@@ -15,4 +15,8 @@ export const QUERY_KEY = {
     },
     SYNC: { STATUS: ['sync', 'status'] },
     API_KEY: { LIST: ['api-key', 'list'] },
+    LOG: {
+        ALL: ['log'],
+        LIST: (params: Record<string, unknown>) => ['log', 'list', params],
+    },
 }
