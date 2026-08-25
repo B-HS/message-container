@@ -91,6 +91,18 @@ describe('auth JSON API e2e', () => {
         expect(chatsRes.status).toBe(200)
     })
 
+    test('revoke 는 제시한 키를 폐기해 이후 호출을 401 로 만든다', async () => {
+        const issued = await parseJson(await postJson('/api/auth/login', { password: PASSWORD, keyName: 'web-revoke' }), keyEnvelopeSchema)
+        const revokeRes = await app.request('/api/auth/revoke', { method: 'POST', headers: { Authorization: `Bearer ${issued.data.key}` } })
+        expect(revokeRes.status).toBe(200)
+
+        const afterRes = await app.request('/api/chats', { headers: { Authorization: `Bearer ${issued.data.key}` } })
+        expect(afterRes.status).toBe(401)
+
+        const withoutKeyRes = await app.request('/api/auth/revoke', { method: 'POST' })
+        expect(withoutKeyRes.status).toBe(401)
+    })
+
     test('짧은 패스워드로 setup 하면 400 VALIDATION_ERROR 를 반환한다', async () => {
         const res = await postJson('/api/auth/login', { password: '' })
         expect(res.status).toBe(400)

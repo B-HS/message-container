@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 import { describeRoute, validator } from 'hono-openapi'
 
 import { errorResponses, successResponse } from '@/lib/api-response'
+import { getBearerToken } from '@/lib/bearer-token'
 import { createAppError } from '@/lib/error'
 import { validationHook } from '@/lib/validation-hook'
 import { withErrorHandling } from '@/lib/with-error-handling'
@@ -58,6 +59,22 @@ export const createAuthRoute = (deps: AuthRouteDeps) => {
             if (result === 'invalid') throw createAppError('AUTH_INVALID_PASSWORD')
             const key = await deps.authService.createApiKey(input.keyName)
             return c.json(successResponse({ id: key.id, name: key.name, start: key.start, key: key.key }))
+        }),
+    )
+
+    route.post(
+        '/revoke',
+        describeRoute({
+            tags: ['Auth'],
+            summary: '제시한 API 키 자기 폐기 (로그아웃)',
+            responses: { 200: { description: '폐기 완료' }, ...errorResponses(['UNAUTHORIZED']) },
+        }),
+        withErrorHandling(async (c) => {
+            const key = getBearerToken(c.req.header('Authorization'))
+            const verified = key ? await deps.authService.verifyApiKey(key) : null
+            if (!verified) throw createAppError('UNAUTHORIZED')
+            await deps.authService.revokeApiKey(verified.id)
+            return c.json(successResponse({ revokedId: verified.id }))
         }),
     )
 

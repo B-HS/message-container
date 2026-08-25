@@ -1,4 +1,5 @@
 import { Hono } from 'hono'
+import { secureHeaders } from 'hono/secure-headers'
 import { openAPIRouteHandler } from 'hono-openapi'
 
 import { compose } from '@/compose'
@@ -16,6 +17,7 @@ await runMigrations(client)
 const composed = compose({ env, client })
 
 const app = new Hono()
+app.use('*', secureHeaders())
 app.get('/', (c) => c.redirect('/panel'))
 app.route('/panel', createPanelRoute({ authService: composed.authService }))
 app.route('/mcp', createMcpRoute(composed))
