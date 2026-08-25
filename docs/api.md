@@ -28,16 +28,23 @@ Authorization: Bearer msg_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 ## 2. 엔드포인트 목록
 
-| 메서드 | 경로                        | 인증      | 설명                                     |
-| ------ | --------------------------- | --------- | ---------------------------------------- |
-| GET    | `/api/chats`                | API 키    | 대화 목록 (참여자 포함, 페이지네이션)    |
-| GET    | `/api/chats/:id/messages`   | API 키    | 대화별 메시지 목록 (최신순)              |
-| GET    | `/api/messages`             | API 키    | 메시지 검색 (`q` 생략 시 최근 메시지)    |
-| GET    | `/api/attachments/:id/file` | API 키    | 첨부파일 원본 바이너리                   |
-| GET    | `/api/sync/status`          | API 키    | 동기화 상태 (커서·시각·건수·에러)        |
-| POST   | `/api/sync/run`             | API 키    | 동기화 즉시 실행                         |
-| GET    | `/openapi.json`             | 공개      | OpenAPI 3 스펙 (프로덕션 포함 항상 제공) |
-| GET    | `/panel`                    | 세션 쿠키 | 초기 설정 / 로그인 / API 키 관리 화면    |
+| 메서드 | 경로                        | 인증      | 설명                                                              |
+| ------ | --------------------------- | --------- | ----------------------------------------------------------------- |
+| GET    | `/api/auth/status`          | 공개      | 초기 설정(패스워드) 여부 조회 — `{ passwordSet }`                 |
+| POST   | `/api/auth/setup`           | 공개      | 최초 1회 패스워드 설정 + API 키 발급 (재호출 409)                 |
+| POST   | `/api/auth/login`           | 공개      | 패스워드 검증 + API 키 발급 (틀리면 401, 연속 실패 잠금 시 429)   |
+| GET    | `/api/chats`                | API 키    | 대화 목록 (참여자 포함, 페이지네이션)                             |
+| GET    | `/api/chats/:id`            | API 키    | 대화 단건 조회                                                    |
+| GET    | `/api/chats/:id/messages`   | API 키    | 대화별 메시지 목록 (최신순)                                       |
+| GET    | `/api/messages`             | API 키    | 메시지 검색 (`q` 생략 시 최근 메시지)                             |
+| GET    | `/api/attachments`          | API 키    | 메시지별 첨부 메타데이터 일괄 조회 (`messageIds=1,2,3`, 최대 200) |
+| GET    | `/api/attachments/:id/file` | API 키    | 첨부파일 원본 바이너리                                            |
+| GET    | `/api/sync/status`          | API 키    | 동기화 상태 (커서·시각·건수·에러)                                 |
+| POST   | `/api/sync/run`             | API 키    | 동기화 즉시 실행                                                  |
+| GET    | `/openapi.json`             | 공개      | OpenAPI 3 스펙 (프로덕션 포함 항상 제공)                          |
+| GET    | `/panel`                    | 세션 쿠키 | API 키 관리 화면 (초기 설정·로그인은 웹 대시보드에서도 가능)      |
+
+인증 API 의 `setup`/`login` 요청 바디는 `{ "password": string, "keyName"?: string }`(JSON) 이며, 성공 시 `{ id, name, start, key }` 를 반환한다 — `key` 원문은 이 응답에서 1회만 노출된다. 웹 대시보드(`apps/web`)는 이 API 로 초기 설정·로그인을 수행하고 발급 키를 httpOnly 쿠키로 보관한다.
 
 ## 3. 공통 응답 봉투
 

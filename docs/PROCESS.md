@@ -6,16 +6,17 @@
 
 기준: docs/acknowledge/2026-08-25-monorepo-fe.md, 사용자 제공 DESIGN.md(flunti-otel Surface A)
 
-- [ ] a. 모노레포 전환 — BE 를 apps/server 로 git mv, 루트 workspaces 설정, Docker/compose/스크립트 경로 갱신, BE 검증(typecheck·test·docker) 그린 유지
-- [ ] b. 공식 문서 확인 — Next 최신(App Router·React Compiler), Tailwind v4 + Next, shadcn CLI, next-themes, bun workspaces docker install
-- [ ] c. FE 스캐폴드 — apps/web: Next + Tailwind v4 + shadcn(new-york) + TanStack Query + FSD 구조 + DESIGN.md §16-1 토큰 CSS
-- [ ] d. 프록시·데이터 계층 — /api/be/[...path] 프록시(키 서버 주입, 바이너리 지원), entities(chat·message·sync) queryOptions + QUERY_KEY, server/client fetch 헬퍼
-- [ ] e. 쉘 — 좌측 레일(256/48px 접힘, 풀블리드 nav, 테마 토글), 1px 심 페이지 루트, 헤더 없음
-- [ ] f. 화면 5종 — 대화 목록 / 대화 상세(첨부 이미지) / 검색 / 동기화 / 설정(연결 상태) — 전부 prefetch+HydrationBoundary+useSuspenseQuery, 스켈레톤 온리
-- [ ] g. FE Docker — standalone 빌드 + compose web 서비스
-- [ ] h. 검증 — 양 앱 typecheck·test·build, 실 BE 연동 스모크
-- [ ] i. 문서 — acknowledge/PROCESS/README/setup 갱신, FE 구조 문서
-- [ ] j. 커밋 (dev)
+- [x] a. 모노레포 전환 — BE 를 apps/server 로 git mv, 루트 workspaces 설정, Docker/compose/스크립트 경로 갱신, BE 검증(typecheck·test·docker) 그린 유지
+- [x] a-2. (후속 지시) 공개 JSON auth API(/api/auth/status·setup·login) + smoke-test 패스워드 제거(docker 만 의존) — 초기설정은 전부 웹에서 BE 로 기록
+- [x] b. 공식 문서 확인 — Next 16(reactCompiler·standalone), Tailwind v4 + Next, shadcn CLI(aliases), MCP SDK zod4, bun install --filter
+- [x] c. FE 스캐폴드 — apps/web: Next + Tailwind v4 + shadcn(new-york, shared/ui) + TanStack Query + FSD 구조 + DESIGN.md §16-1 토큰 CSS
+- [x] d. 프록시·데이터 계층 — /api/be/[...path] 프록시(쿠키 키 서버 주입, 바이너리 지원), /api/session(로그인·로그아웃), entities(chat·message·attachment·sync) queryOptions + QUERY_KEY, 환경중립 apiFetch + Zod 봉투 검증
+- [x] e. 쉘 — 좌측 레일 256px(풀블리드 nav 4항목·테마 토글·로그아웃), 1px 심 페이지 루트, 헤더 없음 (접힘/모바일 드로어는 후속)
+- [x] f. 화면 — setup(초기설정/로그인) + 대화 목록 / 대화 상세(첨부 이미지) / 검색 / 동기화 / 설정 — 전부 prefetch+HydrationBoundary+useSuspenseQuery(SSR 첫 HTML 에 데이터 포함 확인), 스켈레톤 온리
+- [x] g. FE Docker — standalone 빌드 + compose web 서비스, 컨테이너 간(web→api) 플로우 검증
+- [x] h. 검증 — server 133 테스트·web typecheck/build/단위 테스트 그린, 로컬·docker 실연동 스모크(설정→쿠키→SSR→프록시→리다이렉트)
+- [x] i. 문서 — acknowledge/README/setup/api/history 갱신
+- [x] j. 커밋 (dev) + GitHub(B-HS/message-container) dev·prod push
 
 ## 작업: 기동·검증 스크립트 (2026-08-25)
 
