@@ -46,6 +46,11 @@ export const ChatMessagesWidget: FC<ChatMessagesWidgetProps> = ({ chatId, params
                         {chat.displayName ?? chat.identifier ?? chat.participants.map((participant) => participant.address).join(', ')}
                     </h2>
                     <Badge variant={chat.isGroup ? 'secondary' : 'outline'}>{chat.isGroup ? '그룹' : '1:1'}</Badge>
+                    {chat.serviceNames.map((service) => (
+                        <Badge key={service} variant='outline'>
+                            {service}
+                        </Badge>
+                    ))}
                     <span className='text-xs text-muted-foreground tabular-nums'>{formatCount(chat.messageCount)}건</span>
                     <div className='ml-auto'>
                         <Pager
