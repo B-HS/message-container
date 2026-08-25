@@ -105,6 +105,18 @@ describe('sqlite provider', () => {
         expect(groupChat?.participants.map((p) => p.address).toSorted()).toEqual(['+821012345678', 'friend@example.com'])
     })
 
+    test('getChatList 는 최근 메시지 순으로 정렬하고 미리보기·건수를 포함한다', async () => {
+        const serviceDb = await setupServiceDb()
+        await serviceDb.sync.saveBatch(buildBatch(), 2)
+
+        const { data } = await serviceDb.chat.getChatList({ offset: 0, limit: 10 })
+        expect(data.map((c) => c.sourceRowId)).toEqual([11, 10])
+        expect(data.at(0)?.lastMessageText).toBe('사진 보냈어요')
+        expect(data.at(0)?.lastMessageAtMs).toBe(SYNCED_AT_MS + 1000)
+        expect(data.at(0)?.messageCount).toBe(1)
+        expect(data.at(1)?.messageCount).toBe(1)
+    })
+
     test('getMessageListByChat 은 발신자 주소를 조인해 반환한다', async () => {
         const serviceDb = await setupServiceDb()
         await serviceDb.sync.saveBatch(buildBatch(), 2)

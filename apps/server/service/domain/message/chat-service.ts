@@ -5,7 +5,7 @@ export type ChatParticipant = {
     service: string | null
 }
 
-export type ChatSummary = {
+export type ChatListRow = {
     sourceRowId: number
     guid: string
     identifier: string | null
@@ -13,23 +13,37 @@ export type ChatSummary = {
     displayName: string | null
     isGroup: boolean
     participants: ChatParticipant[]
+    messageCount: number
+    lastMessageText: string | null
+    lastMessageAtMs: number | null
 }
 
+export type ChatSummary = Omit<ChatListRow, 'lastMessageAtMs'> & { lastMessageAt: string | null }
+
 export type ChatServiceDb = {
-    getChatList: (params: { offset: number; limit: number }) => Promise<{ data: ChatSummary[]; total: number }>
-    getChatById: (id: number) => Promise<ChatSummary | null>
+    getChatList: (params: { offset: number; limit: number }) => Promise<{ data: ChatListRow[]; total: number }>
+    getChatById: (id: number) => Promise<ChatListRow | null>
 }
 
 type ChatServiceDeps = {
     db: ChatServiceDb
 }
 
+const toChatSummary = ({ lastMessageAtMs, ...row }: ChatListRow): ChatSummary => ({
+    ...row,
+    lastMessageAt: lastMessageAtMs === null ? null : new Date(lastMessageAtMs).toISOString(),
+})
+
 export const createChatService = (deps: ChatServiceDeps) => ({
     list: async (query: PaginationQuery) => {
         const { data, total } = await deps.db.getChatList({ offset: (query.page - 1) * query.limit, limit: query.limit })
-        return { data, page: query.page, limit: query.limit, total }
+        return { data: data.map(toChatSummary), page: query.page, limit: query.limit, total }
     },
-    getById: async (id: number) => deps.db.getChatById(id),
+    getById: async (id: number) => {
+        const row = await deps.db.getChatById(id)
+        if (!row) return null
+        return toChatSummary(row)
+    },
 })
 
 export type ChatService = ReturnType<typeof createChatService>

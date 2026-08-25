@@ -137,6 +137,9 @@ const chatSummarySchema = z.object({
     displayName: z.string().nullable(),
     isGroup: z.boolean(),
     participants: z.array(z.object({ address: z.string(), service: z.string().nullable() })),
+    messageCount: z.number(),
+    lastMessageText: z.string().nullable(),
+    lastMessageAt: z.string().nullable(),
 })
 
 const messageSummarySchema = z.object({

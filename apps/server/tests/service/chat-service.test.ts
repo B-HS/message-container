@@ -2,9 +2,11 @@ import { describe, expect, test } from 'bun:test'
 
 import { createChatService } from '@/service/domain/message/chat-service'
 
-import type { ChatServiceDb, ChatSummary } from '@/service/domain/message/chat-service'
+import type { ChatListRow, ChatServiceDb } from '@/service/domain/message/chat-service'
 
-const buildChat = (sourceRowId: number): ChatSummary => ({
+const LAST_MESSAGE_AT_MS = 1_700_000_000_000
+
+const buildChatRow = (sourceRowId: number): ChatListRow => ({
     sourceRowId,
     guid: `chat-guid-${sourceRowId}`,
     identifier: 'chat-identifier',
@@ -12,6 +14,9 @@ const buildChat = (sourceRowId: number): ChatSummary => ({
     displayName: null,
     isGroup: false,
     participants: [{ address: '+15551234567', service: 'iMessage' }],
+    messageCount: 3,
+    lastMessageText: '마지막 메시지',
+    lastMessageAtMs: LAST_MESSAGE_AT_MS,
 })
 
 describe('chatService.list', () => {
@@ -31,27 +36,33 @@ describe('chatService.list', () => {
         expect(capturedParams).toEqual([{ offset: 20, limit: 10 }])
     })
 
-    test('db 의 data/total 을 그대로 전달하고 page/limit 을 응답에 포함한다', async () => {
-        const chats = [buildChat(1), buildChat(2)]
+    test('lastMessageAtMs 를 ISO lastMessageAt 으로 변환해 반환한다', async () => {
         const db: ChatServiceDb = {
-            getChatList: async () => ({ data: chats, total: 2 }),
+            getChatList: async () => ({ data: [buildChatRow(1)], total: 1 }),
             getChatById: async () => null,
         }
         const service = createChatService({ db })
 
         const result = await service.list({ page: 1, limit: 20 })
 
-        expect(result).toEqual({ data: chats, page: 1, limit: 20, total: 2 })
+        expect(result.page).toBe(1)
+        expect(result.total).toBe(1)
+        expect(result.data.at(0)?.lastMessageAt).toBe(new Date(LAST_MESSAGE_AT_MS).toISOString())
+        expect(result.data.at(0)?.lastMessageText).toBe('마지막 메시지')
+        expect(result.data.at(0)?.messageCount).toBe(3)
+        expect(result.data.at(0)).not.toHaveProperty('lastMessageAtMs')
     })
 })
 
 describe('chatService.getById', () => {
-    test('db 조회 결과를 그대로 반환한다', async () => {
-        const chat = buildChat(5)
-        const db: ChatServiceDb = { getChatList: async () => ({ data: [], total: 0 }), getChatById: async () => chat }
+    test('db 조회 결과를 요약 형태로 변환해 반환한다', async () => {
+        const db: ChatServiceDb = { getChatList: async () => ({ data: [], total: 0 }), getChatById: async () => buildChatRow(5) }
         const service = createChatService({ db })
 
-        expect(await service.getById(5)).toEqual(chat)
+        const result = await service.getById(5)
+
+        expect(result?.sourceRowId).toBe(5)
+        expect(result?.lastMessageAt).toBe(new Date(LAST_MESSAGE_AT_MS).toISOString())
     })
 
     test('없는 채팅이면 null 을 반환한다', async () => {

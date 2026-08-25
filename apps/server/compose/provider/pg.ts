@@ -8,7 +8,7 @@ import { createAppError } from '@/lib/error'
 import type { BunSQLDatabase } from 'drizzle-orm/bun-sql'
 import type { AuthServiceDb } from '@/service/domain/auth/auth-service'
 import type { AttachmentServiceDb } from '@/service/domain/message/attachment-service'
-import type { ChatServiceDb, ChatSummary } from '@/service/domain/message/chat-service'
+import type { ChatListRow, ChatServiceDb } from '@/service/domain/message/chat-service'
 import type { MessageServiceDb } from '@/service/domain/message/message-service'
 import type { SyncServiceDb } from '@/service/domain/message/sync-service'
 
@@ -126,17 +126,28 @@ export const createPgServiceDb = (db: BunSQLDatabase) => {
                   .innerJoin(handles, eq(handles.sourceRowId, chatHandles.handleSourceRowId))
                   .where(inArray(chatHandles.chatSourceRowId, chatIds))
 
-    const toChatSummaries = (
-        chatRows: (typeof chats.$inferSelect)[],
+    const chatListSelection = {
+        sourceRowId: chats.sourceRowId,
+        guid: chats.guid,
+        identifier: chats.identifier,
+        serviceName: chats.serviceName,
+        displayName: chats.displayName,
+        isGroup: chats.isGroup,
+        messageCount: sql<number>`(select count(*) from messages m where m.chat_source_row_id = chats.source_row_id)`,
+        lastMessageText: sql<
+            string | null
+        >`(select m.text from messages m where m.chat_source_row_id = chats.source_row_id order by m.sent_at_ms desc, m.source_row_id desc limit 1)`,
+        lastMessageAtMs: sql<number | null>`(select max(m.sent_at_ms) from messages m where m.chat_source_row_id = chats.source_row_id)`,
+    }
+
+    const toChatRows = (
+        chatRows: Omit<ChatListRow, 'participants'>[],
         participantRows: Awaited<ReturnType<typeof getParticipantRows>>,
-    ): ChatSummary[] =>
+    ): ChatListRow[] =>
         chatRows.map((c) => ({
-            sourceRowId: c.sourceRowId,
-            guid: c.guid,
-            identifier: c.identifier,
-            serviceName: c.serviceName,
-            displayName: c.displayName,
-            isGroup: c.isGroup,
+            ...c,
+            messageCount: Number(c.messageCount),
+            lastMessageAtMs: c.lastMessageAtMs === null ? null : Number(c.lastMessageAtMs),
             participants: participantRows.filter((p) => p.chatSourceRowId === c.sourceRowId).map(({ address, service }) => ({ address, service })),
         }))
 
@@ -144,15 +155,20 @@ export const createPgServiceDb = (db: BunSQLDatabase) => {
         getChatList: async ({ offset, limit }) => {
             const [totalRow, chatRows] = await Promise.all([
                 db.select({ value: count() }).from(chats),
-                db.select().from(chats).orderBy(desc(chats.sourceRowId)).limit(limit).offset(offset),
+                db
+                    .select(chatListSelection)
+                    .from(chats)
+                    .orderBy(sql`${chatListSelection.lastMessageAtMs} desc nulls last`, desc(chats.sourceRowId))
+                    .limit(limit)
+                    .offset(offset),
             ])
             const participantRows = await getParticipantRows(chatRows.map((c) => c.sourceRowId))
-            return { data: toChatSummaries(chatRows, participantRows), total: totalRow.at(0)?.value ?? 0 }
+            return { data: toChatRows(chatRows, participantRows), total: totalRow.at(0)?.value ?? 0 }
         },
         getChatById: async (id) => {
-            const chatRow = (await db.select().from(chats).where(eq(chats.sourceRowId, id))).at(0)
+            const chatRow = (await db.select(chatListSelection).from(chats).where(eq(chats.sourceRowId, id))).at(0)
             if (!chatRow) return null
-            return toChatSummaries([chatRow], await getParticipantRows([id])).at(0) ?? null
+            return toChatRows([chatRow], await getParticipantRows([id])).at(0) ?? null
         },
     }
 

@@ -2,6 +2,12 @@
 
 기준 문서: `~/.claude/convention/*.md` (특히 backend.md · common.md · git.md), `docs/acknowledge/2026-08-25-project-stack.md`
 
+## 작업: 대화 로직 수정 + 저장소 정리 (2026-08-25)
+
+- [x] 대화 목록을 최근 메시지 기준 정렬로 수정 + 미리보기·시각·건수 추가 (drizzle 상관 서브쿼리 비정규화 함정 해결, 3 provider 실 DB 검증)
+- [x] 잘못 커밋된 apps/web/.next 제거 및 gitignore 보강 — 소스는 전부 TypeScript(strict) 126파일 확인
+- [x] FE 대화 목록 컬럼 개편(마지막 메시지·시각·건수), DataTable 고정폭 truncate 지원
+
 ## 작업: 기본 포트 변경 (2026-08-25)
 
 - [x] 서버 33000·웹 32000 으로 기본 포트 전면 변경 — env 기본값·Dockerfile·compose·스크립트·FE 폴백 URL·문서 일괄 갱신, docker 실 기동으로 양 포트 확인
