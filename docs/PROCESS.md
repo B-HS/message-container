@@ -2,6 +2,19 @@
 
 기준 문서: `~/.claude/convention/*.md` (특히 backend.md · common.md · git.md), `docs/acknowledge/2026-08-25-project-stack.md`
 
+## 작업: 테스트 확충 + docs 정합화 (2026-08-25, workflow 병렬)
+
+- [x] a. 공용 테스트 헬퍼 — tests/helpers/test-env.ts (getEnv 경로용 env 고정)
+- [x] b. lib 단위 테스트 — api-response·error·collection·env(envSchema export)·validation-hook·with-error-handling
+- [x] c. dto·service 단위 테스트 — dto/message, chat-service, message-service
+- [x] d. e2e — fake chat.db 헬퍼 공용화 + compose·router 전체 배선(app.request) + bun index.ts 서브프로세스 부트 테스트
+- [x] e. 전체 검증 — typecheck → format:check → bun test 일괄 통과
+- [x] f. docs 정합 점검·고도화 — 기존 문서 사실 검증, architecture·history 추가, PROCESS·QA 갱신
+- [x] g. mysql·postgres provider 실 DB 검증 (docker: mysql:8·postgres:18 + api 이미지, fake chat.db) 및 QA 체크 반영
+- [x] h. 커밋 (dev)
+
+검증 결과: `bun test` 84 pass / 0 fail (155 expect, 18 파일, tests/e2e 10건 포함) — `tsc --noEmit`·`prettier --check` 도 통과. mysql·postgres 는 docker 실 DB 로 동기화·조회 확인.
+
 ## 작업: message-container 초기 구축 (2026-08-25) — 완료
 
 - [x] a. 스택·환경 합의 및 기록 — docs/acknowledge, git init + auto-commit 설정
