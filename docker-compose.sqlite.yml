@@ -1,0 +1,17 @@
+# 단일 컨테이너 구성: SQLite provider. DB 파일이 ./data 에 노출되어 호스트에서 직접 열람 가능
+services:
+    api:
+        build: .
+        ports:
+            - '${API_PORT:-3000}:3000'
+        environment:
+            DB_PROVIDER: sqlite
+            SQLITE_PATH: /data/messages.db
+            CHAT_DB_PATH: /host/messages/chat.db
+            ATTACHMENTS_ROOT: /host/messages/Attachments
+            SYNC_INTERVAL_MS: '${SYNC_INTERVAL_MS:-5000}'
+            SYNC_BATCH_SIZE: '${SYNC_BATCH_SIZE:-1000}'
+        volumes:
+            - ${HOME}/Library/Messages:/host/messages:ro
+            - ./data:/data
+        restart: unless-stopped

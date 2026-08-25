@@ -1,0 +1,40 @@
+# 기본 구성: MySQL provider. Messages 마운트는 Docker Desktop/OrbStack 에 Full Disk Access 필요 (docs/setup.md)
+services:
+    api:
+        build: .
+        ports:
+            - '${API_PORT:-3000}:3000'
+        environment:
+            DB_PROVIDER: mysql
+            DATABASE_URL: mysql://${MYSQL_USER:-messages}:${MYSQL_PASSWORD:-messages}@db:3306/${MYSQL_DATABASE:-messages}
+            CHAT_DB_PATH: /host/messages/chat.db
+            ATTACHMENTS_ROOT: /host/messages/Attachments
+            SYNC_INTERVAL_MS: '${SYNC_INTERVAL_MS:-5000}'
+            SYNC_BATCH_SIZE: '${SYNC_BATCH_SIZE:-1000}'
+        volumes:
+            - ${HOME}/Library/Messages:/host/messages:ro
+        depends_on:
+            db:
+                condition: service_healthy
+        restart: unless-stopped
+
+    db:
+        image: mysql:8
+        environment:
+            MYSQL_DATABASE: ${MYSQL_DATABASE:-messages}
+            MYSQL_USER: ${MYSQL_USER:-messages}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD:-messages}
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-messages-root}
+        ports:
+            - '${MYSQL_PORT:-3306}:3306'
+        volumes:
+            - mysql-data:/var/lib/mysql
+        healthcheck:
+            test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
+            interval: 5s
+            timeout: 3s
+            retries: 20
+        restart: unless-stopped
+
+volumes:
+    mysql-data:
