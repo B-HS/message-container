@@ -2,6 +2,12 @@
 
 기준 문서: `~/.claude/convention/*.md` (특히 backend.md · common.md · git.md), `docs/acknowledge/2026-08-25-project-stack.md`
 
+## 작업: 대화 병합 — 대표 1행 (2026-08-25)
+
+- [x] identifier 기준 chat 행 병합(대표 선택·건수 합산·서비스 union·참여자 dedup) — chat-service 도메인 로직으로 구현
+- [x] 상세·MCP 메시지 조회를 병합 그룹(chatIds IN) 기준으로 변경, 헤더에 서비스 배지
+- [x] 테스트 재작성(병합 단위) + 병합 시나리오 실기동 검증
+
 ## 작업: 대화 UI 고도화 + 설정 FE 완결 (2026-08-25)
 
 - [x] 대화 상세를 AI Elements 말풍선 대화 뷰로 교체 (stick-to-bottom·발신자 라벨·첨부 인라인, 경량화)
