@@ -34,8 +34,6 @@ services:
         volumes:
             - ${HOME}/Library/Messages:/host/messages:ro
             - message-data:/data
-        ports:
-            - '${MC_API_BIND:-127.0.0.1}:${MC_API_PORT:-33000}:33000'
         healthcheck:
             test:
                 - CMD
@@ -71,7 +69,6 @@ services:
                 max-file: '3'
         environment:
             MESSAGE_API_URL: http://message-api:33000
-            MESSAGE_API_PUBLIC_PORT: '${MC_API_PORT:-33000}'
         depends_on:
             message-api:
                 condition: service_healthy
