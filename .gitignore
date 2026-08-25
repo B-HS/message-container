@@ -1,9 +1,29 @@
+# dependencies
 node_modules/
+
+# env & secrets
 .env
 .env.*
 !.env.example
-*.log
+*.pem
+
+# runtime data (sqlite volume, logs)
 data/
+*.log
+
+# build output
 dist/
-.DS_Store
+*.tsbuildinfo
+
+# test artifacts
+coverage/
+
+# local tool & editor settings
+.claude/settings.local.json
 .cursor/
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
+._*
